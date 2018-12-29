@@ -30,6 +30,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <BundleAssemblies>false</BundleAssemblies>
+    <Debugger>Xamarin</Debugger>
+    <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -93,7 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Zal\Zal.csproj">
-      <Project>{7CE8520C-16FA-4AF7-8489-798F07D8FE11}</Project>
+      <Project>{7A498B44-FB97-493C-A485-FA81A9DAD8C7}</Project>
       <Name>Zal</Name>
     </ProjectReference>
   </ItemGroup>
