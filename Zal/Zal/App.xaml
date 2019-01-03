@@ -4,12 +4,23 @@
              x:Class="Zal.App">
     <Application.Resources>
         <ResourceDictionary>
-            <!--Global Styles-->
-            <Color x:Key="NavigationPrimary">#2196F3</Color>
+
+            <Color x:Key="Primary">#2E7D32</Color>
+            <Color x:Key="PrimaryDark">#1B5E20</Color>
+            <Color x:Key="Accent">#FFB300</Color>
+            <Color x:Key="LightBackgroundColor">#E8F5E9</Color>
+            <Color x:Key="GrayBackgroundColor">#C0C0C0</Color>
+            <Color x:Key="DarkGrayColor">#292929</Color>
+            <Color x:Key="LightTextColor">#FFFFFF</Color>
+            <Color x:Key="GrayMenuActiveColor">#E0E0E0</Color>
+
             <Style TargetType="NavigationPage">
-                <Setter Property="BarBackgroundColor" Value="{StaticResource NavigationPrimary}" />
+                <Setter Property="BarBackgroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="BackgroundColor" Value="{StaticResource LightBackgroundColor}"/>
                 <Setter Property="BarTextColor" Value="White" />
+                <Setter Property="Tint" Value="{StaticResource Accent}"/>
             </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

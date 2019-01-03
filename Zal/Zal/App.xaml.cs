@@ -15,6 +15,7 @@ namespace Zal
             InitializeComponent();
             InitializeAppData();
 
+
             MainPage = new MainPage();
         }
 
@@ -42,11 +43,19 @@ namespace Zal
 
         protected override void OnStart()
         {
+            object a;
+            if (Current.Properties.ContainsKey("key2"))
+            {
+               a = Current.Properties["key2"];
+
+            }
             // Handle when your app starts
         }
 
         protected override void OnSleep()
         {
+            Current.Properties["key2"] = "value2";
+            Current.SavePropertiesAsync();
             // Handle when your app sleeps
         }
 

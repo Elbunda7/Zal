@@ -19,6 +19,8 @@ namespace Zal.Droid
 
             base.OnCreate(savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            ImageCircle.Forms.Plugin.Droid.ImageCircleRenderer.Init();
+            //IconEntry.FormsPlugin.Android.IconEntryRenderer.Init();
             LoadApplication(new App());
         }
     }

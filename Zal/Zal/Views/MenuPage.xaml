@@ -1,20 +1,100 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:plugin="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin"
+             xmlns:local="clr-namespace:Zal.Elements"
              x:Class="Zal.Views.MenuPage"
              Title="Menu">
-    <StackLayout VerticalOptions="FillAndExpand">
+    
+    <StackLayout 
+        VerticalOptions="FillAndExpand"
+        BackgroundColor="WhiteSmoke">
         <ListView x:Name="ListViewMenu"
                     HasUnevenRows="True">
+
+            <ListView.Header>
+                <StackLayout>
+                    <Grid BackgroundColor="{StaticResource Accent}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="70"/>
+                            <RowDefinition Height="36"/>
+                            <RowDefinition Height="2"/>
+                        </Grid.RowDefinitions>
+
+                        <Image x:Name="BgImage"
+                        Grid.Column="0" Grid.ColumnSpan="5"
+                        Grid.Row="0" Grid.RowSpan="5"
+                        Source="menu_profile_bg.png" 
+                        Aspect="AspectFill"/>
+
+                        <Label x:Name="NameLabel"
+                            Grid.Column="1" Grid.ColumnSpan="3"
+                            Grid.Row="3"
+                            TextColor="{StaticResource DarkGrayColor}"
+                            Margin="15, 0"
+                            Text="Zálesák"  
+                            FontSize="28"
+                            Style="{DynamicResource SubtitleStyle}"/>
+
+                        <plugin:CircleImage x:Name="ProfileImage"
+                            Grid.Column="1"
+                            Grid.Row="1" Grid.RowSpan="2"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Start"
+                            HeightRequest="115"
+                            BorderThickness="3"
+                            BorderColor="{StaticResource DarkGrayColor}"
+                            Source="profile_girl.png">
+                            <!--<Image.GestureRecognizers>
+                        <TapGestureRecognizer
+                                    Tapped="ProfileImage_Tapped"
+                                    NumberOfTapsRequired="1" />
+                    </Image.GestureRecognizers>-->
+                        </plugin:CircleImage>
+
+                        <local:CircleButton x:Name="LoginButton"
+                            Grid.Column="2" Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Text="Přihlásit se"
+                            TextColor="White"
+                            FontSize="Small"
+                            Clicked="LoginButton_Clicked"
+                            BackgroundColor="{StaticResource Primary}"/>
+
+                        <local:CircleButton x:Name="LogoutButton"
+                            Grid.Column="2" Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Text="Odhlásit se"
+                            TextColor="White"
+                            FontSize="Small"
+                            Clicked="LogoutButton_Clicked"
+                            BackgroundColor="Red"
+                            IsVisible="false"/>
+
+                    </Grid>
+                    <BoxView HeightRequest="8"/>
+                </StackLayout>
+            </ListView.Header>
+
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <ViewCell>
-                        <Grid Padding="10">
-                            <Label Text="{Binding Title}" FontSize="20"/>
-                        </Grid>
-                    </ViewCell>
+                    <local:SideMenuViewCell
+                      IconSource="{Binding Icon}"
+                      Title="{Binding Title}"
+                      IsSelected="{Binding IsSelected}"/>
                 </DataTemplate>
             </ListView.ItemTemplate>
+
         </ListView>
     </StackLayout>
+    
 </ContentPage>

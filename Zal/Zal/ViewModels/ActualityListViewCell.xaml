@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ViewCell xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Zal.ViewModels.ActualityListViewCell">
+  <ViewCell.View>
+        <Frame Padding = "10"
+               BackgroundColor="White"
+               Margin ="16,12,16,4">
+            <StackLayout Orientation="Horizontal">
+                <Label Text="{Binding Title}"
+          TextColor="{StaticResource Primary}" />
+                <Label Text="{Binding Text}"
+          HorizontalOptions="EndAndExpand"
+          TextColor="#503026" />
+            </StackLayout>
+        </Frame>
+    </ViewCell.View>
+</ViewCell>

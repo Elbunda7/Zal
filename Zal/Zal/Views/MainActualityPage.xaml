@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Zal.Elements"
+             xmlns:actuality="clr-namespace:Zal.ViewModels"
+             x:Class="Zal.Views.MainActualityPage">
+    
+    <AbsoluteLayout>
+
+        <ListView x:Name="MyListView"
+          AbsoluteLayout.LayoutBounds="0,0,1,1"
+          AbsoluteLayout.LayoutFlags="All"
+          ItemsSource="{Binding Items}"
+          ItemTapped="Handle_ItemTapped"
+          CachingStrategy="RecycleElement"
+          SeparatorVisibility="None"
+          RowHeight="120"
+          IsPullToRefreshEnabled="True"
+          BackgroundColor="{StaticResource GrayBackgroundColor}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <actuality:ActualityListViewCell/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <local:ActionButton
+            Clicked="AddButton_Clicked"
+            Image="ic_add_black.png"
+            AbsoluteLayout.LayoutBounds="1,1,-1,-1"
+            AbsoluteLayout.LayoutFlags="PositionProportional" />
+
+        <ActivityIndicator x:Name="activityIndicator" IsRunning="true" IsVisible="false"                            
+          AbsoluteLayout.LayoutBounds="0.5, 0.5"
+          AbsoluteLayout.LayoutFlags="PositionProportional"/>
+
+        <!--<StackLayout>
+            <local:RoundedButton Icon="ic_edit_black_24dp.png"/>
+            <local:RoundedButton Icon="ic_edit_black_24dp.png" BackgroundColor="Azure"/>
+            <local:RoundedButton Icon="ic_edit_black_24dp.png" Text="dloooooooo000000000uhy" IsCircle="False"/>
+
+        </StackLayout>-->
+
+    </AbsoluteLayout>
+    
+</ContentPage>

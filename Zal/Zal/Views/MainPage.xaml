@@ -5,7 +5,7 @@
             x:Class="Zal.Views.MainPage">
 
     <MasterDetailPage.Master>
-        <views:MenuPage />
+        <views:MenuPage x:Name="MasterPage" />
     </MasterDetailPage.Master>
 
     <MasterDetailPage.Detail>

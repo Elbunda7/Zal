@@ -10,42 +10,30 @@ namespace Zal.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainPage : MasterDetailPage
     {
-        Dictionary<int, NavigationPage> MenuPages = new Dictionary<int, NavigationPage>();
+        //Dictionary<int, NavigationPage> MenuPages = new Dictionary<int, NavigationPage>();
         public MainPage()
         {
             InitializeComponent();
 
             MasterBehavior = MasterBehavior.Popover;
 
-            MenuPages.Add((int)MenuItemType.Browse, (NavigationPage)Detail);
+            //MenuPages.Add((int)MenuItemType.Browse, (NavigationPage)Detail);
         }
 
-        public async Task NavigateFromMenu(int id)
+        public async Task NavigateFromMenu(Type targetType)
         {
-            if (!MenuPages.ContainsKey(id))
+            Page page = (Page)Activator.CreateInstance(targetType);
+            Detail = new NavigationPage(page);
+            if (Device.RuntimePlatform == Device.Android)
             {
-                switch (id)
-                {
-                    case (int)MenuItemType.Browse:
-                        MenuPages.Add(id, new NavigationPage(new ItemsPage()));
-                        break;
-                    case (int)MenuItemType.About:
-                        MenuPages.Add(id, new NavigationPage(new AboutPage()));
-                        break;
-                }
+                await Task.Delay(100);
             }
+            HideMenu();
+        }
 
-            var newPage = MenuPages[id];
-
-            if (newPage != null && Detail != newPage)
-            {
-                Detail = newPage;
-
-                if (Device.RuntimePlatform == Device.Android)
-                    await Task.Delay(100);
-
-                IsPresented = false;
-            }
+        public void HideMenu()
+        {
+            IsPresented = false;
         }
     }
 }
