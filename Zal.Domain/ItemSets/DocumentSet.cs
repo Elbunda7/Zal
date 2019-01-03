@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace Zal.Domain.ItemSets
 {
-    public class DocumentSet
+    public class DocumentSet : BaseSet
     {
         public Collection<Document> Data { get; private set; }
         private DateTime LastCheck;
@@ -30,7 +30,8 @@ namespace Zal.Domain.ItemSets
 
         internal async void Synchronize() {
             if (LastCheck == ZAL.DATE_OF_ORIGIN) {
-                Data = await Document.GetAll() as Collection<Document>;
+                var task = Document.GetAll();
+                Data = await ExecuteTask(task) as Collection<Document>;
                 LastCheck = DateTime.Now;
             }
         }

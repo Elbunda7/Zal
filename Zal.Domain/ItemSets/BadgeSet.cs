@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace Zal.Domain.ItemSets
 {
-    public class BadgeSet
+    public class BadgeSet : BaseSet
     {
         public IEnumerable<Badge> Badges { get; private set; }
         private DateTime lastCheck;
@@ -21,7 +21,8 @@ namespace Zal.Domain.ItemSets
         }
 
         public async Task Synchronize() {
-            var respond = await Badge.IfNeededGetAllAsync(Zalesak.Session.UserRank, lastCheck);
+            var task = Badge.IfNeededGetAllAsync(Zalesak.Session.UserRank, lastCheck);
+            var respond = await ExecuteTask(task);
             if (respond.IsChanged) {
                 lastCheck = respond.Timestamp;
                 Badges = respond.Changed;
@@ -34,7 +35,8 @@ namespace Zal.Domain.ItemSets
         }
 
         public async Task<bool> Add(string name, string text, string image) {
-            Badge badge = await Badge.Add(name, text, image);
+            var task = Badge.Add(name, text, image);
+            Badge badge = await ExecuteTask(task);
             bool isAdded = badge != null;
             if (isAdded) {
                 (Badges as List<Badge>).Add(badge);
@@ -47,7 +49,8 @@ namespace Zal.Domain.ItemSets
         //}
 
         internal async Task<IEnumerable<Badge>> GetAcquired(User user) {//vrátit jen idčka
-            return await Badge.GetAcquiredAsync(user);
+            var task = Badge.GetAcquiredAsync(user);
+            return await ExecuteTask(task);
         }
 
         internal XElement GetXml(string elementName) {

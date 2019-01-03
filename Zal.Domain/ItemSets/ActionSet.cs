@@ -9,7 +9,7 @@ using Zal.Domain.Tools.ARSets;
 
 namespace Zal.Domain.ItemSets
 {
-    public class ActionSet {
+    public class ActionSet : BaseSet {
 
         public ActionObservableSortedSet UpcomingActionEvents { get; set; }
         private Dictionary<int, ActionObservableSortedSet> ActionEventsDict { get; set; } 
@@ -61,14 +61,16 @@ namespace Zal.Domain.ItemSets
         }
 
         private async Task<ActionObservableSortedSet> LoadActionsByYear(ActionObservableSortedSet actions, int year) {
-            var respond = await ActionEvent.GetActionsByYear((int)Zalesak.Session.UserRank, year);
+            var task = ActionEvent.GetActionsByYear((int)Zalesak.Session.UserRank, year);
+            var respond = await ExecuteTask(task);
             return new ActionObservableSortedSet(respond.ActiveRecords) {
                 LastSynchronization = respond.Timestamp
             };
         }
 
         private async Task<ActionObservableSortedSet> LoadChangesByYear(ActionObservableSortedSet actions, int year) {
-            var respond = await ActionEvent.GetChangedAsync((int)Zalesak.Session.UserRank, actions.LastSynchronization, year, actions.Count);
+            var task = ActionEvent.GetChangedAsync((int)Zalesak.Session.UserRank, actions.LastSynchronization, year, actions.Count);
+            var respond = await ExecuteTask(task);
             if (respond.IsHardChanged) {
                 actions.Clear();
                 actions.AddAll(respond.Changed);
@@ -84,7 +86,8 @@ namespace Zal.Domain.ItemSets
 
         public async Task<bool> AddNewActionAsync(string name, string type, DateTime dateFrom, DateTime dateTo, int fromRank, bool isOfficial) {
             bool isAdded = false;
-            ActionEvent item = await ActionEvent.AddAsync(name, type, dateFrom, dateTo, fromRank, isOfficial);
+            var task = ActionEvent.AddAsync(name, type, dateFrom, dateTo, fromRank, isOfficial);
+            ActionEvent item = await ExecuteTask(task);
             if (item != null) {
                 PlaceIntoRelevantCollection(item);
                 isAdded = true;

@@ -7,27 +7,26 @@ using Zal.Domain.ActiveRecords;
 using Zal.Domain.Consts;
 using Zal.Domain.Models;
 using Zal.Domain.Tools.ARSets;
-using static Zal.Domain.Consts.ZAL;
 
 namespace Zal.Domain.ItemSets
 {
-    public class ActualitySet
+    public class ActualitySet : BaseSet
     {
         public ActualityObservableSortedSet Data { get; set; }
-        private int[] topTenIds;
+        private int[] TopTenIds => Data.Take(10).Select(x => x.Id).ToArray();
 
         public ActualitySet() {
             Data = new ActualityObservableSortedSet();
-            topTenIds = new int[0];
         }
 
-        internal async Task<Article> CreateNewArticle(string title, string text, int fromRank, ArticleType type, int? bindToAction = null, int? forGroup = null) {
-            //token uživatele
+        internal async Task<Article> CreateNewArticle(string title, string text, int fromRank, ZAL.ArticleType type, int? bindToAction = null, int? forGroup = null) {
+            //token uživatele            
             return await CreateNewArticle(Zalesak.Session.CurrentUser, title, text, fromRank, type, forGroup, bindToAction);
         }
 
-        internal async Task<Article> CreateNewArticle(User author, string title, string text, int fromRank, ArticleType type, int? bindToAction = null, int? forGroup = null) {
-            Article article = await Article.AddAsync(author, title, text, type);//, fromRank, forGroup));
+        internal async Task<Article> CreateNewArticle(User author, string title, string text, int fromRank, ZAL.ArticleType type, int? bindToAction = null, int? forGroup = null) {
+            var task = Article.AddAsync(author, title, text, type);//, fromRank, forGroup));
+            Article article = await ExecuteTask(task);
             if (article != null) {
                 Data.Add(article);
                 return article;
@@ -36,13 +35,14 @@ namespace Zal.Domain.ItemSets
         }
 
         public async Task<bool> AddNewArticle(string title, string text, int fromRank, int? forGroup = null) {
-            Article article = await CreateNewArticle(Zalesak.Session.CurrentUser, title, text, fromRank, ArticleType.Article, forGroup);
+            Article article = await CreateNewArticle(Zalesak.Session.CurrentUser, title, text, fromRank, ZAL.ArticleType.Article, forGroup);
             return article != null;
         }
 
         public async void Remove(Article item) {
             //if (Zal.Me.IsLeader()) { }
-            if (await Article.Delete(item)) {
+            var task = Article.Delete(item);
+            if (await ExecuteTask(task)) {
                 Data.Remove(item);
             }
             else {
@@ -51,9 +51,10 @@ namespace Zal.Domain.ItemSets
         }
 
         public async Task Synchronize() {
-            ArticleChangedModel respond = await Article.LoadTopTen(topTenIds, Data.LastSynchronization);
+            var task = Article.LoadTopTen(TopTenIds, Data.LastSynchronization);
+            ArticleChangedModel respond = await ExecuteTask(task);
             if (respond.IsChanged) {
-                var idsToDelete = topTenIds.Except(respond.Ids);
+                var idsToDelete = TopTenIds.Except(respond.Ids);
                 Data.RemoveByIds(idsToDelete.ToArray());
                 Data.AddOrUpdateAll(respond.Changed);
                 Data.LastSynchronization = respond.Timestamp;
@@ -61,14 +62,14 @@ namespace Zal.Domain.ItemSets
         }
 
         internal async Task ReSynchronize() {
-            topTenIds = new int[0];
             Data.Clear();
             await Synchronize();
         }
 
         public async Task LoadNext() {
-            int lastNonInfoId = Data.Last(x => x.Type != ArticleType.Info).Id;
-            Data.AddAll(await Article.LoadNext(lastNonInfoId));
+            int lastNonInfoId = Data.Last(x => x.Type != ZAL.ArticleType.Info).Id;
+            var task = Article.LoadNext(lastNonInfoId);
+            Data.AddAll(await ExecuteTask(task));
         }
 
         public async Task<Article> GetArticleAsync(int id) {
@@ -77,7 +78,8 @@ namespace Zal.Domain.ItemSets
                 a = Data.Single(article => article.Id == id);
             }
             else {
-                a = await Article.GetAsync(id);
+                var task = Article.GetAsync(id);
+                a = await ExecuteTask(task);
                 Data.Add(a);
             }
             return a;

@@ -8,6 +8,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Domain;
 using Zal.Domain.ActiveRecords;
+using Zal.Domain.ItemSets;
 
 namespace Zal.Views
 {
@@ -28,7 +29,9 @@ namespace Zal.Views
             InitializeComponent();
             Title = "Novinky";
             MyListView.ItemsSource = Zalesak.Actualities.Data;
-            //todo setbinding for isBusy https://docs.microsoft.com/cs-cz/dotnet/api/xamarin.forms.bindableobjectextensions.setbinding?view=xamarin-forms
+            MyListView.SelectionMode = ListViewSelectionMode.None;
+            activityIndicator.SetBinding(IsVisibleProperty, nameof(BaseSet.IsBusy));
+            activityIndicator.BindingContext = Zalesak.Actualities;
             Button button = new Button()
             {
                 Text = "Load next",
@@ -45,16 +48,12 @@ namespace Zal.Views
 
         private async void Synchronize()
         {
-            IsBusy = true;
             await Zalesak.Actualities.Synchronize();
-            IsBusy = false;
         }
 
         private async void Button_Clicked(object sender, EventArgs e)
         {
-            IsBusy = true;
             await Zalesak.Actualities.LoadNext();
-            IsBusy = false;
         }
 
         async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)

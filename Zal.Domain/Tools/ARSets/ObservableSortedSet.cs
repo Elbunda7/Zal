@@ -47,11 +47,12 @@ namespace Zal.Domain.Tools.ARSets
             }
         }
 
-        public void AddOrUpdate(T item) {
-            if (InnerCollection.Any(x => x.Id == item.Id)) {
-                InnerCollection.Remove(InnerCollection.Single(x => x.Id == item.Id));
+        public void AddOrUpdate(T item) {//todo nechat pouze add?
+            if (InnerCollection.Contains(item)) {                
+                InnerCollection.Remove(item);
+                //InnerCollection.Remove(InnerCollection.Single(x => x.Id == item.Id));
             }
-            InnerCollection.Add(item);
+            Add(item);
         }
 
         public void Clear() {

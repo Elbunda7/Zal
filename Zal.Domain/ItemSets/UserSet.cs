@@ -11,7 +11,7 @@ using static Zal.Domain.Consts.ZAL;
 
 namespace Zal.Domain.ItemSets
 {
-    public class UserSet
+    public class UserSet : BaseSet
     {
         public UserObservableSortedSet Users { get; set; }
         private UserFilterModel filterInMemory;
@@ -43,13 +43,15 @@ namespace Zal.Domain.ItemSets
         }
 
         private async Task LoadUsers(UserFilterModel filter, bool isAndMode) {
-            var respond = await User.GetAll(filter, isAndMode);
+            var task = User.GetAll(filter, isAndMode);
+            var respond = await ExecuteTask(task);
             Users.AddOrUpdateAll(respond.ActiveRecords);
             Users.LastSynchronization = respond.Timestamp;
         }
 
         private async Task LoadUserChanges(UserFilterModel filter) {
-            var respond = await User.GetChanged(filter, Users.LastSynchronization, Users.Where(x=>x.Meets(filter)).Count());
+            var task = User.GetChanged(filter, Users.LastSynchronization, Users.Where(x=>x.Meets(filter)).Count());
+            var respond = await ExecuteTask(task);
             if (respond.IsHardChanged) {
                 Users.Clear();
                 Users.AddAll(respond.Changed);
@@ -74,7 +76,8 @@ namespace Zal.Domain.ItemSets
 
         public async Task AddNewUser(string name, string surname, int group, string nickname = null, string phone = null, string email = null, DateTime? birthDate = null) {
             //UserPermision.HasRank(Zal.Session.CurrentUser, ZAL.Rank.Vedouci);
-            Users.Add(await User.AddNewUser(name, surname, group, nickname, phone, email, birthDate));
+            var task = User.AddNewUser(name, surname, group, nickname, phone, email, birthDate);
+            Users.Add(await ExecuteTask(task));
         }
 
         //public User GetByEmail(string email) {
@@ -96,7 +99,8 @@ namespace Zal.Domain.ItemSets
 
             User a = Users.Single(user => user.Id == id);
             if (a == null) {
-                a = await User.GetAsync(id);
+                var task = User.GetAsync(id);
+                a = await ExecuteTask(task);
                 Users.Add(a);
             }
             return a;
@@ -105,7 +109,8 @@ namespace Zal.Domain.ItemSets
         internal async Task<IEnumerable<User>> Get(List<int> ids) {
             IEnumerable<User> users = Users.Where(user => ids.Any(id => id == user.Id));
             var notLoadedIds = ids.Where(id => users.All(user => user.Id != id));
-            users.Union(await User.GetAsync(notLoadedIds));
+            var task = User.GetAsync(notLoadedIds);
+            users.Union(await ExecuteTask(task));
             return users;
         }
     }
