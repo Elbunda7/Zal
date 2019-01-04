@@ -10,10 +10,10 @@ using Zal.Domain;
 using Zal.Domain.ActiveRecords;
 using Zal.Domain.ItemSets;
 
-namespace Zal.Views
+namespace Zal.Views.Pages
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MainActualityPage : ContentPage
+	public partial class ActualityMainPage : ContentPage
 	{
         private new bool IsBusy {
             get {
@@ -24,7 +24,7 @@ namespace Zal.Views
             }
         }
 
-        public MainActualityPage()
+        public ActualityMainPage()
         {
             InitializeComponent();
             Title = "Novinky";
@@ -68,7 +68,7 @@ namespace Zal.Views
 
         private async void AddButton_Clicked(object sender, EventArgs args)
         {
-            //await Navigation.PushAsync(new ArticleCreator());
+            await Navigation.PushAsync(new Actualities.ArticleCreatorPage());
         }
     }
 }

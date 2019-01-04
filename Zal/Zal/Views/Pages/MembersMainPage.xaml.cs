@@ -10,12 +10,12 @@ using Zal.Domain;
 using Zal.Domain.ActiveRecords;
 using Zal.Domain.Models;
 
-namespace Zal.Views
+namespace Zal.Views.Pages
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MainMembersPage : ContentPage
+	public partial class MembersMainPage : ContentPage
 	{
-        public MainMembersPage()
+        public MembersMainPage()
         {
             InitializeComponent();
             Title = "Členové";
@@ -32,7 +32,7 @@ namespace Zal.Views
 
     private async void NewUser_ToolbarItemClicked(object sender, EventArgs e)
     {
-        //await Navigation.PushAsync(new UserCreator());
+        await Navigation.PushAsync(new Users.CreatorPage());
     }
 
     async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
@@ -40,7 +40,7 @@ namespace Zal.Views
         if (e.Item is User)
         {
             User currentUser = e.Item as User;
-            //await Navigation.PushAsync(new ProfilePage(currentUser));
+            await Navigation.PushAsync(new Users.ProfilePage(currentUser));
             (sender as ListView).SelectedItem = null;
         }
     }

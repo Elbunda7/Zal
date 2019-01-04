@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace Zal.Views
+namespace Zal.Views.Pages
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MainGaleryPage : ContentPage
+	public partial class GaleryMainPage : ContentPage
 	{
-		public MainGaleryPage ()
+		public GaleryMainPage ()
 		{
 			InitializeComponent ();
 		}

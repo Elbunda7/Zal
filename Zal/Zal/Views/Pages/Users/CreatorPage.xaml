@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Zal.Views.Pages.Users.CreatorPage">
+    <ContentPage.Content>
+
+
+        <StackLayout
+      Orientation="Vertical"
+      HorizontalOptions="FillAndExpand">
+
+            <Label Text="Jméno"/>
+            <Entry x:Name="NameEntry"/>
+            <Label Text="Příjmení"/>
+            <Entry x:Name="SurnameEntry"/>
+
+            <Button
+        x:Name="AddButton"
+        Text="Přidat"
+        Clicked="AddButton_Clicked"/>
+
+
+        </StackLayout>
+
+    </ContentPage.Content>
+</ContentPage>

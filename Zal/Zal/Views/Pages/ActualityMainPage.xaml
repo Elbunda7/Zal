@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Zal.Elements"
              xmlns:actuality="clr-namespace:Zal.ViewModels"
-             x:Class="Zal.Views.MainActualityPage">
+             x:Class="Zal.Views.Pages.ActualityMainPage">
     
     <AbsoluteLayout>
 

@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Zal.Views.Pages.Actions.CreatorPage">
+    <ContentPage.Content>
+
+
+        <StackLayout
+        Orientation="Vertical"
+        HorizontalOptions="FillAndExpand">
+
+            <Label Text="Nová akce"/>
+
+            <Label Text="Název"/>
+            <Entry x:Name="NameEntry"/>
+            <Label Text="Počet dní"/>
+            <Entry x:Name="DaysEntry" Keyboard="Numeric"/>
+            <Label Text="Lokalita"/>
+            <Entry x:Name="PositionEntry"/>
+            <Label Text="Typ"/>
+            <Entry x:Name="TypeEntry"/>
+
+            <DatePicker 
+          x:Name="datePicker"
+          VerticalOptions="CenterAndExpand" 
+          Date="Jan 1 2000">
+                <DatePicker.Format>yyyy-MM-dd</DatePicker.Format>
+            </DatePicker>
+
+            <Button
+          x:Name="AddButton"
+          Text="Přidat"
+          Clicked="AddButton_Clicked"/>
+
+
+        </StackLayout>
+
+    </ContentPage.Content>
+</ContentPage>

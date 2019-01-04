@@ -9,12 +9,12 @@ using Xamarin.Forms.Xaml;
 using Zal.Domain;
 using Zal.Domain.ActiveRecords;
 
-namespace Zal.Views
+namespace Zal.Views.Pages.Actions
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class ActionsPage : ContentPage
+	public partial class ActionsListPage : ContentPage
 	{
-		public ActionsPage (int? year = null)
+		public ActionsListPage (int? year = null)
         {
             InitializeComponent();
             StartInitializingItems(year);
@@ -39,7 +39,7 @@ namespace Zal.Views
             if (e.Item is ActionEvent)
             {
                 ActionEvent currentEvent = e.Item as ActionEvent;
-                //await Navigation.PushAsync(new ActionDetail(currentEvent));
+                await Navigation.PushAsync(new Actions.DetailPage(currentEvent));
                 (sender as ListView).SelectedItem = null;
             }
         }

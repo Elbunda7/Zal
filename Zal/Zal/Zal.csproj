@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Xam.FormsPlugin.IconEntry" Version="1.1.1" />
     <PackageReference Include="Xam.Plugins.Forms.ImageCircle" Version="3.0.0.5" />
     <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />  
   </ItemGroup>
@@ -19,28 +20,76 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\Pages\ActionMainPage.xaml.cs">
+      <DependentUpon>ActionMainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Pages\Actions\ActionsListPage.xaml.cs">
+      <DependentUpon>ActionsListPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Pages\InfoMainPage.xaml.cs">
+      <DependentUpon>InfoMainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Pages\ActualityMainPage.xaml.cs">
+      <DependentUpon>ActualityMainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Pages\GaleryMainPage.xaml.cs">
+      <DependentUpon>GaleryMainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Pages\MembersMainPage.xaml.cs">
+      <DependentUpon>MembersMainPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Update="ViewModels\ActionListViewCell.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="ViewModels\ActualityListViewCell.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\ActionsPage.xaml">
+    <EmbeddedResource Update="Views\Pages\Actions\ActionsListPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\MainActionPage.xaml">
+    <EmbeddedResource Update="Views\Pages\ActionMainPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\MainActualityPage.xaml">
+    <EmbeddedResource Update="Views\Pages\Actions\CreatorPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\MainGaleryPage.xaml">
+    <EmbeddedResource Update="Views\Pages\Actions\DetailPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\MainInfoPage.xaml">
+    <EmbeddedResource Update="Views\Pages\ActualityMainPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\MainMembersPage.xaml">
+    <EmbeddedResource Update="Views\Pages\Actualities\ArticleCreatorPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Pages\Actualities\InfoCreatorPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Pages\Actualities\ReportCreatorPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Pages\GaleryMainPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Pages\InfoMainPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Pages\MembersMainPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Pages\Users\CreatorPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Pages\Users\LoginPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Pages\Users\ProfilePage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Pages\Users\RegisterPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\WebViewPage.xaml">

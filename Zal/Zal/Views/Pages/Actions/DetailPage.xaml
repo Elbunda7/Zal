@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Zal.Elements"
+             x:Class="Zal.Views.Pages.Actions.DetailPage">
+    <ContentPage.Content>
+
+        <StackLayout
+            Spacing="0">
+
+            <Image 
+                    Source="icon.png" 
+                    BackgroundColor="{StaticResource Primary}"
+                    HorizontalOptions="FillAndExpand"/>
+
+            <Grid RowSpacing="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.25*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="0.25*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="24"/>
+                </Grid.RowDefinitions>
+
+                <BoxView
+                    Grid.Column="0" Grid.ColumnSpan="3"
+                    Grid.Row="0"
+                    BackgroundColor="{StaticResource Primary}"/>
+
+                <Frame 
+                    x:Name="ParticipateCrossroadView"
+                    Grid.Column="1"
+                    Grid.Row="0" Grid.RowSpan="2"
+                    CornerRadius="25"
+                    Padding="16,0">
+
+                    <Grid RowSpacing="0" HorizontalOptions="FillAndExpand">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Label 
+                            Grid.Column="0" Grid.ColumnSpan="3"
+                            Grid.Row="0" 
+                            Text="Zúčastnit se:" 
+                            HorizontalOptions="Center" 
+                            FontSize="12"/>
+
+                        <local:ClickableImageLabel 
+                            Grid.Column="0"
+                            Grid.Row="1" 
+                            HorizontalOptions="Center"
+                            BackgroundColor="Bisque" Padding="5,0" Icon="ic_add_black.png" OnClick="ClickableImageLabel_OnClickAsync"/>
+                        <local:ClickableImageLabel 
+                            Padding="5,0"
+                            HorizontalOptions="Center"
+                            Grid.Column="1"
+                            Grid.Row="1" 
+                            BackgroundColor="DarkCyan" Icon="ic_edit_black_24dp.png"/>
+                        <local:ClickableImageLabel 
+                            HorizontalOptions="Center"
+                            Padding="5,0"
+                            BackgroundColor="Bisque" 
+                            Grid.Column="2"
+                            Grid.Row="1" 
+                            Icon="ic_explore_black_24dp.png"/>
+
+                    </Grid>
+                </Frame>
+
+                <local:ActionButton 
+                    x:Name="ParticipateView"
+                    Grid.Column="2"
+                    Grid.Row="0" Grid.RowSpan="2"
+                    Image="ic_add_black.png"/>
+
+            </Grid>
+
+            <StackLayout>
+
+
+                <Label Text="{Binding Type}" 
+                TextColor="{StaticResource DarkGrayColor}" />
+
+                <Label Text="{Binding DateFrom}"
+                  HorizontalOptions="EndAndExpand"
+                  TextColor="{StaticResource DarkGrayColor}" />
+
+                <Label Text="{Binding Garant}"/>
+
+                <Button
+        x:Name="InfoButton"
+        Text="Informačka"
+            
+        Clicked="InfoButton_ClickedAsync"/>
+
+                <Button
+        x:Name="RecordButton"
+        Text="Zápis z akce"
+        Clicked="RecordButton_ClickedAsync"/>
+
+                <Button
+        x:Name="JoinButton"
+        Text="Zůčastnit se"
+        Clicked="JoinButton_ClickedAsync"/>
+
+            </StackLayout>
+        </StackLayout>
+
+    </ContentPage.Content>
+</ContentPage>

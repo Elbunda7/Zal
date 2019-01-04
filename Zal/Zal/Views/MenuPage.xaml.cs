@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Elements;
+using Zal.Views.Pages;
 
 namespace Zal.Views
 {
@@ -22,11 +23,11 @@ namespace Zal.Views
 
             menuItems = new List<HomeMenuItem>
             {
-                new HomeMenuItem("Aktuality", typeof(MainActualityPage), "ic_explore_black_24dp.png"),
-                new HomeMenuItem("Plán akcí", typeof(MainActionPage), "ic_event_black_24dp.png"),
-                new HomeMenuItem("Členové", typeof(MainMembersPage), "ic_people_black_24dp.png"),
-                new HomeMenuItem("Galerie", typeof(MainGaleryPage), "ic_photo_library_black_24dp.png"),
-                new HomeMenuItem("Studnice vědění", typeof(MainInfoPage), "ic_apps_black_24dp.png"),
+                new HomeMenuItem("Aktuality", typeof(ActualityMainPage), "ic_explore_black_24dp.png"),
+                new HomeMenuItem("Plán akcí", typeof(ActionMainPage), "ic_event_black_24dp.png"),
+                new HomeMenuItem("Členové", typeof(MembersMainPage), "ic_people_black_24dp.png"),
+                new HomeMenuItem("Galerie", typeof(GaleryMainPage), "ic_photo_library_black_24dp.png"),
+                new HomeMenuItem("Studnice vědění", typeof(InfoMainPage), "ic_apps_black_24dp.png"),
             };
             ListViewMenu.SelectionMode = ListViewSelectionMode.None;
             ListViewMenu.ItemsSource = menuItems;

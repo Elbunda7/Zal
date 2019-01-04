@@ -8,16 +8,16 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Elements;
 
-namespace Zal.Views
+namespace Zal.Views.Pages
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MainInfoPage : ContentPage
+	public partial class InfoMainPage : ContentPage
 	{
         private int numOfColumns = 3;
         private double itemSize = 0;
         private double pageWidthSize = 0;
 
-        public MainInfoPage()
+        public InfoMainPage()
         {
             InitializeComponent();
         }

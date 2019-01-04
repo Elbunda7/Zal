@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace Zal.Views
+namespace Zal.Views.Pages
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MainActionPage : TabbedPage
+	public partial class ActionMainPage : TabbedPage
     {
-		public MainActionPage ()
+		public ActionMainPage ()
         {
             InitializeComponent();
             Title = "Plán akcí";
@@ -23,13 +23,13 @@ namespace Zal.Views
             };
             toolbarItem.Clicked += NewActionEvent_ToolbarItemClicked;
             ToolbarItems.Add(toolbarItem);
-            Children.Add(new ActionsPage());
-            Children.Add(new ActionsPage(DateTime.Today.Year));
+            Children.Add(new Actions.ActionsListPage());
+            Children.Add(new Actions.ActionsListPage(DateTime.Today.Year));
         }
 
         private async void NewActionEvent_ToolbarItemClicked(object sender, EventArgs e)
         {
-            //await Navigation.PushAsync(new ActionCreator());
+            await Navigation.PushAsync(new Actions.CreatorPage());
         }
     }
 }

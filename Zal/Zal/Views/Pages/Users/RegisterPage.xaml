@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Zal.Elements"
+             xmlns:ie="clr-namespace:IconEntry.FormsPlugin.Abstractions;assembly=IconEntry.FormsPlugin.Abstractions"
+             x:Class="Zal.Views.Pages.Users.RegisterPage">
+    <ContentPage.Content>
+
+        <StackLayout 
+            BackgroundColor="{StaticResource Primary}"
+            Padding="20,10">
+
+            <Frame 
+                Padding="10" 
+                CornerRadius="10" 
+                BackgroundColor="WhiteSmoke">
+                <StackLayout Padding="10,5">
+
+                    <ie:IconEntry 
+                        x:Name="EmailEntry"
+                        Keyboard="Email"
+                        Placeholder="Email"
+                        Icon="ic_email_black_24dp.png"/>
+
+                    <ie:IconEntry                             
+                        x:Name="NameEntry"
+                        Placeholder="Jméno"
+                        Icon="ic_person_black_24dp.png"/>
+
+                    <ie:IconEntry 
+                        x:Name="SurnameEntry"
+                        Placeholder="Příjmení"
+                        Icon="ic_person_black_24dp.png"/>
+
+                    <ie:IconEntry                             
+                        x:Name="PhoneEntry"
+                        Placeholder="Telefonní číslo"
+                        Keyboard="Numeric"
+                        Icon="ic_phone_black_24dp.png"/>
+
+                    <ie:IconEntry 
+                        x:Name="PassEntry"
+                        Placeholder="Heslo"
+                        IsPassword="true"
+                        Icon="ic_lock_black_24dp.png"/>
+
+                    <ie:IconEntry                             
+                        x:Name="PassConfirmEntry"
+                        Placeholder="Heslo znova"
+                        IsPassword="true"
+                        Icon="ic_lock_black_24dp.png"/>
+
+                    <Button x:Name="RegistrationButton"
+                      BackgroundColor="{StaticResource Accent}"
+                      HorizontalOptions="Center"
+                      Text="Registrovat se"
+                      Clicked="RegistrationButton_Click"
+                      Margin="0,25,0,0"/>
+
+                </StackLayout>
+            </Frame>
+
+            <local:DividerView Margin="5, 10"/>
+
+            <local:ClickableImageLabel
+                HorizontalOptions="Center"
+                Icon="ic_account_circle_white_24dp.png"
+                Text="Přejít na přihlášení"
+                OnClick="ToLogin_Click"/>
+        </StackLayout>
+
+    </ContentPage.Content>
+</ContentPage>

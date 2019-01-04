@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ZalXamarin.Elements"
+             x:Class="Zal.Views.Pages.Users.ProfilePage">
+    <ContentPage.Content>
+
+        <AbsoluteLayout>
+
+            <StackLayout
+                AbsoluteLayout.LayoutBounds="0,0,1,1"  
+                AbsoluteLayout.LayoutFlags="All"  
+                Spacing="0" 
+                Orientation="Vertical"
+                HorizontalOptions="FillAndExpand">
+
+                <local:ProfileHeaderLayout Name="{Binding NickName}"
+                                         Age="{Binding Age}"/>
+
+                <ScrollView 
+                    Padding="16"                    
+                    BackgroundColor="{StaticResource GrayBackgroundColor}"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand">
+
+                    <StackLayout
+                        x:Name="PropLayout"
+                        Spacing="10"
+                        HorizontalOptions="FillAndExpand"
+                        VerticalOptions="FillAndExpand"/>
+
+                </ScrollView>
+
+
+                <!--    <Label Text="{Binding ShortName}" />
+      <Label Text="{Binding Group}" />
+      <Label Text="{Binding Rank}" />
+      
+      <StackLayout
+        Orientation="Horizontal">        
+        <Label Text="{Binding Name}" />
+        <Label Text="{Binding Surname}"/>      
+      </StackLayout>
+      
+      <Label Text="{Binding Phone}" />
+      <Label Text="{Binding Email}" />
+
+      <Button
+        x:Name="LogOutButton"
+        Text="Odhlásit se"
+        Clicked="LogOutButton_Clicked"/>-->
+
+
+
+            </StackLayout>
+
+            <Frame CornerRadius="28" HeightRequest="56" WidthRequest="56" OutlineColor="Black" Padding="0"  AbsoluteLayout.LayoutBounds="0.9,120" AbsoluteLayout.LayoutFlags="XProportional">
+                <Button Image="ic_edit_black_24dp.png"/>
+            </Frame>
+
+
+
+        </AbsoluteLayout>
+
+
+    </ContentPage.Content>
+</ContentPage>
