@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ namespace Zal.Views.Pages
 		public GaleryMainPage ()
 		{
 			InitializeComponent ();
+            Analytics.TrackEvent("GaleryMainPage");
+            throw new Exception("test");
 		}
 	}
 }

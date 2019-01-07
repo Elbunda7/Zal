@@ -30,7 +30,7 @@ namespace Zal.Models
             }
         }
 
-        public HomeMenuItem(string title, Type targetType, string icon)
+        public HomeMenuItem(string title, Type targetType, string icon = "")
         {
             Title = title;
             TargetType = targetType;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,7 @@ namespace Zal.Views.Pages.Users
 	{
         public LoginPage()
         {
+            Analytics.TrackEvent("LoginPage");
             InitializeComponent();
             EmailEntry.Text = "pepa3@email.cz";
             PasswordEntry.Text = "password";
@@ -36,10 +38,12 @@ namespace Zal.Views.Pages.Users
                 LoginErrorModel response = await Zalesak.Session.LoginAsync(EmailEntry.Text, PasswordEntry.Text, StayLoggedSwitch.IsToggled);
                 if (response.HasAnyErrors)
                 {
+                    Analytics.TrackEvent("LoginPage_badLogin", new Dictionary<string, string>() { { "isExist", response.IsExist.ToString() }, { "isPasswordCorrect", response.IsPasswordCorrect.ToString() } });
                     HandleErrors(response);
                 }
                 else
                 {
+                    Analytics.TrackEvent("LoginPage_goodLogin", new Dictionary<string, string>() { { "user", EmailEntry.Text } });
                     await ShowProfile();
                 }
             }

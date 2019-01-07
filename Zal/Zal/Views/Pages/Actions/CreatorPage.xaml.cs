@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace Zal.Views.Pages.Actions
             string type = TypeEntry.Text ?? "";
             string name = NameEntry.Text ?? "";
             int days = DaysEntry.Text == null ? 0 : int.Parse(DaysEntry.Text);
+            Analytics.TrackEvent("ActionCreator_add", new Dictionary<string, string>() { { "name", name } });
             await Zalesak.Actions.AddNewActionAsync(name, type, datePicker.Date, datePicker.Date, 0, true);
             await Navigation.PopAsync();
         }

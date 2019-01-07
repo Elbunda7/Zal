@@ -6,6 +6,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Elements;
 using Zal.Views.Pages;
+using Zal.Domain;
 
 namespace Zal.Views
 {
@@ -13,14 +14,17 @@ namespace Zal.Views
     public partial class MenuPage : ContentPage
     {
         HomeMenuItem SelectedItem;
-
+        List<HomeMenuItem> menuItems;
+        HomeMenuItem LoginItem;
+        HomeMenuItem ProfileItem;
 
         MainPage RootPage { get => Application.Current.MainPage as MainPage; }
-        List<HomeMenuItem> menuItems;
         public MenuPage()
         {
             InitializeComponent();
 
+            LoginItem = new HomeMenuItem("Přihlásit se", typeof(Pages.Users.LoginPage));
+            ProfileItem = new HomeMenuItem("Profil", typeof(Pages.Users.ProfilePage));
             menuItems = new List<HomeMenuItem>
             {
                 new HomeMenuItem("Aktuality", typeof(ActualityMainPage), "ic_explore_black_24dp.png"),
@@ -54,7 +58,7 @@ namespace Zal.Views
         {
             HomeMenuItem item = e.Item as HomeMenuItem;//todo isBusy
             if (item == null) return;
-            if (item != SelectedItem)
+            if (item != SelectedItem || !SelectedItem.IsSelected)
             {
                 SetItemAsSelected(item);
             }
@@ -64,14 +68,23 @@ namespace Zal.Views
             }
         }
 
-        private void LoginButton_Clicked(object sender, EventArgs e)
+        private void ProfileImage_Tapped(object sender, EventArgs e)
         {
-
+            SetItemAsSelected(ProfileItem);
+            //SelectedItem.IsSelected = false;
+            //await RootPage.NavigateFromMenu(typeof(Pages.Users.ProfilePage));
         }
 
-        private void LogoutButton_Clicked(object sender, EventArgs e)
+        private void LoginButton_Clicked(object sender, EventArgs e)
         {
+            SetItemAsSelected(LoginItem);
+            //SelectedItem.IsSelected = false;
+            //await RootPage.NavigateFromMenu(typeof(Pages.Users.LoginPage));
+        }
 
+        private async void LogoutButton_Clicked(object sender, EventArgs e)
+        {
+            await Zalesak.Session.Logout();
         }
     }
 }

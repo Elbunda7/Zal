@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,8 @@ namespace Zal.Views.Pages.Actualities
 
         private async void AddButton_Clicked(object sender, EventArgs args)
         {
-            await Zalesak.Actualities.AddNewArticle("ApplicationTilte", textEditor.Text, 0);
+            Analytics.TrackEvent("ArticleCreator_add", new Dictionary<string, string>() { { "title", "title" } });
+            await Zalesak.Actualities.AddNewArticle("ApplicationTitle", textEditor.Text, 0);
             await Navigation.PopAsync();
         }
     }

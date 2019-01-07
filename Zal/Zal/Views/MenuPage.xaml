@@ -10,6 +10,7 @@
         VerticalOptions="FillAndExpand"
         BackgroundColor="WhiteSmoke">
         <ListView x:Name="ListViewMenu"
+              SeparatorVisibility="None"
                     HasUnevenRows="True">
 
             <ListView.Header>
@@ -54,11 +55,11 @@
                             BorderThickness="3"
                             BorderColor="{StaticResource DarkGrayColor}"
                             Source="profile_girl.png">
-                            <!--<Image.GestureRecognizers>
-                        <TapGestureRecognizer
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer
                                     Tapped="ProfileImage_Tapped"
                                     NumberOfTapsRequired="1" />
-                    </Image.GestureRecognizers>-->
+                            </Image.GestureRecognizers>
                         </plugin:CircleImage>
 
                         <local:CircleButton x:Name="LoginButton"

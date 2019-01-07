@@ -4,17 +4,24 @@ using Xamarin.Forms.Xaml;
 using Zal.Domain;
 using Zal.Views;
 
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace Zal
 {
     public partial class App : Application
     {
+        private const string LOCAL_DATA = "data";
+        private const string OFFLINE_COMANDS = "commands";
 
         public App()
         {
             InitializeComponent();
             InitializeAppData();
 
+            AppCenter.Start("android=555f3d1a-d1f9-485d-8a9d-983344faa20b;", typeof(Analytics), typeof(Crashes));
 
             MainPage = new MainPage();
         }
@@ -23,45 +30,37 @@ namespace Zal
         {
             //Zal.CommandExecutedOffline += OnCommandExecutedOffline;
             await Task.Run(async () => {
+                if (Current.Properties.ContainsKey(LOCAL_DATA))
+                {
+                    var fileData = (string)Current.Properties[LOCAL_DATA];
+                    Zalesak.LoadDataFrom(fileData);
+                    var isLogged = await Zalesak.Session.TryLoginWithTokenAsync();
+                    await Zalesak.StartSynchronizingAsync();
+                }
                 //Zal.LoadOfflineCommands(LoadFromStorage(OFFLINE_COMMANDS_FILE));
-                //Zal.LoadDataFrom(await LoadFromStorageAsync(LOCAL_DATA_FILE));
-                //var a = await LoadFromStorageAsync(LOCAL_DATA_FILE);
-                //Zal.LoadDataFrom(a);
-                //var b = await Zalesak.Session.TryLoginWithTokenAsync();
-                var c = await Zalesak.Session.LoginAsync("pepa3@email.cz", "password", false);
-                //await Zal.StartSynchronizingAsync();
-
+                //var c = await Zalesak.Session.LoginAsync("pepa3@email.cz", "password", false);
             });
             OnAppReady();
         }
 
         private void OnAppReady()
         {
-            //MainPage = new SideMenu.SideMenu();
+            MainPage = new MainPage();
         }
 
 
         protected override void OnStart()
         {
-            object a;
-            if (Current.Properties.ContainsKey("key2"))
-            {
-               a = Current.Properties["key2"];
-
-            }
-            // Handle when your app starts
         }
 
         protected override void OnSleep()
         {
-            Current.Properties["key2"] = "value2";
+            Current.Properties[LOCAL_DATA] = Zalesak.GetDataJson();
             Current.SavePropertiesAsync();
-            // Handle when your app sleeps
         }
 
         protected override void OnResume()
         {
-            // Handle when your app resumes
         }
     }
 }

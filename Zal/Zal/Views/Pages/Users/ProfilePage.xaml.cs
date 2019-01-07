@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,21 +15,17 @@ namespace Zal.Views.Pages.Users
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ProfilePage : ContentPage
 	{
-        User CurrentUser;
+        private User currentUser;
 
-        public ProfilePage(User user = null)
+        public ProfilePage() : this(Zalesak.Session.CurrentUser) { }
+
+        public ProfilePage(User user)
         {
-            if (user == null)
-            {
-                CurrentUser = Zalesak.Session.CurrentUser;
-            }
-            else
-            {
-                CurrentUser = user;
-                //LogOutButton.IsVisible = false;
-            }
+            Analytics.TrackEvent("Profile_Page", new Dictionary<string, string>() { { "user", user.NickName } });
+            currentUser = user;
+            //LogOutButton.IsVisible = false;
             InitializeComponent();
-            BindingContext = CurrentUser;
+            BindingContext = currentUser;
             InitProfileProperties();
         }
 
@@ -54,7 +51,7 @@ namespace Zal.Views.Pages.Users
 
         private async void LogOutButton_Clicked(object sender, EventArgs args)
         {
-            Zalesak.Logout();
+            await Zalesak.Session.Logout();
             Navigation.InsertPageBefore(new LoginPage(), Navigation.NavigationStack.First());
             await Navigation.PopToRootAsync();
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ namespace Zal.Views.Pages
 		public ActionMainPage ()
         {
             InitializeComponent();
+
+            Analytics.TrackEvent("ActionsMainPage");
             Title = "Plán akcí";
             var toolbarItem = new ToolbarItem()
             {
@@ -29,6 +32,7 @@ namespace Zal.Views.Pages
 
         private async void NewActionEvent_ToolbarItemClicked(object sender, EventArgs e)
         {
+            Analytics.TrackEvent("ActionsMainPage_createAction");
             await Navigation.PushAsync(new Actions.CreatorPage());
         }
     }

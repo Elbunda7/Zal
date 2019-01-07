@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace Zal.Views.Pages.Users
         {
             string name = NameEntry.Text ?? "defaultName";
             string surname = SurnameEntry.Text ?? "defaultSurname";
+            Analytics.TrackEvent("UserCreator_addUser", new Dictionary<string, string>() { { "toAdd", name + " " + surname } });
             await Zalesak.Users.AddNewUser(name, surname, (int)ZAL.Group.Non);
             await Navigation.PopAsync();
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,7 @@ namespace Zal.Views.Pages.Users
 		{
 			InitializeComponent ();
             Title = "Registrace";
+            Analytics.TrackEvent("RegisterPage");
         }
 
         private void ConfirmatedPassword_Completed(object sender, EventArgs e)
@@ -38,6 +40,7 @@ namespace Zal.Views.Pages.Users
             {
                 await DisplayAlert("Regisrace", "Regisrace se nezdařila", "Ok");
             }
+            Analytics.TrackEvent("RegisterPage_Registration", new Dictionary<string, string>() { { "isSuccess", isRegistered.ToString() } });
         }
 
         private async Task ShowProfile()

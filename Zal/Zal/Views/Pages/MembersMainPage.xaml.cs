@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,12 +13,13 @@ using Zal.Domain.Models;
 
 namespace Zal.Views.Pages
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MembersMainPage : ContentPage
-	{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class MembersMainPage : ContentPage
+    {
         public MembersMainPage()
         {
             InitializeComponent();
+            Analytics.TrackEvent("MembersMainPage");
             Title = "Členové";
             MyListView.ItemsSource = Zalesak.Users.Users.Where(x => x.Meets(UserFilterModel.Default));
 
@@ -30,19 +32,21 @@ namespace Zal.Views.Pages
             ToolbarItems.Add(toolbarItem);
         }
 
-    private async void NewUser_ToolbarItemClicked(object sender, EventArgs e)
-    {
-        await Navigation.PushAsync(new Users.CreatorPage());
-    }
-
-    async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
-    {
-        if (e.Item is User)
+        private async void NewUser_ToolbarItemClicked(object sender, EventArgs e)
         {
-            User currentUser = e.Item as User;
-            await Navigation.PushAsync(new Users.ProfilePage(currentUser));
-            (sender as ListView).SelectedItem = null;
+            Analytics.TrackEvent("MembersMainPage_newUser");
+            await Navigation.PushAsync(new Users.CreatorPage());
+        }
+
+        async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            if (e.Item is User)
+            {
+                User currentUser = e.Item as User;
+                Analytics.TrackEvent("MembersMainPage_showUser", new Dictionary<string, string>() { { "toShow", currentUser.NickName } });
+                await Navigation.PushAsync(new Users.ProfilePage(currentUser));
+                (sender as ListView).SelectedItem = null;
+            }
         }
     }
-}
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,18 +16,10 @@ namespace Zal.Views.Pages
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ActualityMainPage : ContentPage
 	{
-        private new bool IsBusy {
-            get {
-                return activityIndicator.IsVisible;
-            }
-            set {
-                activityIndicator.IsVisible = value;
-            }
-        }
-
         public ActualityMainPage()
         {
             InitializeComponent();
+            Analytics.TrackEvent("ActualityMainPage");
             Title = "Novinky";
             MyListView.ItemsSource = Zalesak.Actualities.Data;
             MyListView.SelectionMode = ListViewSelectionMode.None;
@@ -53,6 +46,7 @@ namespace Zal.Views.Pages
 
         private async void Button_Clicked(object sender, EventArgs e)
         {
+            Analytics.TrackEvent("ActualityMainPage_loadNext");
             await Zalesak.Actualities.LoadNext();
         }
 
@@ -61,6 +55,7 @@ namespace Zal.Views.Pages
             if (e.Item is Article)
             {
                 Article item = e.Item as Article;
+                Analytics.TrackEvent("ActualityMainPage_showArticle", new Dictionary<string, string>() { { "toShow", item.Id + ". " + item.Title } });
                 await Navigation.PushAsync(new WebViewPage(item));
                 (sender as ListView).SelectedItem = null;
             }
@@ -68,6 +63,7 @@ namespace Zal.Views.Pages
 
         private async void AddButton_Clicked(object sender, EventArgs args)
         {
+            Analytics.TrackEvent("ActualityMainPage_createArticle");
             await Navigation.PushAsync(new Actualities.ArticleCreatorPage());
         }
     }

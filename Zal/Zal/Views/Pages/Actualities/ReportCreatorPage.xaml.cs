@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,7 @@ namespace Zal.Views.Pages.Actualities
 
         private async void AddButton_Clicked(object sender, EventArgs args)
         {
+            Analytics.TrackEvent("ReportCreator_add", new Dictionary<string, string>() { { "title", Title } });
             await action.AddNewReportAsync(Title, textEditor.Text);
             await Navigation.PopAsync();
         }

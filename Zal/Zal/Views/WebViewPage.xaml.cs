@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AppCenter.Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ namespace Zal.Views
     {
         public WebViewPage(ISimpleItem item)
         {
+
+            Analytics.TrackEvent("WebViewPage", new Dictionary<string, string>() { { "title", item.Title } });
             InitializeComponent();
             Title = item.Title;
             HtmlWebViewSource htmlSource = new HtmlWebViewSource
