@@ -9,7 +9,8 @@ using Zal.Domain.Consts;
 
 namespace Zal.Domain.Tools.ARSets
 {
-    public class ObservableSortedSet<T> : ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged where T : IActiveRecord {
+    public class ObservableSortedSet<T> : ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged where T : IActiveRecord
+    {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -17,11 +18,13 @@ namespace Zal.Domain.Tools.ARSets
 
         readonly SortedSet<T> InnerCollection;
 
-        public ObservableSortedSet(IComparer<T> comparer) {
+        public ObservableSortedSet(IComparer<T> comparer)
+        {
             InnerCollection = new SortedSet<T>(comparer);
         }
 
-        public ObservableSortedSet(IEnumerable<T> enumerable, IComparer<T> comparer) {
+        public ObservableSortedSet(IEnumerable<T> enumerable, IComparer<T> comparer)
+        {
             InnerCollection = new SortedSet<T>(enumerable, comparer);
         }
 
@@ -29,75 +32,98 @@ namespace Zal.Domain.Tools.ARSets
 
         public bool IsReadOnly => (InnerCollection as ICollection<T>).IsReadOnly;
 
-        public void Add(T item) {
-            InnerCollection.Add(item);
-            RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+        public void AddAll(IEnumerable<T> items)
+        {
+            foreach (T item in items)
+            {
+                Add(item);
+            }
         }
 
-        public void AddAll(IEnumerable<T> items) {
-            foreach (T item in items) {
-                InnerCollection.Add(item);
+        public void Add(T item)
+        {
+            if (InnerCollection.Add(item))
+            {
                 RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
             }
         }
 
-        public void AddOrUpdateAll(IEnumerable<T> items) {
-            foreach (T item in items) {
+        public void AddOrUpdateAll(IEnumerable<T> items)
+        {
+            foreach (T item in items)
+            {
                 AddOrUpdate(item);
             }
         }
 
-        public void AddOrUpdate(T item) {//todo nechat pouze add?
-            if (InnerCollection.Contains(item)) {                
-                InnerCollection.Remove(item);
-                //InnerCollection.Remove(InnerCollection.Single(x => x.Id == item.Id));
+        public void AddOrUpdate(T item)
+        {
+            if (InnerCollection.Remove(item))
+            {
+                InnerCollection.Add(item);
+                RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, item));
             }
-            Add(item);
+            else
+            {
+                Add(item);
+            }
         }
 
-        public void Clear() {
+        public void Clear()
+        {
             LastSynchronization = ZAL.DATE_OF_ORIGIN;
             InnerCollection.Clear();
             RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        public void RemoveByIds(int[] ids) {
-            foreach (int id in ids) {
+        public void RemoveByIds(int[] ids)
+        {
+            foreach (int id in ids)
+            {
                 RemoveById(id);
             }
         }
 
-        public bool RemoveById(int id) {
+        public bool RemoveById(int id)
+        {
             T toDelete = InnerCollection.Single(x => x.Id == id);
             return Remove(toDelete);
         }
 
-        public bool Remove(T item) {
+        public bool Remove(T item)
+        {
             bool isRemoved = InnerCollection.Remove(item);
-            if (isRemoved) {
+            if (isRemoved)
+            {
                 RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
             }
             return isRemoved;
         }
 
-        public bool Contains(T item) {
+        public bool Contains(T item)
+        {
             return InnerCollection.Contains(item);
         }
 
-        public void CopyTo(T[] array, int arrayIndex) {
+        public void CopyTo(T[] array, int arrayIndex)
+        {
             InnerCollection.CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<T> GetEnumerator() {
+        public IEnumerator<T> GetEnumerator()
+        {
             return InnerCollection.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator() {
+        IEnumerator IEnumerable.GetEnumerator()
+        {
             return GetEnumerator();
         }
 
-        private void RaiseCollectionChanged(NotifyCollectionChangedEventArgs args) {
-            if (CollectionChanged != null) {
+        private void RaiseCollectionChanged(NotifyCollectionChangedEventArgs args)
+        {
+            if (CollectionChanged != null)
+            {
                 CollectionChanged.Invoke(this, args);
             }
         }

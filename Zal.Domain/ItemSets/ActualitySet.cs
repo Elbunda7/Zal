@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 using Zal.Domain.ActiveRecords;
 using Zal.Domain.Consts;
 using Zal.Domain.Models;
@@ -94,22 +95,17 @@ namespace Zal.Domain.ItemSets
             return Data;
         }
 
-        internal XElement GetXml(string elementName) {
-            XElement element = new XElement(elementName);
-            foreach (Article a in Data) {
-                element.Add(a.GetXml("Actuality"));
-            }
-            return element;
+        internal JToken GetJson()
+        {
+            var toStore = Data.Take(10).Select(x => x.GetJson());
+            JArray jArray = new JArray(toStore);
+            return jArray;
         }
 
-        internal void LoadFromXml(XElement element) {
-            IEnumerable<XElement> data = element.Elements("Actuality");
-            foreach (XElement el in data) {
-                Article actuality = Article.LoadFromXml(el);
-                if (!Data.Contains(actuality)) { //contains vs containsById
-                    Data.Add(Article.LoadFromXml(el));
-                }
-            }
+        internal void LoadFrom(JToken json)
+        {
+            var actualities = json.Select(x => Article.LoadFrom(x));
+            Data.AddAll(actualities);
         }
     }
 }

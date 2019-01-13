@@ -102,6 +102,7 @@ namespace Zal.Domain
                 JObject jObject = JObject.Parse(json);
                 Session.LoadFrom(jObject.GetValue("session"));// = JsonConvert.DeserializeObject<Session>(jObject.GetValue("session").ToString());
                 Actions.LoadFrom(jObject.GetValue("actions"));
+                Actualities.LoadFrom(jObject.GetValue("actualities"));
             }
             catch (Exception)
             {
@@ -112,7 +113,8 @@ namespace Zal.Domain
         {
             JObject jObject = new JObject {
                 {"session", Session.GetJson() },
-                {"actions", Actions.GetJson() }
+                {"actions", Actions.GetJson() },
+                {"actualities", Actualities.GetJson() }
             };
             return jObject.ToString();
         }

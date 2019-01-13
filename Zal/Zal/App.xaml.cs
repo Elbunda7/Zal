@@ -7,6 +7,8 @@ using Zal.Views;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using System;
+using System.Xml.Linq;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace Zal
@@ -23,24 +25,28 @@ namespace Zal
 
             AppCenter.Start("android=555f3d1a-d1f9-485d-8a9d-983344faa20b;", typeof(Analytics), typeof(Crashes));
 
-            MainPage = new MainPage();
+            MainPage = new AboutPage();//todo loading page
         }
 
         private async void InitializeAppData()
         {
-            //Zal.CommandExecutedOffline += OnCommandExecutedOffline;
+            Zalesak.CommandExecutedOffline += OnCommandExecutedOffline;
             await Task.Run(async () => {
                 if (Current.Properties.ContainsKey(LOCAL_DATA))
                 {
                     var fileData = (string)Current.Properties[LOCAL_DATA];
                     Zalesak.LoadDataFrom(fileData);
                     var isLogged = await Zalesak.Session.TryLoginWithTokenAsync();
-                    await Zalesak.StartSynchronizingAsync();
+                    await Zalesak.StartSynchronizingAsync();//todo synchronizovat vše?
                 }
-                //Zal.LoadOfflineCommands(LoadFromStorage(OFFLINE_COMMANDS_FILE));
-                //var c = await Zalesak.Session.LoginAsync("pepa3@email.cz", "password", false);
+                //Zalesak.LoadOfflineCommands(LoadFromStorage(OFFLINE_COMMANDS_FILE));
             });
             OnAppReady();
+        }
+
+        private void OnCommandExecutedOffline(XDocument commands)
+        {
+            throw new NotImplementedException();
         }
 
         private void OnAppReady()

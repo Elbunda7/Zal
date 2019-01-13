@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Xml.Linq;
 using Zal.Domain.Tools;
 using Zal.Domain.Consts;
 using Zal.Bridge.Models;
@@ -11,6 +10,7 @@ using Zal.Bridge;
 using System.Threading.Tasks;
 using Zal.Domain.Models;
 using Zal.Bridge.Models.ApiModels;
+using Newtonsoft.Json.Linq;
 
 namespace Zal.Domain.ActiveRecords
 {
@@ -116,39 +116,15 @@ namespace Zal.Domain.ActiveRecords
             return await Gateway.DeleteAsync(actuality.model.Id);
         }
 
-        public XElement GetXml(string elementName) {
-            /*XElement element = new XElement(elementName,
-                new XElement("Id", model.Id),
-                new XElement("DateOfCreation", model.DateOfCreation.Ticks),
-                new XElement("Title", model.Title),
-                new XElement("ShortText", model.ShortText),
-                new XElement("Id_info", model.Id_info),
-                new XElement("Id_zapis", model.Id_zapis),
-                new XElement("Id_clanek", model.Id_clanek));
-            return element;*/
-
-            throw new NotImplementedException();
+        internal JToken GetJson()
+        {
+            return JObject.FromObject(model);
         }
 
-        public static Article LoadFromXml(XElement element) {
-            /*AktualityTable data = new AktualityTable {
-                Id = Int32.Parse(element.Element("Id").Value),
-                DateOfCreation = new DateTime(long.Parse(element.Element("DateOfCreation").Value)),
-                Title = element.Element("Title").Value,
-                ShortText = element.Element("ShortText").Value
-            };
-            if (!element.Element("Id_info").IsEmpty) {
-                data.Id_info = Int32.Parse(element.Element("Id_info").Value);
-            }
-            else if (!element.Element("Id_zapis").IsEmpty) {
-                data.Id_zapis = Int32.Parse(element.Element("Id_zapis").Value);
-            }
-            else if (!element.Element("Id_clanek").IsEmpty) {
-                data.Id_clanek = Int32.Parse(element.Element("Id_clanek").Value);
-            }
-            return new Actuality(data);*/
-
-            throw new NotImplementedException();
+        internal static Article LoadFrom(JToken json)
+        {
+            var model = json.ToObject<ArticleModel>();
+            return new Article(model);
         }
     }
 }
