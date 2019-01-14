@@ -10,5 +10,6 @@ namespace Zal.Bridge.Models.ApiModels
     {
         public UserModel Member { get; set; }
         public bool IsGarant { get; set; }
+        public int Joining { get; set; }
     }
 }

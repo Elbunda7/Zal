@@ -19,13 +19,23 @@ namespace Zal.Bridge.Models
         public int? Id_Info { get; set; }
         public int? Id_Report { get; set; }
 
-        private int[] members;
-        public int[] Members {
+        private List<int> members;
+        public List<int> Members {
             get {
-                return members ?? (members = new int[0]);
+                return members ?? (members = new List<int>());
             }
             set {
                 members = value;
+            }
+        }
+
+        private List<int> isJoining;
+        public List<int> IsJoining {
+            get {
+                return isJoining ?? (isJoining = new List<int>());
+            }
+            set {
+                isJoining = value;
             }
         }
 
@@ -38,6 +48,7 @@ namespace Zal.Bridge.Models
                 EventType = EventType,
                 FromRank = FromRank,
                 Members = Members,
+                IsJoining = IsJoining,
                 Id_Gallery = Id_Gallery,
                 Id_Info = Id_Info,
                 Id_Report = Id_Report,

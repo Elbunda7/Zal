@@ -20,8 +20,7 @@ namespace Zal.Bridge.Tools
                 {
                     { new StringContent(str), "x" }
                 };
-                var response = await client.PostAsync(ResourceUri, content);
-                str = await response.Content.ReadAsStringAsync();
+                str = await SendAsync(client, content);
             }
             return string.IsNullOrEmpty(str) ? str : str.Decrypt().Unzip();
         }

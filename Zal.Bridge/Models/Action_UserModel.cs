@@ -15,5 +15,6 @@ namespace Zal.Bridge.Models
     public class ActionUserJoinModel : ActionUserModel
     {
         public bool IsGarant { get; set; }
+        public int IsJoining { get; set; }
     }
 }

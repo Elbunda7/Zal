@@ -41,10 +41,7 @@ namespace Zal.Elements
 
         private void Button_Clicked(object sender, EventArgs e)
         {
-            if (Clicked != null)
-            {
-                Clicked.Invoke(sender, e);
-            }
+            Clicked?.Invoke(sender, e);
         }
 
         public void AnimateIn()

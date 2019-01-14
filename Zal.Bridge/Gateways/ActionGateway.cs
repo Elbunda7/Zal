@@ -16,7 +16,7 @@ namespace Zal.Bridge
             return SendRequestFor<ActionModel>(API.METHOD.GET, id);
         }
 
-        public Task<IEnumerable<ActionModel>> GetAllAsync() {
+        public Task<IEnumerable<ActionModel>> GetAllAsync() {//todo nullable
             return SendRequestFor<IEnumerable<ActionModel>>(API.METHOD.GET_ALL);
         }
 
@@ -33,16 +33,13 @@ namespace Zal.Bridge
             return SendRequestFor<bool>(API.METHOD.JOIN, model);
         }
 
-        public Task<bool> UnJoinAsync(ActionUserModel model) {
-            return SendRequestFor<bool>(API.METHOD.UNJOIN, model);
-        }
-
         public Task<bool> DeleteAsync(int idAction, string token) {
             return SendRequestFor<bool>(API.METHOD.DELETE, idAction, token);
         }
 
-        public Task<IEnumerable<MembersOnActionModel>> GetUsersOnActionAsync(int id) {
-            return SendRequestFor<IEnumerable<MembersOnActionModel>>(API.METHOD.GET_USERS_ON_ACTION, id);
+        public async Task<IEnumerable<MembersOnActionModel>> GetUsersOnActionAsync(int id) {
+            var respond = await SendRequestForNullable<IEnumerable<MembersOnActionModel>>(API.METHOD.GET_USERS_ON_ACTION, id);
+            return respond ?? new List<MembersOnActionModel>();
         }
 
         public Task<bool> UpdateAsync(ActionModel model, string token) {

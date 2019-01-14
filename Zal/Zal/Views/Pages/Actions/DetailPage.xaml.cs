@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Domain.ActiveRecords;
+using Zal.Domain.Consts;
 
 namespace Zal.Views.Pages.Actions
 {
@@ -51,19 +52,19 @@ namespace Zal.Views.Pages.Actions
             }
         }
 
-        private async void JoinButton_ClickedAsync(object sender, EventArgs args)
+        private async void NotJoinButton_ClickedAsync()
         {
-            await action.Join();
+            await action.Join(ZAL.Joining.False);
         }
 
-        private async void ParticipateButton_ClickedAsync(object sender, EventArgs args)
+        private async void MaybeJoinButton_ClickedAsync()
         {
-            bool result = await action.Join();
+            await action.Join(ZAL.Joining.Maybe);
         }
 
-        private async void ClickableImageLabel_OnClickAsync()
+        private async void JoinButton_ClickedAsync()
         {
-            await Navigation.PushAsync(new WebViewPage(await action.ReportLazyLoad()));
+            bool isSuccess = await action.Join(ZAL.Joining.True);
         }
     }
 }

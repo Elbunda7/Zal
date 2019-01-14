@@ -16,23 +16,21 @@ using Zal.Domain.Tools.ARSets;
 
 namespace Zal.Domain.ActiveRecords
 {
-    public class ActionEvent : IActiveRecord
+    public class ActionEvent : IActiveRecord//todo observable
     {
         private ActionModel Model;
 
-        private IEnumerable<User> garants;
-        private IEnumerable<User> members;
+        private List<UserJoiningAction> users;
         private Article report;
         private Article info;
         
         public int Id => Model.Id;
         public string Type => Model.EventType;
         public string Name => Model.Name;
-        public int FromRank => Model.FromRank;
+        public int FromRank => Model.FromRank;//todo (ZAL.Rank)
         public DateTime DateFrom => Model.Date_start;
         public DateTime DateTo => Model.Date_end;
-        public int MembersCount => Model.Members.Length;
-        public bool DoIParticipate => Model.Members.Contains(Zalesak.Session.CurrentUser.Id);//todo jak aktualizovat?
+        public int MembersCount => Model.IsJoining.Where(x => x == (int)ZAL.Joining.True).Count();
         public bool IsOfficial => Model.IsOfficial;//todo přejmenovat nebo přidat IsPublished
         public bool HasInfo => Model.Id_Info.HasValue;
         public bool HasReport => Model.Id_Report.HasValue;
@@ -40,6 +38,16 @@ namespace Zal.Domain.ActiveRecords
             get {
                 TimeSpan ts = Model.Date_end - Model.Date_start;
                 return (int)ts.TotalDays;
+            }
+        }
+        public ZAL.Joining DoIParticipate {//todo jak aktualizovat?
+            get {
+                if (Model.Members.Contains(Zalesak.Session.CurrentUser.Id))
+                {
+                    int index = Model.Members.IndexOf(Zalesak.Session.CurrentUser.Id);
+                    return (ZAL.Joining)Model.IsJoining[index];
+                }
+                return ZAL.Joining.Unknow;
             }
         }
 
@@ -75,21 +83,18 @@ namespace Zal.Domain.ActiveRecords
             return report;
         }
 
-        public async Task<IEnumerable<User>> MembersLazyLoad(ZAL.ActionUserRole role, bool reload = false) {
-            await MembersLazyLoad(reload);
-            switch (role) {
-                case ZAL.ActionUserRole.Garant: return garants;
-                case ZAL.ActionUserRole.Member: return members;
-                default: return garants.Union(members);
-            }
-        }
-
-        private async Task MembersLazyLoad(bool reload = false) {
-            if (reload || (garants == null && members == null)) {
+        public async Task<IEnumerable<UserJoiningAction>> MembersLazyLoad(bool reload = false) {
+            if (reload || users == null)
+            {
                 var respond = await Gateway.GetUsersOnActionAsync(Id);
-                garants = respond.Where(x => x.IsGarant).Select(x => new User(x.Member)).ToList();
-                members = respond.Where(x => !x.IsGarant).Select(x => new User(x.Member)).ToList();
+                users = respond.Select(x => new UserJoiningAction
+                {
+                    Member = new User(x.Member),
+                    IsGarant = x.IsGarant,
+                    Joining = (ZAL.Joining)x.Joining
+                }).ToList();
             }
+            return users;
         }
 
         public static async Task<ActionEvent> AddAsync(string name, string type, DateTime start, DateTime end, int fromRank, bool isOfficial = true) {
@@ -139,54 +144,50 @@ namespace Zal.Domain.ActiveRecords
             return wasAdded;
         }
 
-        public Task<bool> Join(bool asGarant = false) {
+        public Task<bool> Join(ZAL.Joining joining, bool asGarant = false) {
             //token uživatele
-            return Join(Zalesak.Session.CurrentUser, asGarant);
+            UserPermision.HasRank(Zalesak.Session.CurrentUser, (ZAL.Rank)FromRank);
+            return Join(Zalesak.Session.CurrentUser, joining, asGarant);
         }
 
-        public async Task<bool> Join(User user, bool asGarant = false) {
-            await MembersLazyLoad();
-            UpdateLocalMember(user, asGarant);
+        public async Task<bool> Join(User user, ZAL.Joining joining, bool asGarant = false) {
+            UserPermision.Validate(Zalesak.Session.CurrentUser, user, ZAL.Rank.Vedouci);
+            if ((await MembersLazyLoad()).Select(x => x.Member).Contains(user, ActiveRecordEqualityComparer.Instance))
+            {
+                var userOnAction = users.Single(x => x.Member.Id == user.Id);
+                userOnAction.IsGarant = asGarant;
+                userOnAction.Joining = joining;
+            }
+            else
+            {
+                users.Add(new UserJoiningAction
+                {
+                    IsGarant = asGarant,
+                    Joining = joining,
+                    Member = user,
+                });
+            }
+
+            if (Model.Members.Contains(Zalesak.Session.CurrentUser.Id))
+            {
+                int index = Model.Members.IndexOf(Zalesak.Session.CurrentUser.Id);
+                Model.IsJoining[index] = (int)joining;
+            }
+            else
+            {
+                Model.Members.Add(user.Id);
+                Model.IsJoining.Add((int)joining);
+            }
+
             var requestModel = new ActionUserJoinModel {
                 Id_User = user.Id,
                 Id_Action = Id,
                 IsGarant = asGarant,
+                IsJoining = (int)joining
             };
             return await Gateway.JoinAsync(requestModel);
         }
 
-        public Task<bool> UnJoin() {
-            return UnJoin(Zalesak.Session.CurrentUser);
-        }
-
-        public async Task<bool> UnJoin(User user) {
-            await MembersLazyLoad();
-            RemoveLocalMember(user);
-            var requestModel = new ActionUserModel {
-                Id_User = user.Id,
-                Id_Action = Id,
-            };
-            return await Gateway.UnJoinAsync(requestModel);
-        }
-
-        private void UpdateLocalMember(User user, bool asGarant) {
-            RemoveLocalMember(user);
-            if (asGarant) {
-                (garants as List<User>).Add(user);
-            }
-            else {
-                (members as List<User>).Add(user);
-            }
-        }
-
-        private void RemoveLocalMember(User user) {
-            if (garants.Contains(user, ActiveRecordEqualityComparer.Instance)) {
-                (garants as List<User>).Remove(garants.Single(x => x.Id == user.Id));
-            }
-            else if (members.Contains(user, ActiveRecordEqualityComparer.Instance)) {
-                (members as List<User>).Remove(members.Single(x => x.Id == user.Id));
-            }
-        }
 
         internal static async Task<ChangedActiveRecords<ActionEvent>> GetChangedAsync(int userRank, DateTime lastCheck, int currentYear, int count) {
             var requestModel = new ActionChangesRequestModel {

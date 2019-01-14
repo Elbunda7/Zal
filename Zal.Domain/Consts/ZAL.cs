@@ -64,6 +64,14 @@ namespace Zal.Domain.Consts
             Link = 4,
         }
 
+        public enum Joining
+        {
+            True = 1,
+            False = 2,
+            Maybe = 3,
+            Unknow = 4,
+        }
+
         public abstract class MEMBERSHIP
         {
             public static string NECLEN = "nečlen";

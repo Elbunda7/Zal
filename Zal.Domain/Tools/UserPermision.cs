@@ -18,5 +18,17 @@ namespace Zal.Domain.Tools
                 throw new UserPermisionException($"Low user Rank - expected: [{ZAL.RANK_NAME[(int)expectedRank]}], current: [{ZAL.RANK_NAME[(int)user.Rank]}]");
             }
         }
+
+        internal static void Validate(User currentUser, User user, ZAL.Rank expectedRank)
+        {
+            if (user == null || currentUser == null)
+            {
+                throw new UserPermisionException("null exception!");
+            }
+            if (!user.Equals(currentUser) && currentUser.Rank < expectedRank)
+            {
+                throw new UserPermisionException($"Low user Rank - expected: [{ZAL.RANK_NAME[(int)expectedRank]}], current: [{ZAL.RANK_NAME[(int)currentUser.Rank]}]");
+            }
+        }
     }
 }
