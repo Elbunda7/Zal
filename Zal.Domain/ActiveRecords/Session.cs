@@ -15,7 +15,7 @@ namespace Zal.Domain.ActiveRecords
 {
     public class Session
     {
-        public event SessionStateDelegate UsersSessionStateChanged;
+        public event SessionStateDelegate UserStateChanged;
 
         public User CurrentUser { get; set; }
         private string RefreshToken { get; set; }
@@ -29,7 +29,7 @@ namespace Zal.Domain.ActiveRecords
         private static SessionGateway Gateway => gateway ?? (gateway = new SessionGateway());
 
 
-        private void Clear() {
+        private void ClearSession() {
             CurrentUser = null;
             RefreshToken = null;
             Token = null;
@@ -85,7 +85,7 @@ namespace Zal.Domain.ActiveRecords
                     RaisSessionStateChanged();
                 }
                 else {
-                    Clear();
+                    ClearSession();
                 }
             }
             return isLogged;
@@ -97,13 +97,13 @@ namespace Zal.Domain.ActiveRecords
                 Token = Token,
             };
             await Gateway.LogoutAsync(requestModel);
-            Clear();
+            ClearSession();
             RaisSessionStateChanged();
         }
 
         public void RaisSessionStateChanged() {
-            if (UsersSessionStateChanged != null) {
-                UsersSessionStateChanged.Invoke(this);
+            if (UserStateChanged != null) {
+                UserStateChanged.Invoke(this);
             }
         }
 

@@ -28,6 +28,7 @@ namespace Zal.Domain.ActiveRecords
         public string Name => Model.Name;
         public string Surname => Model.Surname;
         public string Phone => Model.Phone;
+        public string Image => Model.Image?? "";
         public ZAL.Rank Rank => (ZAL.Rank)Model.Id_Rank;
         public ZAL.Group Group => (ZAL.Group)Model.Id_Group;
         public string RankAsString => ZAL.RANK_NAME[Model.Id_Rank];
@@ -130,6 +131,15 @@ namespace Zal.Domain.ActiveRecords
             bool wasAdded = await Gateway.AddBadgeAsync(model);
             if (wasAdded) badges.Add(badge);
             return wasAdded;
+        }
+
+        public Task<bool> UploadProfileImage(byte[] rawImage)
+        {
+            var model = new ImageUploadModel
+            {
+                Id = Id,
+            };
+            return Gateway.UploadProfileImage(model, rawImage, Zalesak.Session.Token);
         }
 
         public void BecomeMember(DateTime dateOfBirthDay, int group, string prezdivka = null) {

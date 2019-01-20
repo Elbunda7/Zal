@@ -13,6 +13,12 @@ namespace Zal.Bridge
             JsonFormator = new JsonFormator(ApiEndpoint);
         }
 
+        protected async Task<T> SendImageUploadRequestFor<T>(string apiMethod, byte[] rawImage, object content = null, string userToken = null)
+        {
+            string respond = await SendRequest(apiMethod, content, userToken, rawImage);
+            return JsonConvert.DeserializeObject<T>(respond);
+        }
+
         protected async Task<T> SendRequestFor<T>(string apiMethod, object content = null, string userToken = null) {
             string respond = await SendRequest(apiMethod, content, userToken);
             return JsonConvert.DeserializeObject<T>(respond);
@@ -23,9 +29,9 @@ namespace Zal.Bridge
             return string.IsNullOrEmpty(respond) ? default(T) : JsonConvert.DeserializeObject<T>(respond);
         }
 
-        protected Task<string> SendRequest(string apiMethod, object content, string userToken) {
+        protected Task<string> SendRequest(string apiMethod, object content, string userToken, byte[] rawImage = null) {
             string str = JsonFormator.CreateApiRequestString(apiMethod, content, userToken);
-            return ApiClient.PostRequest(str);
+            return ApiClient.PostRequest(str, rawImage);
         }
     }
 }

@@ -4,7 +4,8 @@
              x:Class="Zal.Views.Pages.GaleryMainPage">
     <ContentPage.Content>
         <StackLayout>
-            <Image Source="SplashScreen.png" />
+            <Button Clicked="Button_Clicked"></Button>
+            <Image x:Name="mainImage" Source="Splash.png" />
 
         </StackLayout>
     </ContentPage.Content>

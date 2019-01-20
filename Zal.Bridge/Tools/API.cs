@@ -35,6 +35,7 @@ namespace Zal.Bridge.Tools
             public const string ADD_BADGE_TO = "AddBadgeTo";
             public const string LOAD_TOP_TEN = "LoadTopTen";
             public const string LOAD_NEXT = "LoadNext";
+            public const string UPLOAD_IMAGE = "UploadImage";
         }
 
         public abstract class MODE

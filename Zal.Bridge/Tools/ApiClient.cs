@@ -11,7 +11,7 @@ namespace Zal.Bridge.Tools
         static readonly Uri BaseUri = new Uri("http://zalesak.hlucin.com");
         static readonly Uri ResourceUri = new Uri("http://zalesak.hlucin.com/api/index.php");
 
-        public static async Task<string> PostRequest(string jsonContent)
+        public static async Task<string> PostRequest(string jsonContent, byte[] rawImage = null)
         {
             string str = jsonContent.Encrypt();
             using (HttpClient client = new HttpClient())
@@ -20,6 +20,11 @@ namespace Zal.Bridge.Tools
                 {
                     { new StringContent(str), "x" }
                 };
+                if (rawImage != null)
+                {
+                    content.Add(new ByteArrayContent(rawImage), "y");
+                    client.Timeout = TimeSpan.FromSeconds(15);
+                }
                 str = await SendAsync(client, content);
             }
             return string.IsNullOrEmpty(str) ? str : str.Decrypt().Unzip();

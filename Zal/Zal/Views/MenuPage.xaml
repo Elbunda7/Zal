@@ -41,8 +41,8 @@
                             Grid.Column="1" Grid.ColumnSpan="3"
                             Grid.Row="3"
                             TextColor="{StaticResource DarkGrayColor}"
-                            Margin="15, 0"
-                            Text="Zálesák"  
+                            Margin="5, 0"
+                            Text="TOM Zálesák"  
                             FontSize="28"
                             Style="{DynamicResource SubtitleStyle}"/>
 
@@ -70,16 +70,6 @@
                             FontSize="Small"
                             Clicked="LoginButton_Clicked"
                             BackgroundColor="{StaticResource Primary}"/>
-
-                        <local:CircleButton x:Name="LogoutButton"
-                            Grid.Column="2" Grid.ColumnSpan="2"
-                            Grid.Row="1"
-                            Text="Odhlásit se"
-                            TextColor="White"
-                            FontSize="Small"
-                            Clicked="LogoutButton_Clicked"
-                            BackgroundColor="Red"
-                            IsVisible="false"/>
 
                     </Grid>
                     <BoxView HeightRequest="8"/>

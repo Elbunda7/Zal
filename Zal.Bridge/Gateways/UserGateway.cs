@@ -55,6 +55,11 @@ namespace Zal.Bridge
             throw new NotImplementedException();
         }
 
+        public Task<bool> UploadProfileImage(ImageUploadModel model, byte[] rawImage, string token)
+        {
+            return SendImageUploadRequestFor<bool>(API.METHOD.UPLOAD_IMAGE, rawImage, model, token);
+        }
+
 
         /*public Collection<Uzivatel> getParticipatingAt(Akce akce) {
             SqlCommand command = db.CreateCommand(SQL_SELECT_USERS_AT_ACTION);

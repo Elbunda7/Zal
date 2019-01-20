@@ -15,6 +15,7 @@ namespace Zal.Bridge.Models
         public string Surname { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public string Image { get; set; }
         public DateTime? BirthDate { get; set; }
         public int Id_Rank { get; set; }
         public int Id_Group { get; set; }

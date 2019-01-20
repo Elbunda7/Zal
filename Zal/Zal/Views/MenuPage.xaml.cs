@@ -7,6 +7,8 @@ using Xamarin.Forms.Xaml;
 using Zal.Elements;
 using Zal.Views.Pages;
 using Zal.Domain;
+using Zal.Domain.ActiveRecords;
+using Zal.Services;
 
 namespace Zal.Views
 {
@@ -38,6 +40,30 @@ namespace Zal.Views
             ListViewMenu.ItemTapped += ListViewMenu_ItemTapped;
 
             SelectedItem = menuItems[0];
+
+            Zalesak.Session.UserStateChanged += OnUserStateChanged;
+            OnUserStateChanged(Zalesak.Session);
+        }
+
+        private void OnUserStateChanged(Session session)
+        {
+
+            if (session.IsUserLogged)
+            {
+                ImageSource imageSource = ImageSourceHelper.UserImg(session.CurrentUser.Image, NamedSize.Medium);
+
+            //ImageSource imageSource2 = ImageSourceHelper.UserImg("session", NamedSize.Medium);
+                NameLabel.Text = session.CurrentUser.NickName;
+                //ProfileImage.Source = "profile_girl.png";
+                ProfileImage.Source = imageSource;
+                LoginButton.Text = "Odhlásit se";
+            }
+            else
+            {
+                NameLabel.Text = "TOM Zálesák";
+                ProfileImage.Source = "icon.png";
+                LoginButton.Text = "Přihlásit se";
+            }
         }
 
         protected override void OnAppearing()
@@ -70,21 +96,26 @@ namespace Zal.Views
 
         private void ProfileImage_Tapped(object sender, EventArgs e)
         {
-            SetItemAsSelected(ProfileItem);
-            //SelectedItem.IsSelected = false;
-            //await RootPage.NavigateFromMenu(typeof(Pages.Users.ProfilePage));
+            if (Zalesak.Session.IsUserLogged)
+            {
+                SetItemAsSelected(ProfileItem);
+            }
+            else
+            {
+                SetItemAsSelected(LoginItem);
+            }
         }
 
-        private void LoginButton_Clicked(object sender, EventArgs e)
+        private async void LoginButton_Clicked(object sender, EventArgs e)
         {
-            SetItemAsSelected(LoginItem);
-            //SelectedItem.IsSelected = false;
-            //await RootPage.NavigateFromMenu(typeof(Pages.Users.LoginPage));
-        }
-
-        private async void LogoutButton_Clicked(object sender, EventArgs e)
-        {
-            await Zalesak.Session.Logout();
+            if (Zalesak.Session.IsUserLogged)
+            {
+                await Zalesak.Session.Logout();
+            }
+            else
+            {
+                SetItemAsSelected(LoginItem);
+            }
         }
     }
 }

@@ -54,8 +54,8 @@
 
             </StackLayout>
 
-            <Frame CornerRadius="28" HeightRequest="56" WidthRequest="56" OutlineColor="Black" Padding="0"  AbsoluteLayout.LayoutBounds="0.9,120" AbsoluteLayout.LayoutFlags="XProportional">
-                <Button Image="ic_edit_black_24dp.png"/>
+            <Frame CornerRadius="28" HeightRequest="56" WidthRequest="56" Padding="0"  AbsoluteLayout.LayoutBounds="0.9,120" AbsoluteLayout.LayoutFlags="XProportional">
+                <Button Image="ic_edit_black_24dp.png" Margin="-7" Clicked="EditButton_Clicked"/>
             </Frame>
 
 
