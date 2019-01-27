@@ -100,6 +100,12 @@ namespace Zal.Domain.Tools.ARSets
             return isRemoved;
         }
 
+        public void RemoveAll()
+        {
+            InnerCollection.Clear();
+            RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
         public bool Contains(T item)
         {
             return InnerCollection.Contains(item);

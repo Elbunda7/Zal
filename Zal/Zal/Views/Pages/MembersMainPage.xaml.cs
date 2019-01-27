@@ -21,7 +21,7 @@ namespace Zal.Views.Pages
             InitializeComponent();
             Analytics.TrackEvent("MembersMainPage");
             Title = "Členové";
-            MyListView.ItemsSource = Zalesak.Users.Users.Where(x => x.Meets(UserFilterModel.Default));
+            MyListView.ItemsSource = Zalesak.Users.Users;
 
             var toolbarItem = new ToolbarItem()
             {
@@ -30,6 +30,36 @@ namespace Zal.Views.Pages
             };
             toolbarItem.Clicked += NewUser_ToolbarItemClicked;
             ToolbarItems.Add(toolbarItem);
+
+            //dev
+            var toolbarFilterOne = new ToolbarItem()
+            {
+                Text = "Oddíloví",
+                Order = ToolbarItemOrder.Secondary
+            };
+            toolbarFilterOne.Clicked += FilterOne_ToolbarItemClicked;
+            ToolbarItems.Add(toolbarFilterOne);
+
+            var toolbarFilterTwo = new ToolbarItem()
+            {
+                Text = "Všichni",
+                Order = ToolbarItemOrder.Secondary
+            };
+            toolbarFilterTwo.Clicked += FilterTwo_ToolbarItemClicked;
+            ToolbarItems.Add(toolbarFilterTwo);
+            //dev
+        }
+
+        private async void FilterOne_ToolbarItemClicked(object sender, EventArgs e)
+        {
+            await Zalesak.Users.Synchronize();
+        }
+
+        private async void FilterTwo_ToolbarItemClicked(object sender, EventArgs e)
+        {
+            var a = UserFilterModel.Default;
+            a.Groups = Domain.Consts.ZAL.Group.CompletlyAll;
+            await Zalesak.Users.Synchronize(a);
         }
 
         private async void NewUser_ToolbarItemClicked(object sender, EventArgs e)

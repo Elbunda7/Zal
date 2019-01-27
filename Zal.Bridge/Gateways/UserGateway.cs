@@ -15,8 +15,8 @@ namespace Zal.Bridge
             return SendRequestFor<UserModel>(API.METHOD.GET, id);
         }
 
-        public Task<AllRespondModel<UserModel>> GetAllAsync(UserRequestModel model) {
-            return SendRequestFor<AllRespondModel<UserModel>>(API.METHOD.GET_ALL, model);
+        public Task<AllRespondModel<UserModel>> GetMoreAsync(UserRequestModel model) {
+            return SendRequestFor<AllRespondModel<UserModel>>(API.METHOD.GET_MORE, model);
         }
 
         public async Task<FullChangesRespondModel<UserModel>> GetAllChangedAsync(UserChangesRequestModel model, string token) {//todo token?

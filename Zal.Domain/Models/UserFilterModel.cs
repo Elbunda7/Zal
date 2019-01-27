@@ -35,11 +35,30 @@ namespace Zal.Domain.Models
             Roles = 0;
         }
 
-        internal bool WillBeExtendedWith(UserFilterModel filter) {
+        public static bool operator ==(UserFilterModel a, UserFilterModel b)
+        {
+            bool value = true;
+            value &= a.Groups == b.Groups;
+            value &= a.Ranks == b.Ranks;
+            value &= a.Roles == b.Roles;
+            return value;
+        }
+
+        public static bool operator !=(UserFilterModel a, UserFilterModel b)
+        {
             bool value = false;
-            value |= (~Groups & filter.Groups) != 0;
-            value |= (~Ranks & filter.Ranks) != 0;
-            value |= (~Roles & filter.Roles) != 0;
+            value |= a.Groups != b.Groups;
+            value |= a.Ranks != b.Ranks;
+            value |= a.Roles != b.Roles;
+            return value;
+        }
+
+        internal bool IsExtending(UserFilterModel filter)
+        {
+            bool value = false;
+            value |= (Groups & ~filter.Groups) != 0;
+            value |= (Ranks & ~filter.Ranks) != 0;
+            value |= (Roles & ~filter.Roles) != 0;
             return value;
         }
 

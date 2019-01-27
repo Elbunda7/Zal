@@ -113,7 +113,7 @@ namespace Zal.Domain.ActiveRecords
             };
             if (StayLogged) {
                 json.Add("RefreshToken", RefreshToken);
-                json.Add("CurrentUser", CurrentUser.GetModelJson());
+                json.Add("CurrentUser", CurrentUser.GetJson());
             }            
             return json;
         }

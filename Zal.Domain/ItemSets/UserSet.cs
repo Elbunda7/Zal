@@ -2,64 +2,80 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Zal.Domain.ActiveRecords;
 using Zal.Domain.Consts;
 using Zal.Domain.Models;
 using Zal.Domain.Tools;
 using Zal.Domain.Tools.ARSets;
-using static Zal.Domain.Consts.ZAL;
 
 namespace Zal.Domain.ItemSets
 {
     public class UserSet : BaseSet
     {
         public UserObservableSortedSet Users { get; set; }
-        private UserFilterModel filterInMemory;
+        private HashSet<User> AllUsers;
+        private UserFilterModel currentFilter;
+        private UserFilterModel cumulativeFilter;
 
         public UserSet() {
             Users = new UserObservableSortedSet();
-            filterInMemory = new UserFilterModel();
+            AllUsers = new HashSet<User>(ActiveRecordEqualityComparer.Instance);
+            currentFilter = new UserFilterModel();
+            cumulativeFilter = UserFilterModel.Default;
         }
 
-        public async Task ReSynchronize(UserFilterModel filter = null) {
-            filterInMemory.Clear();
-            Users.LastSynchronization = DATE_OF_ORIGIN;
-            await SynchronizeUsers(filter);
+        public async Task ReSynchronize(UserFilterModel filter = null)//todo empty params?
+        {
+            currentFilter.Clear();
+            cumulativeFilter = UserFilterModel.Default;
+            AllUsers.Clear();
+            Users.Clear();
+            await Synchronize(filter);
         }
 
-        public async Task SynchronizeUsers(UserFilterModel filter = null) {//todo kontrola korektnosti při změně filtru
+        public async Task Synchronize(UserFilterModel filter = null)
+        {
             filter = filter ?? UserFilterModel.Default;
-            if (Users.LastSynchronization == DATE_OF_ORIGIN) {
-                await LoadUsers(filter, isAndMode: true);
+            if (filter != currentFilter)
+            {
+                Users.RemoveAll();
+                Users.AddAll(AllUsers.Where(x => x.Match(filter)));
+                currentFilter = filter;
             }
-            else {
-                await LoadUserChanges(filterInMemory);
-                if (filterInMemory.WillBeExtendedWith(filter)) {
-                    UserFilterModel extendingFilter = filterInMemory.GetOnlyExtendigFilterFrom(filter);//todo filtermode
-                    await LoadUsers(extendingFilter, isAndMode: false);
-                }
+            await LoadChangedUsers(cumulativeFilter);
+            if (filter.IsExtending(cumulativeFilter))
+            {
+                var extendingFilter = cumulativeFilter.GetOnlyExtendigFilterFrom(filter);
+                await LoadMoreUsers(extendingFilter);
+                cumulativeFilter.CombineWith(filter);
             }
-            filterInMemory.CombineWith(filter);
         }
 
-        private async Task LoadUsers(UserFilterModel filter, bool isAndMode) {
-            var task = User.GetAll(filter, isAndMode);
+        private async Task LoadMoreUsers(UserFilterModel filter) {
+            var task = User.GetMore(filter);
             var respond = await ExecuteTask(task);
-            Users.AddOrUpdateAll(respond.ActiveRecords);
-            Users.LastSynchronization = respond.Timestamp;
+            Users.AddAll(respond.ActiveRecords);
+            AllUsers.UnionWith(respond.ActiveRecords);
         }
 
-        private async Task LoadUserChanges(UserFilterModel filter) {
-            var task = User.GetChanged(filter, Users.LastSynchronization, Users.Where(x=>x.Meets(filter)).Count());
+        private async Task LoadChangedUsers(UserFilterModel filter) {
+            var task = User.GetChanged(filter, Users.LastSynchronization, AllUsers.Count());
             var respond = await ExecuteTask(task);
-            if (respond.IsHardChanged) {
+            if (respond.IsHardChanged)
+            {
                 Users.Clear();
                 Users.AddAll(respond.Changed);
+                AllUsers.Clear();
+                AllUsers.UnionWith(respond.Changed);
                 Users.LastSynchronization = respond.Timestamp;
             }
-            else if (respond.IsChanged) {
+            else if (respond.IsChanged)
+            {
                 Users.RemoveByIds(respond.Deleted);
                 Users.AddOrUpdateAll(respond.Changed);
+                AllUsers.RemoveWhere(x => respond.Deleted.Contains(x.Id));
+                AllUsers.UnionWith(respond.Changed);
                 Users.LastSynchronization = respond.Timestamp;
             }
         }
@@ -112,6 +128,29 @@ namespace Zal.Domain.ItemSets
             var task = User.GetAsync(notLoadedIds);
             users.Union(await ExecuteTask(task));
             return users;
+        }
+
+        internal JToken GetJson()
+        {
+            JArray jArray = new JArray();
+            foreach (User user in AllUsers.Where(x => x.Match(UserFilterModel.Default)))
+            {
+                jArray.Add(user.GetJson());
+            }
+            JToken jToken = new JObject{
+                {"timestamp", Users.LastSynchronization },
+                {"users", jArray }
+            };
+            return jToken;
+        }
+
+        internal void LoadFrom(JToken json)
+        {
+            var users = json.Value<JArray>("users").Select(x => User.LoadFrom(x));
+            AllUsers.UnionWith(users);
+            Users.AddAll(users);
+            Users.LastSynchronization = json.Value<DateTime>("timestamp");
+            cumulativeFilter = currentFilter = UserFilterModel.Default;
         }
     }
 }

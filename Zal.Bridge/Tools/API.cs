@@ -20,6 +20,7 @@ namespace Zal.Bridge.Tools
         {
             public const string GET = "Get";
             public const string GET_ALL = "GetAll";
+            public const string GET_MORE = "GetMore";
             public const string ADD = "Add";
             public const string UPDATE = "Update";
             public const string DELETE = "Delete";

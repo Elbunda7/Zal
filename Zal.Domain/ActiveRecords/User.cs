@@ -57,7 +57,6 @@ namespace Zal.Domain.ActiveRecords
                 Groups = (int)filter.Groups,
                 Ranks = (int)filter.Ranks,
                 Roles = (int)filter.Roles,
-                Mode = API.MODE.AND,
                 LastCheck = lastCheck,
                 Count = count
             };
@@ -66,7 +65,7 @@ namespace Zal.Domain.ActiveRecords
             return new ChangedActiveRecords<User>(respond, items);
         }
 
-        public bool Meets(UserFilterModel filter) {
+        public bool Match(UserFilterModel filter) {
             return filter.CanContains(Group, Rank, (ZAL.UserRole)7);//todo role
         }
 
@@ -99,14 +98,13 @@ namespace Zal.Domain.ActiveRecords
 
         public static User Empty => new User(new UserModel());
 
-        public static async Task<AllActiveRecords<User>> GetAll(UserFilterModel filter, bool isAndMode) {
+        public static async Task<AllActiveRecords<User>> GetMore(UserFilterModel extendingFilter) {
             var requestModel = new UserRequestModel() {
-                Groups = (int)filter.Groups,
-                Ranks = (int)filter.Ranks,
-                Roles = (int)filter.Roles,//todo not ready jet
-                Mode = isAndMode ? API.MODE.AND : API.MODE.OR,
+                Groups = (int)extendingFilter.Groups,
+                Ranks = (int)extendingFilter.Ranks,
+                Roles = (int)extendingFilter.Roles,//todo not ready jet
             };
-            var respond = await Gateway.GetAllAsync(requestModel);
+            var respond = await Gateway.GetMoreAsync(requestModel);
             return new AllActiveRecords<User>() {
                 Timestamp = respond.Timestamp,
                 ActiveRecords = respond.GetItems().Select(model => new User(model)),
@@ -242,6 +240,11 @@ namespace Zal.Domain.ActiveRecords
             return Gateway.UpdatePassword(userEmail, oldPass, newPass);
         }*/
 
+        public override int GetHashCode()
+        {
+            return Id;
+        }
+
         public override string ToString() {
             return NickName;
         }
@@ -256,7 +259,7 @@ namespace Zal.Domain.ActiveRecords
             return new User(model);
         }
 
-        internal JToken GetModelJson() {
+        internal JToken GetJson() {
             return JToken.FromObject(Model);
         }
     }

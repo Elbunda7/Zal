@@ -81,7 +81,7 @@ namespace Zal.Domain
         {
             //Documents.Synchronize();
             //Badgets.Synchronize();
-            await Users.SynchronizeUsers();
+            await Users.Synchronize();
             await Actualities.Synchronize();
             await Actions.SynchronizeAllCurrentlyActive();
         }
@@ -100,7 +100,8 @@ namespace Zal.Domain
             try
             {
                 JObject jObject = JObject.Parse(json);
-                Session.LoadFrom(jObject.GetValue("session"));// = JsonConvert.DeserializeObject<Session>(jObject.GetValue("session").ToString());
+                Session.LoadFrom(jObject.GetValue("session"));
+                Users.LoadFrom(jObject.GetValue("users"));
                 Actions.LoadFrom(jObject.GetValue("actions"));
                 Actualities.LoadFrom(jObject.GetValue("actualities"));
             }
@@ -113,8 +114,9 @@ namespace Zal.Domain
         {
             JObject jObject = new JObject {
                 {"session", Session.GetJson() },
+                {"users", Users.GetJson() },
                 {"actions", Actions.GetJson() },
-                {"actualities", Actualities.GetJson() }
+                {"actualities", Actualities.GetJson() },
             };
             return jObject.ToString();
         }
