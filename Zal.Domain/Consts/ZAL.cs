@@ -88,4 +88,17 @@ namespace Zal.Domain.Consts
             Garant, Member, Any
         }
     }
+
+    public static class ZalEnumsExtension
+    {
+        public static string AsString(this ZAL.Group group, bool isPlural = true)
+        {
+            return isPlural ? ZAL.GROUP_NAME_PLURAL[(int)group / 2] : ZAL.GROUP_NAME_SINGULAR[(int)group / 2];
+        }
+
+        public static string AsString(this ZAL.Rank rank)
+        {
+            return ZAL.RANK_NAME[(int)rank / 2];
+        }
+    }
 }

@@ -139,14 +139,14 @@ namespace Zal.Domain.ItemSets
             }
             JToken jToken = new JObject{
                 {"timestamp", Users.LastSynchronization },
-                {"users", jArray }
+                {"items", jArray }
             };
             return jToken;
         }
 
         internal void LoadFrom(JToken json)
         {
-            var users = json.Value<JArray>("users").Select(x => User.LoadFrom(x));
+            var users = json.Value<JArray>("items").Select(x => User.LoadFrom(x));
             AllUsers.UnionWith(users);
             Users.AddAll(users);
             Users.LastSynchronization = json.Value<DateTime>("timestamp");

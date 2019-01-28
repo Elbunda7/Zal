@@ -105,12 +105,16 @@ namespace Zal.Domain.ItemSets
             }
         }
 
-        private void PlaceEachIntoRelevantCollection(IEnumerable<ActionEvent> items) {
+        private void PlaceEachIntoRelevantCollection(IEnumerable<ActionEvent> items, DateTime timestamp)
+        {
             UpcomingActionEvents.AddOrUpdateAll(items.Where(x => x.DateTo >= DateTime.Now));
+            UpcomingActionEvents.LastSynchronization = timestamp;
             var usedYears = items.Where(x => x.DateTo < DateTime.Now).Select(x => x.DateFrom.Year);
-            foreach (int year in usedYears) {
+            foreach (int year in usedYears)
+            {
                 AddToDictionaryIfNeeded(year);
                 ActionEventsDict[year].AddOrUpdateAll(items.Where(x => x.DateTo < DateTime.Now && x.DateFrom.Year == year));
+                ActionEventsDict[year].LastSynchronization = timestamp;
             }
         }
 
@@ -120,29 +124,42 @@ namespace Zal.Domain.ItemSets
             }
         }
 
-        internal JToken GetJson() {
+        internal JToken GetJson()
+        {
             JArray jArray = new JArray();
-            if (ActionEventsDict.ContainsKey(DateTime.Today.Year)) {
-                foreach (ActionEvent a in ActionEventsDict[DateTime.Today.Year]) {
+            if (ActionEventsDict.ContainsKey(DateTime.Today.Year))
+            {
+                foreach (ActionEvent a in ActionEventsDict[DateTime.Today.Year])
+                {
                     jArray.Add(a.GetJson());
                 }
             }
-            foreach (ActionEvent a in UpcomingActionEvents) {
+            foreach (ActionEvent a in UpcomingActionEvents)
+            {
                 jArray.Add(a.GetJson());
             }
-            return jArray;
+            JToken jToken = new JObject{
+                {"timestamp", UpcomingActionEvents.LastSynchronization },
+                {"items", jArray }
+            };
+            return jToken;
         }
 
-        internal void LoadFrom(JToken json) {
-            var actions = json.Select(x => ActionEvent.LoadFrom(x));
-            if (actions.Count() >= 1) {
-                PlaceEachIntoRelevantCollection(actions);
+        internal void LoadFrom(JToken json)
+        {
+            var actions = json.Value<JArray>("items").Select(x => ActionEvent.LoadFrom(x));
+            var timestamp = json.Value<DateTime>("timestamp");
+            if (actions.Count() >= 1)
+            {
+                PlaceEachIntoRelevantCollection(actions, timestamp);
             }
         }
 
-        public async Task<bool> DeleteAsync(ActionEvent akce) {
+        public async Task<bool> DeleteAsync(ActionEvent akce)
+        {
             bool isDeleted = await akce.DeleteAsync();
-            if (isDeleted) {
+            if (isDeleted)
+            {
                 ActionEventsDict[akce.DateFrom.Year].Remove(akce);
                 UpcomingActionEvents.Remove(akce);
             }

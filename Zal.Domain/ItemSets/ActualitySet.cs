@@ -99,13 +99,18 @@ namespace Zal.Domain.ItemSets
         {
             var toStore = Data.Take(10).Select(x => x.GetJson());
             JArray jArray = new JArray(toStore);
-            return jArray;
+            JToken jToken = new JObject{
+                {"timestamp", Data.LastSynchronization },
+                {"items", jArray }
+            };
+            return jToken;
         }
 
         internal void LoadFrom(JToken json)
         {
-            var actualities = json.Select(x => Article.LoadFrom(x));
+            var actualities = json.Value<JArray>("items").Select(x => Article.LoadFrom(x));
             Data.AddAll(actualities);
+            Data.LastSynchronization = json.Value<DateTime>("timestamp");
         }
     }
 }

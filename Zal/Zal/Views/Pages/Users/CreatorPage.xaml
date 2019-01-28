@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Zal.Elements"
              x:Class="Zal.Views.Pages.Users.CreatorPage">
     <ContentPage.Content>
 
@@ -9,15 +10,33 @@
       Orientation="Vertical"
       HorizontalOptions="FillAndExpand">
 
+            <Grid>
+                <Picker
+                    Margin="5"
+                    x:Name="GroupPicker"
+                    Title="Zvolte družinu"/>
+                <local:TintImage
+                    Margin="5,2"
+                    HorizontalOptions="End"
+                    TintColor="{StaticResource Accent}"
+                    Source="baseline_keyboard_arrow_down_black_24">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Arrow_OnTapped" />
+                    </Image.GestureRecognizers>
+                </local:TintImage>
+            </Grid>
+
             <Label Text="Jméno"/>
-            <Entry x:Name="NameEntry"/>
+            <Entry x:Name="NameEntry" PropertyChanged="Entry_OnPropertyChanged"/>
+            
             <Label Text="Příjmení"/>
-            <Entry x:Name="SurnameEntry"/>
+            <Entry x:Name="SurnameEntry" PropertyChanged="Entry_OnPropertyChanged"/>
 
             <Button
-        x:Name="AddButton"
-        Text="Přidat"
-        Clicked="AddButton_Clicked"/>
+                x:Name="AddButton"
+                Text="Přidat"
+                IsEnabled="False"
+                Clicked="AddButton_Clicked"/>
 
 
         </StackLayout>
