@@ -19,6 +19,8 @@ namespace Zal.Bridge.Models
         public DateTime? BirthDate { get; set; }
         public int Id_Rank { get; set; }
         public int Id_Group { get; set; }
+        public bool IsBoy { get; set; }
+
         //public int Body { get; set; }
         //public bool Pres_facebook { get; set; }
         //public bool Zaplatil_prispevek { get; set; }

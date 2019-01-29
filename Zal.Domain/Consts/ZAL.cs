@@ -100,5 +100,21 @@ namespace Zal.Domain.Consts
         {
             return ZAL.RANK_NAME[(int)rank / 2];
         }
+
+        public static string GetColorCode(this ZAL.Group group)
+        {
+            switch (group)
+            {
+                case ZAL.Group.Non: return "#000000";
+                case ZAL.Group.Casual:return "#757575";
+                case ZAL.Group.Lisky:return "#9dcacd";
+                case ZAL.Group.Bobri:return "#ffec00";
+                case ZAL.Group.Jesterky:return "#e30016";
+                case ZAL.Group.Svisti:return "#83c326";
+                case ZAL.Group.Veverky:return "#0191db";
+                case ZAL.Group.Trosky:return "#FFDEAD";
+                default:return "#000000";
+            }
+        }
     }
 }

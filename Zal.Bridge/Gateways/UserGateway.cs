@@ -24,7 +24,7 @@ namespace Zal.Bridge
             return respond ?? new FullChangesRespondModel<UserModel>();
         }
 
-        public async Task<bool> AddAsync(UserModel model, string token) {//nastaví správně id u modelu?
+        public async Task<bool> AddAsync(UserModel model, string token) {
             model.Id = await SendRequestFor<int>(API.METHOD.ADD, model, token);
             return model.Id != -1;
         }
@@ -55,9 +55,9 @@ namespace Zal.Bridge
             throw new NotImplementedException();
         }
 
-        public Task<bool> UploadProfileImage(ImageUploadModel model, byte[] rawImage, string token)
+        public Task<string> UploadProfileImage(ImageUploadModel model, byte[] rawImage, string token)
         {
-            return SendImageUploadRequestFor<bool>(API.METHOD.UPLOAD_IMAGE, rawImage, model, token);
+            return SendImageUploadRequestFor<string>(API.METHOD.UPLOAD_IMAGE, rawImage, model, token);
         }
 
 

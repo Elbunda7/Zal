@@ -27,10 +27,13 @@ namespace Zal.Domain.ActiveRecords
         public string NickName => Model.NickName;
         public string Name => Model.Name;
         public string Surname => Model.Surname;
+        public bool IsBoy => Model.IsBoy;
         public string Phone => Model.Phone;
         public string Image => Model.Image?? "";
+        public UserImageInfo ImageInfo => new UserImageInfo { ImageName = Model.Image, IsBoy = Model.IsBoy };
         public ZAL.Rank Rank => (ZAL.Rank)Model.Id_Rank;
         public ZAL.Group Group => (ZAL.Group)Model.Id_Group;
+        public string GroupColor => Group.GetColorCode();
         public string RankAsString => ZAL.RANK_NAME[Model.Id_Rank];
         public string GroupAsString => ZAL.GROUP_NAME_SINGULAR[Model.Id_Group];
         public DateTime? DateOfBirth => Model.BirthDate;
@@ -131,13 +134,14 @@ namespace Zal.Domain.ActiveRecords
             return wasAdded;
         }
 
-        public Task<bool> UploadProfileImage(byte[] rawImage)
+        public async Task<bool> UploadProfileImage(byte[] rawImage)
         {
             var model = new ImageUploadModel
             {
                 Id = Id,
             };
-            return Gateway.UploadProfileImage(model, rawImage, Zalesak.Session.Token);
+            Model.Image = await Gateway.UploadProfileImage(model, rawImage, Zalesak.Session.Token);
+            return string.IsNullOrEmpty(Model.Image);
         }
 
         public void BecomeMember(DateTime dateOfBirthDay, int group, string prezdivka = null) {
