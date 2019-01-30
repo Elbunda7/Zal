@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:ZalXamarin.Elements"
+             xmlns:plugin="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin"
              x:Class="Zal.Views.Pages.Users.ProfilePage">
     <ContentPage.Content>
 
-        <AbsoluteLayout>
+        <AbsoluteLayout>            
 
             <StackLayout
                 AbsoluteLayout.LayoutBounds="0,0,1,1"  
@@ -14,8 +14,74 @@
                 Orientation="Vertical"
                 HorizontalOptions="FillAndExpand">
 
-                <local:ProfileHeaderLayout Name="{Binding NickName}"
-                                         Age="{Binding Age}"/>
+                <StackLayout
+                    HeightRequest="150"
+                    BackgroundColor="{StaticResource Primary}"
+                    HorizontalOptions="Fill"
+                    Orientation="Horizontal">
+
+                    <AbsoluteLayout
+                        HeightRequest="144"
+                        WidthRequest="144"
+                        Margin="35,0,-15,0">
+
+                        <plugin:CircleImage 
+                            x:Name="mainImg" 
+                            Source="{Binding Path=ImageInfo, Converter={StaticResource imageSourceConverter}, ConverterParameter={x:Static NamedSize.Medium}}" 
+                            BorderThickness="3"             
+                            HeightRequest="120"
+                            WidthRequest="120"                            
+                            BorderColor="{StaticResource PrimaryExtraDark}">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Tapped="ProfileImage_Tapped"
+                                    NumberOfTapsRequired="1" />
+                            </Image.GestureRecognizers>
+                        </plugin:CircleImage>
+
+                            <plugin:CircleImage
+                            x:Name="rankImg"
+                            Source="{Binding Path=Rank, Converter={StaticResource rankToImgConverter}}"
+                            BorderColor="{StaticResource DarkBrown}"
+                            FillColor="{StaticResource LightYellow}"
+                            BorderThickness="2"
+                            AbsoluteLayout.LayoutBounds="1.02, 0.48, 40, 40"
+                            AbsoluteLayout.LayoutFlags="PositionProportional"/>
+
+                        <plugin:CircleImage
+                            x:Name="groupImg"
+                            Source="profile_girl.png"
+                            BorderColor="{StaticResource Accent}"
+                            BorderThickness="2"
+                            AbsoluteLayout.LayoutBounds="0.75, 0.85, 40, 40"
+                            AbsoluteLayout.LayoutFlags="PositionProportional"/>
+
+                    </AbsoluteLayout>
+
+                    <StackLayout
+                        Orientation="Vertical"
+                        HorizontalOptions="FillAndExpand">
+
+                        <Label 
+                            x:Name="nameLabel"
+                            Text="{Binding NickName}"
+                            LineBreakMode="TailTruncation"
+                            TextColor="{StaticResource LightTextColor}"
+                            FontSize="24"
+                            HorizontalOptions="Center"/>
+
+                        <Label 
+                            x:Name="ageLabel"
+                            Text="{Binding Age}"
+                            TextColor="{StaticResource LightTextColor}"
+                            FontSize="16"
+                            HorizontalOptions="Center"/>
+
+                    </StackLayout>
+
+                </StackLayout>
+                
+                
 
                 <ScrollView 
                     Padding="16"                    
@@ -59,6 +125,22 @@
             </Frame>
 
 
+
+            <ContentView x:Name="popupWindow" BackgroundColor="#C0808080" Padding="10, 0" IsVisible="false" AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All">
+                <ContentView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="BackFromPopup_Tapped" NumberOfTapsRequired="1"/>
+                </ContentView.GestureRecognizers>
+
+                <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                    <Image x:Name="imageDetail"/>
+
+                    <StackLayout Orientation="Vertical" HeightRequest="150" WidthRequest="200" BackgroundColor="White">
+                        <ActivityIndicator x:Name="activityIndicator" Margin="0,50,0,0" VerticalOptions="Center" HorizontalOptions="Center" Color="Black" WidthRequest="30" HeightRequest="30" />
+                        <Label TextColor="Black" VerticalOptions="Center" HorizontalOptions="Center" VerticalTextAlignment="Center" Text="Loading..."/>
+                    </StackLayout>
+
+                </StackLayout>
+            </ContentView>
 
         </AbsoluteLayout>
 

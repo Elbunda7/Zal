@@ -47,14 +47,10 @@ namespace Zal.Views
 
         private void OnUserStateChanged(Session session)
         {
-
             if (session.IsUserLogged)
             {
                 ImageSource imageSource = ImageSourceHelper.UserImg(session.CurrentUser.ImageInfo, NamedSize.Medium);
-
-            //ImageSource imageSource2 = ImageSourceHelper.UserImg("session", NamedSize.Medium);
                 NameLabel.Text = session.CurrentUser.NickName;
-                //ProfileImage.Source = "profile_girl.png";
                 ProfileImage.Source = imageSource;
                 LoginButton.Text = "Odhlásit se";
             }

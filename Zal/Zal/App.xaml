@@ -1,18 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Application xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Zal.Services"
              x:Class="Zal.App">
     <Application.Resources>
         <ResourceDictionary>
 
             <Color x:Key="Primary">#2E7D32</Color>
             <Color x:Key="PrimaryDark">#1B5E20</Color>
+            <Color x:Key="PrimaryExtraDark">#174f1b</Color>
             <Color x:Key="Accent">#FFB300</Color>
             <Color x:Key="LightBackgroundColor">#E8F5E9</Color>
             <Color x:Key="GrayBackgroundColor">#C0C0C0</Color>
             <Color x:Key="DarkGrayColor">#292929</Color>
             <Color x:Key="LightTextColor">#FFFFFF</Color>
             <Color x:Key="GrayMenuActiveColor">#E0E0E0</Color>
+            <Color x:Key="LightYellow">#f9f68f</Color>
+            <Color x:Key="DarkBrown">#422300</Color>
+
 
             <Style TargetType="NavigationPage">
                 <Setter Property="BarBackgroundColor" Value="{StaticResource Primary}" />
@@ -20,6 +25,9 @@
                 <Setter Property="BarTextColor" Value="White" />
                 <Setter Property="Tint" Value="{StaticResource Accent}"/>
             </Style>
+
+            <local:ImageSourceConverter x:Key="imageSourceConverter" />
+            <local:RankToImgConverter x:Key="rankToImgConverter"/>
 
         </ResourceDictionary>
     </Application.Resources>

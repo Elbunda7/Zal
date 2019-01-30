@@ -72,5 +72,33 @@ namespace Zal.Views.Pages.Users
                 mediaFile.Dispose();
             }
         }
+
+        private void ProfileImage_Tapped(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(currentUser.Image))
+            {
+                EditButton_Clicked(this, null);
+            }
+            else
+            {
+                popupWindow.IsVisible = true;
+                imageDetail.Source = ImageSourceHelper.UserImg(currentUser.ImageInfo, NamedSize.Large);
+            }
+        }
+
+        private void BackFromPopup_Tapped(object sender, EventArgs e)
+        {
+            popupWindow.IsVisible = false;
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            if (popupWindow.IsVisible)
+            {
+                popupWindow.IsVisible = false;
+                return true;
+            }
+            return base.OnBackButtonPressed();
+        }
     }
 }

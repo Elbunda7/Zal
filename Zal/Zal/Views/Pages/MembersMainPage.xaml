@@ -2,14 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:plugin="clr-namespace:ImageCircle.Forms.Plugin.Abstractions;assembly=ImageCircle.Forms.Plugin"
-             x:Class="Zal.Views.Pages.MembersMainPage"
-             xmlns:y="clr-namespace:Zal.Services">
-
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <y:ImageSourceConverter x:Key="imageSourceConverter" />
-        </ResourceDictionary>
-    </ContentPage.Resources>
+             x:Class="Zal.Views.Pages.MembersMainPage">
 
     <ListView x:Name="MyListView" 
           ItemsSource="{Binding Items}"
@@ -19,16 +12,21 @@
         <ListView.ItemTemplate>
             <DataTemplate>
                 <ViewCell>
-                    <StackLayout Orientation="Horizontal" Margin="15, 5" >
+                    <StackLayout Orientation="Horizontal" Margin="15, 6" >
 
                         <plugin:CircleImage 
-                            Source="{Binding Path=ImageInfo, Converter={StaticResource imageSourceConverter}, ConverterParameter={x:Static NamedSize.Small}}}" 
-                            BorderColor="{Binding Path=GroupColor}" BorderThickness="2"/>
+                            Source="{Binding Path=ImageInfo, Converter={StaticResource imageSourceConverter}, ConverterParameter={x:Static NamedSize.Small}}" 
+                            BorderColor="{Binding Path=GroupColor}" BorderThickness="1.5"/>
 
                         <Label Text="{Binding NickName}"
                                FontSize="Medium"
+                               TextColor="Black"
+                               Opacity="0.87"
                                Margin="10,0,0,0"
                                VerticalTextAlignment="Center"/>
+
+                        <Image Source="{Binding Path=Rank, Converter={StaticResource rankToImgConverter}}" HeightRequest="30" WidthRequest="30"/>
+                        
                     </StackLayout>
                 </ViewCell>
             </DataTemplate>
