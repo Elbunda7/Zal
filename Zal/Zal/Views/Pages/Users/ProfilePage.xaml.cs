@@ -67,9 +67,12 @@ namespace Zal.Views.Pages.Users
             if (await HavePermission.For(Permission.Storage))
             {
                 var mediaFile = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions() { CompressionQuality = 90, });
-                byte[] rawImage = File.ReadAllBytes(mediaFile.Path);
-                var isSuccess = await currentUser.UploadProfileImage(rawImage);
-                mediaFile.Dispose();
+                if (mediaFile != null)
+                {
+                    byte[] rawImage = File.ReadAllBytes(mediaFile.Path);
+                    var isSuccess = await currentUser.UploadProfileImage(rawImage);
+                    mediaFile.Dispose();
+                }
             }
         }
 

@@ -28,4 +28,29 @@ namespace Zal.Services
             throw new NotImplementedException();
         }
     }
+
+    public class GroupToImgConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is ZAL.Group)
+            {
+                switch ((ZAL.Group)value)
+                {
+                    case ZAL.Group.Lisky: return "";
+                    case ZAL.Group.Bobri: return "bobr_40dp.png";
+                    case ZAL.Group.Jesterky: return "jesterka_40dp.png";
+                    case ZAL.Group.Svisti: return "svist_40dp.png";
+                    case ZAL.Group.Veverky: return "veverka_40dp.png";
+                    case ZAL.Group.Trosky: return "trosky_40dp.png";
+                }
+            }
+            return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

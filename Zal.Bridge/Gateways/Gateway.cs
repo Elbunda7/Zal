@@ -13,6 +13,12 @@ namespace Zal.Bridge
             JsonFormator = new JsonFormator(ApiEndpoint);
         }
 
+        protected Task<string> SendImageUploadRequestFor(string apiMethod, byte[] rawImage, object content = null, string userToken = null)
+        {
+            return SendRequest(apiMethod, content, userToken, rawImage);
+        }
+
+        [Obsolete]
         protected async Task<T> SendImageUploadRequestFor<T>(string apiMethod, byte[] rawImage, object content = null, string userToken = null)
         {
             string respond = await SendRequest(apiMethod, content, userToken, rawImage);

@@ -44,15 +44,15 @@
                             Source="{Binding Path=Rank, Converter={StaticResource rankToImgConverter}}"
                             BorderColor="{StaticResource DarkBrown}"
                             FillColor="{StaticResource LightYellow}"
-                            BorderThickness="2"
+                            BorderThickness="1.5"
                             AbsoluteLayout.LayoutBounds="1.02, 0.48, 40, 40"
                             AbsoluteLayout.LayoutFlags="PositionProportional"/>
 
                         <plugin:CircleImage
                             x:Name="groupImg"
-                            Source="profile_girl.png"
-                            BorderColor="{StaticResource Accent}"
-                            BorderThickness="2"
+                            Source="{Binding Path=Group, Converter={StaticResource groupToImgConverter}}"
+                            BorderColor="{StaticResource DarkBrown}"
+                            BorderThickness="1.5"
                             AbsoluteLayout.LayoutBounds="0.75, 0.85, 40, 40"
                             AbsoluteLayout.LayoutFlags="PositionProportional"/>
 

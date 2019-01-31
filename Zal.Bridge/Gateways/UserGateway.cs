@@ -57,7 +57,7 @@ namespace Zal.Bridge
 
         public Task<string> UploadProfileImage(ImageUploadModel model, byte[] rawImage, string token)
         {
-            return SendImageUploadRequestFor<string>(API.METHOD.UPLOAD_IMAGE, rawImage, model, token);
+            return SendImageUploadRequestFor(API.METHOD.UPLOAD_IMAGE, rawImage, model, token);
         }
 
 
