@@ -14,6 +14,7 @@ using Xamarin.Forms.Xaml;
 using Zal.Domain;
 using Zal.Domain.ActiveRecords;
 using Zal.Services;
+using Zal.Views.Pages.Users.ProfileElements;
 
 namespace Zal.Views.Pages.Users
 {
@@ -36,6 +37,7 @@ namespace Zal.Views.Pages.Users
 
         private void InitProfileProperties()
         {
+            if (!currentUser.HasConfirmedEmail) profileElements.Children.Add(new ConfirmEmail());
             //PropLayout.Children.Add(new PropertyBadges());
             //PropLayout.Children.Add(new PropertyPoints());
             SetOnClickEvents();
@@ -43,14 +45,15 @@ namespace Zal.Views.Pages.Users
 
         private void SetOnClickEvents()
         {
-            //foreach (ProfilePropertyFrame profileProperty in PropLayout.Children)
-            //{
-            //    profileProperty.OnClick += Property_Clicked;
-            //}
+            foreach (ProfileElement element in profileElements.Children)
+            {
+                element.OnClick += Property_Clicked;
+            }
         }
 
-        private void Property_Clicked(object sender, EventArgs e)
+        private async void Property_Clicked(object sender, EventArgs e)
         {
+            await DisplayAlert("Click", "", "Ok");
             //Navigation.PushAsync(new EmptyPage());
         }
 

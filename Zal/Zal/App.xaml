@@ -28,6 +28,7 @@
 
             <local:ImageSourceConverter x:Key="imageSourceConverter" />
             <local:RankToImgConverter x:Key="rankToImgConverter"/>
+            <local:RankToBoolConverter x:Key="rankToBoolConverter"/>
             <local:GroupToImgConverter x:Key="groupToImgConverter"/>
 
         </ResourceDictionary>

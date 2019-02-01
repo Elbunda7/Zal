@@ -17,6 +17,7 @@ namespace Zal.Domain.Models
         public DateTime? BirthDate { get; set; }
         public ZAL.Rank Id_Rank { get; set; }
         public ZAL.Group Id_Group { get; set; }
+        public bool IsBoy { get; set; }
         //public bool Zaplatil_prispevek { get; set; }
         //public string Role { get; set; }
 
@@ -28,7 +29,8 @@ namespace Zal.Domain.Models
             Phone = model.Phone;
             BirthDate = model.BirthDate;
             Id_Rank = (ZAL.Rank)model.Id_Rank;
-            Id_Group = (ZAL.Group)model.Id_Group;        
+            Id_Group = (ZAL.Group)model.Id_Group;
+            IsBoy = model.IsBoy;
         }
 
         public void CopyInto(IModel apiModel) {
@@ -40,6 +42,7 @@ namespace Zal.Domain.Models
             model.BirthDate = BirthDate;
             model.Id_Rank = (int)Id_Rank;
             model.Id_Group = (int)Id_Group;
+            model.IsBoy = IsBoy;
         }
     }
 }

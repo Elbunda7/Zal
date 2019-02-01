@@ -38,7 +38,7 @@ namespace Zal.Views.Pages.Users
             }
             else
             {
-                await DisplayAlert("Regisrace", "Regisrace se nezdařila", "Ok");
+                await DisplayAlert("Registrace", "Registrace se nezdařila", "Ok");
             }
             Analytics.TrackEvent("RegisterPage_Registration", new Dictionary<string, string>() { { "isSuccess", isRegistered.ToString() } });
         }

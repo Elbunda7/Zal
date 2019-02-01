@@ -12,7 +12,6 @@ using Zal.Domain.Consts;
 using Newtonsoft.Json;
 using Zal.Domain.Tools;
 using Zal.Domain.Models;
-using Zal.Bridge.Tools;
 
 namespace Zal.Domain.ActiveRecords
 {
@@ -38,6 +37,7 @@ namespace Zal.Domain.ActiveRecords
         public string GroupAsString => ZAL.GROUP_NAME_SINGULAR[Model.Id_Group];
         public DateTime? DateOfBirth => Model.BirthDate;
         public int Age => Model.BirthDate.HasValue ? DateTime.Now.Year - Model.BirthDate.Value.Year : -1;
+        public bool HasConfirmedEmail => Model.IsEmailConfirmed;
         //public string Role { get { return model.Role; } }
         //public int Points { get { return model.Body; } }//todo
 

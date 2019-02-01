@@ -29,6 +29,28 @@ namespace Zal.Services
         }
     }
 
+    public class RankToBoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is ZAL.Rank)
+            {
+                switch ((ZAL.Rank)value)
+                {
+                    case ZAL.Rank.Kadet:
+                    case ZAL.Rank.Podradce:
+                    case ZAL.Rank.Radce: return true;
+                }
+            }
+            return false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class GroupToImgConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

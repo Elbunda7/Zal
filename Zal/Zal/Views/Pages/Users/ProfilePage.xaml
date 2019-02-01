@@ -39,20 +39,19 @@
                             </Image.GestureRecognizers>
                         </plugin:CircleImage>
 
-                            <plugin:CircleImage
+                        <plugin:CircleImage
                             x:Name="rankImg"
                             Source="{Binding Path=Rank, Converter={StaticResource rankToImgConverter}}"
+                            IsVisible="{Binding Path=Rank, Converter={StaticResource rankToBoolConverter}}"
                             BorderColor="{StaticResource DarkBrown}"
                             FillColor="{StaticResource LightYellow}"
                             BorderThickness="1.5"
                             AbsoluteLayout.LayoutBounds="1.02, 0.48, 40, 40"
                             AbsoluteLayout.LayoutFlags="PositionProportional"/>
 
-                        <plugin:CircleImage
+                        <Image
                             x:Name="groupImg"
                             Source="{Binding Path=Group, Converter={StaticResource groupToImgConverter}}"
-                            BorderColor="{StaticResource DarkBrown}"
-                            BorderThickness="1.5"
                             AbsoluteLayout.LayoutBounds="0.75, 0.85, 40, 40"
                             AbsoluteLayout.LayoutFlags="PositionProportional"/>
 
@@ -90,7 +89,7 @@
                     VerticalOptions="FillAndExpand">
 
                     <StackLayout
-                        x:Name="PropLayout"
+                        x:Name="profileElements"
                         Spacing="10"
                         HorizontalOptions="FillAndExpand"
                         VerticalOptions="FillAndExpand"/>
