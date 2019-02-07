@@ -13,7 +13,9 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Domain;
 using Zal.Domain.ActiveRecords;
+using Zal.Domain.Consts;
 using Zal.Services;
+using Zal.Views.Pages.Users.ProfileElementPages;
 using Zal.Views.Pages.Users.ProfileElements;
 
 namespace Zal.Views.Pages.Users
@@ -37,7 +39,12 @@ namespace Zal.Views.Pages.Users
 
         private void InitProfileProperties()
         {
-            if (!currentUser.HasConfirmedEmail) profileElements.Children.Add(new ConfirmEmail());
+            if (!currentUser.Attribs.HasFlag(ZAL.UserAttribs.ConfirmedEmail)) profileElements.Children.Add(new ConfirmEmail());
+            else if (currentUser.Attribs.HasFlag(ZAL.UserAttribs.RegCompWaiting))
+            {
+                profileElements.Children.Add(new LabelElement("Dokončení registrace čeká na vyřízení"));
+            }
+            else if (!currentUser.Attribs.HasFlag(ZAL.UserAttribs.RegCompleted)) profileElements.Children.Add(new CompleteRegistration());
             //PropLayout.Children.Add(new PropertyBadges());
             //PropLayout.Children.Add(new PropertyPoints());
             SetOnClickEvents();
@@ -53,7 +60,8 @@ namespace Zal.Views.Pages.Users
 
         private async void Property_Clicked(object sender, EventArgs e)
         {
-            await DisplayAlert("Click", "", "Ok");
+            if (sender is CompleteRegistration) await Navigation.PushAsync(new CompleteRegistrationPage(currentUser));
+            else await DisplayAlert("Click", "", "Ok");
             //Navigation.PushAsync(new EmptyPage());
         }
 

@@ -71,6 +71,11 @@ namespace Zal.Domain.ActiveRecords
             return isRegistered;
         }
 
+        public async Task BecomeMember(string phone, DateTime birth, bool isBoy)
+        {
+            CurrentUser = await CurrentUser.BecomeMember(phone, birth, isBoy);
+        }
+
         public async Task<bool> TryLoginWithTokenAsync() {
             bool isLogged = StayLogged && CurrentUser != null;
             if (isLogged) {

@@ -7,14 +7,14 @@ namespace Zal.Domain.Models
     {
         public ZAL.Group Groups { get; set; }
         public ZAL.Rank Ranks { get; set; }
-        public ZAL.UserRole Roles { get; set; }
+        public ZAL.UserAttribs Attribs { get; set; }
 
         public static UserFilterModel Default {
             get {
                 return new UserFilterModel() {
                     Groups = ZAL.Group.AllClub,
                     Ranks = ZAL.Rank.All,
-                    Roles = ZAL.UserRole.All,
+                    Attribs = ZAL.UserAttribs.All,
                 };
             }
         }
@@ -23,16 +23,16 @@ namespace Zal.Domain.Models
             Clear();
         }
 
-        public void Set(ZAL.Group groups, ZAL.Rank ranks, ZAL.UserRole roles) {
+        public void Set(ZAL.Group groups, ZAL.Rank ranks, ZAL.UserAttribs attribs) {
             Groups = groups;
             Ranks = ranks;
-            Roles = roles;
+            Attribs = attribs;
         }
 
         internal void Clear() {
             Groups = 0;
             Ranks = 0;
-            Roles = 0;
+            Attribs = 0;
         }
 
         public static bool operator ==(UserFilterModel a, UserFilterModel b)
@@ -40,7 +40,7 @@ namespace Zal.Domain.Models
             bool value = true;
             value &= a.Groups == b.Groups;
             value &= a.Ranks == b.Ranks;
-            value &= a.Roles == b.Roles;
+            value &= a.Attribs == b.Attribs;
             return value;
         }
 
@@ -49,7 +49,7 @@ namespace Zal.Domain.Models
             bool value = false;
             value |= a.Groups != b.Groups;
             value |= a.Ranks != b.Ranks;
-            value |= a.Roles != b.Roles;
+            value |= a.Attribs != b.Attribs;
             return value;
         }
 
@@ -58,7 +58,7 @@ namespace Zal.Domain.Models
             bool value = false;
             value |= (Groups & ~filter.Groups) != 0;
             value |= (Ranks & ~filter.Ranks) != 0;
-            value |= (Roles & ~filter.Roles) != 0;
+            value |= (Attribs & ~filter.Attribs) != 0;
             return value;
         }
 
@@ -66,21 +66,21 @@ namespace Zal.Domain.Models
             return new UserFilterModel() {
                 Groups = ~Groups & filter.Groups,
                 Ranks = ~Ranks & filter.Ranks,
-                Roles = ~Roles & filter.Roles,
+                Attribs = ~Attribs & filter.Attribs,
             };
         }
 
         internal void CombineWith(UserFilterModel filter) {
             Groups |= filter.Groups;
             Ranks |= filter.Ranks;
-            Roles |= filter.Roles;
+            Attribs |= filter.Attribs;
         }
 
-        internal bool CanContains(ZAL.Group group, ZAL.Rank rank, ZAL.UserRole roles) {
+        internal bool CanContains(ZAL.Group group, ZAL.Rank rank, ZAL.UserAttribs attribs) {
             bool value = true;
             value &= (Groups & group) != 0;
             value &= (Ranks & rank) != 0;
-            value &= (Roles & roles) != 0;
+            value &= (Attribs & attribs) != 0;
             return value;
         }
     }

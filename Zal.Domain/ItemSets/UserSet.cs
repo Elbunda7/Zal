@@ -90,7 +90,7 @@ namespace Zal.Domain.ItemSets
         //    return users;
         //}
 
-        public async Task AddNewUser(string name, string surname, int group, string nickname = null, string phone = null, string email = null, DateTime? birthDate = null) {
+        public async Task AddNewUser(string name, string surname, ZAL.Group group, string nickname = null, string phone = null, string email = null, DateTime? birthDate = null) {
             //UserPermision.HasRank(Zal.Session.CurrentUser, ZAL.Rank.Vedouci);
             var task = User.AddNewUser(name, surname, group, nickname, phone, email, birthDate);
             Users.Add(await ExecuteTask(task));
@@ -129,6 +129,10 @@ namespace Zal.Domain.ItemSets
             users.Union(await ExecuteTask(task));
             return users;
         }
+
+        internal void RemoveLocal(int id) => AllUsers.RemoveWhere(x => x.Id == id);
+
+        internal void AddLocal(User user) => AllUsers.Add(user);
 
         internal JToken GetJson()
         {

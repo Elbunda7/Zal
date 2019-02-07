@@ -39,8 +39,8 @@ namespace Zal.Bridge
 
         //todo bodíky
 
-        public bool BecomeMember(UserModel user) {
-            throw new NotImplementedException();
+        public Task<UserCompleteRegistrationRespondModel> BecomeMember(UserCompleteRegistrationModel model) {
+            return SendRequestFor<UserCompleteRegistrationRespondModel>(API.METHOD.COMPLETE_REGISTRATION, model);
         }
 
         public Task<bool> UpdateAsync(UserModel user, string token) {

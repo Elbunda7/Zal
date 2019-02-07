@@ -37,6 +37,7 @@ namespace Zal.Bridge.Tools
             public const string LOAD_TOP_TEN = "LoadTopTen";
             public const string LOAD_NEXT = "LoadNext";
             public const string UPLOAD_IMAGE = "UploadImage";
+            public const string COMPLETE_REGISTRATION = "CompleteRegistration";
         }
 
         public abstract class MODE

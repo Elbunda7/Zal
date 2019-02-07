@@ -23,14 +23,14 @@ namespace Zal.Views.Pages.Users
             InitializeComponent();
             Title = "Nový člen";
             GroupPicker.ItemsSource = ZAL.GROUP_NAME_SINGULAR;
-            GroupPicker.SelectedIndex = (int)group / 2;
+            GroupPicker.SelectedIndex = group.AsIndex();
         }
 
         private async void AddButton_Clicked(object sender, EventArgs args)
         {
             string name = NameEntry.Text;
             string surname = SurnameEntry.Text;
-            int group = (GroupPicker.SelectedIndex + 1) * 2;
+            var group = GroupPicker.SelectedIndex.AsGroup();
             Analytics.TrackEvent("UserCreator_addUser", new Dictionary<string, string>() { { "toAdd", name + " " + surname } });
             await Zalesak.Users.AddNewUser(name, surname, group);
             await Navigation.PopAsync();

@@ -50,6 +50,17 @@ namespace Zal.Views.Pages
             //dev
         }
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            Synchronize();
+        }
+
+        private async void Synchronize()
+        {
+            await Zalesak.Users.Synchronize();
+        }
+
         private async void FilterOne_ToolbarItemClicked(object sender, EventArgs e)
         {
             await Zalesak.Users.Synchronize();

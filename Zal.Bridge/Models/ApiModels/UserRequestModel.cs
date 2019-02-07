@@ -6,7 +6,7 @@ namespace Zal.Bridge.Models.ApiModels
     {
         public int Groups { get; set; }
         public int Ranks { get; set; }
-        public int Roles { get; set; }
+        public int Attribs { get; set; }
     }
 
     public class UserChangesRequestModel : UserRequestModel, IChangesRequestModel

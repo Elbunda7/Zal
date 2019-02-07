@@ -31,13 +31,16 @@ namespace Zal.Domain.Consts
             CompletlyAll = 255,
         }
 
-        public enum UserRole
+        public enum UserAttribs
         {
             Registered = 1,
-            Parent = 2,
-            Admin = 4,
+            ConfirmedEmail = 2,
+            Parent = 4,
+            Admin = 8,
+            RegCompleted = 16,
+            RegCompWaiting = 32,
 
-            All = 7,
+            All = 63,
         }
 
         public enum Rank
@@ -99,6 +102,19 @@ namespace Zal.Domain.Consts
         public static string AsString(this ZAL.Rank rank)
         {
             return ZAL.RANK_NAME[(int)rank / 2];
+        }
+
+        public static int AsIndex(this ZAL.Group group)
+        {
+            double value = Math.Log((int)group, 2);
+            double index = Math.Floor(value);
+            if (index != value) throw new InvalidOperationException("It has to be just one group!");
+            return (int)index;
+        }
+
+        public static ZAL.Group AsGroup(this int index)
+        {
+            return (ZAL.Group)Math.Pow(2, index);
         }
 
         public static string GetColorCode(this ZAL.Group group)

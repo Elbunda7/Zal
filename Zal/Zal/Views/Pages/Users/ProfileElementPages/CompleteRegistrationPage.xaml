@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ie="clr-namespace:IconEntry.FormsPlugin.Abstractions;assembly=IconEntry.FormsPlugin.Abstractions"
+             x:Class="Zal.Views.Pages.Users.ProfileElementPages.CompleteRegistrationPage"
+             Title="Dokončení registrace">
+    <ContentPage.Content>
+        <StackLayout Padding="10,5">
+
+            <Label Text="Datum narození:"/>
+
+            <DatePicker 
+                  x:Name="datePicker"
+                  VerticalOptions="CenterAndExpand" 
+                  Date="Jan 1 2000">
+                <DatePicker.Format>yyyy-MM-dd</DatePicker.Format>
+            </DatePicker>
+
+            <Label Text="Jsem kluk: (ano/ne)"/>
+
+            <Switch x:Name="genderSwitch"/>
+
+            <ie:IconEntry                             
+                        x:Name="NicknameEntry"
+                        Placeholder="Přezdívka"
+                        Icon="ic_person_black_24dp.png"/>
+
+            <ie:IconEntry                             
+                        x:Name="PhoneEntry"
+                        Placeholder="Telefonní číslo"
+                        Keyboard="Numeric"
+                        Icon="ic_phone_black_24dp.png"/>
+
+            <Button x:Name="ConfirmButton"
+                      BackgroundColor="{StaticResource Accent}"
+                      HorizontalOptions="Center"
+                      Text="Potvrdit"
+                      Clicked="ConfirmButton_Click"
+                      Margin="0,25,0,0"/>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

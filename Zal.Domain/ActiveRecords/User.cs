@@ -29,6 +29,7 @@ namespace Zal.Domain.ActiveRecords
         public bool IsBoy => Model.IsBoy;
         public string Phone => Model.Phone;
         public string Image => Model.Image?? "";
+        public bool IsMember => ZAL.Group.AllClub.HasFlag(Group);//todo isEmpty(api)
         public UserImageInfo ImageInfo => new UserImageInfo { ImageName = Model.Image, IsBoy = Model.IsBoy };
         public ZAL.Rank Rank => (ZAL.Rank)Model.Id_Rank;
         public ZAL.Group Group => (ZAL.Group)Model.Id_Group;
@@ -37,7 +38,7 @@ namespace Zal.Domain.ActiveRecords
         public string GroupAsString => ZAL.GROUP_NAME_SINGULAR[Model.Id_Group];
         public DateTime? DateOfBirth => Model.BirthDate;
         public int Age => Model.BirthDate.HasValue ? DateTime.Now.Year - Model.BirthDate.Value.Year : -1;
-        public bool HasConfirmedEmail => Model.IsEmailConfirmed;
+        public ZAL.UserAttribs Attribs => (ZAL.UserAttribs)Model.Attribs;
         //public string Role { get { return model.Role; } }
         //public int Points { get { return model.Body; } }//todo
 
@@ -59,7 +60,7 @@ namespace Zal.Domain.ActiveRecords
             var requestModel = new UserChangesRequestModel {
                 Groups = (int)filter.Groups,
                 Ranks = (int)filter.Ranks,
-                Roles = (int)filter.Roles,
+                Attribs = (int)filter.Attribs,
                 LastCheck = lastCheck,
                 Count = count
             };
@@ -69,15 +70,15 @@ namespace Zal.Domain.ActiveRecords
         }
 
         public bool Match(UserFilterModel filter) {
-            return filter.CanContains(Group, Rank, (ZAL.UserRole)7);//todo role
+            return filter.CanContains(Group, Rank, (ZAL.UserAttribs)7);//todo role
         }
 
-        internal static async Task<User> AddNewUser(string name, string surname, int group, string nickname = null, string phone = null, string email = null, DateTime? birthDate = null) {
+        internal static async Task<User> AddNewUser(string name, string surname, ZAL.Group group, string nickname = null, string phone = null, string email = null, DateTime? birthDate = null) {
             UserModel model = new UserModel {
                 NickName = nickname ?? $"{name} {surname[0]}.",
                 Name = name,
                 Surname = surname,
-                Id_Group = group,
+                Id_Group = (int)group,
                 BirthDate = birthDate,
                 Email = email,
                 Phone = phone,
@@ -105,7 +106,7 @@ namespace Zal.Domain.ActiveRecords
             var requestModel = new UserRequestModel() {
                 Groups = (int)extendingFilter.Groups,
                 Ranks = (int)extendingFilter.Ranks,
-                Roles = (int)extendingFilter.Roles,//todo not ready jet
+                Attribs = (int)extendingFilter.Attribs,//todo not ready jet
             };
             var respond = await Gateway.GetMoreAsync(requestModel);
             return new AllActiveRecords<User>() {
@@ -144,17 +145,35 @@ namespace Zal.Domain.ActiveRecords
             return string.IsNullOrEmpty(Model.Image);
         }
 
-        public void BecomeMember(DateTime dateOfBirthDay, int group, string prezdivka = null) {
-            //if (model.Role == ZAL.MEMBERSHIP.NECLEN) {
-                Model.BirthDate = dateOfBirthDay;
-            if (prezdivka != null) Model.NickName = prezdivka;
-                //model.Role = ZAL.MEMBERSHIP.CLEN;
-                Model.Id_Group = group;
-                Gateway.BecomeMember(Model);
-            //}
-            //else {
-            //    throw new Exception("user already is a member");
-            //}
+        public async Task<User> BecomeMember(string phone, DateTime birth, bool isBoy, string nickName = "")
+        {
+            var model = new UserCompleteRegistrationModel
+            {
+                Id = Model.Id,
+                Name = Model.Name,
+                Surname = Model.Surname,
+                NickName = string.IsNullOrEmpty(nickName) ? Model.NickName : nickName,
+                Phone = phone,
+                BirthDate = birth,
+                IsBoy = isBoy,
+            };
+            var respond = await Gateway.BecomeMember(model);
+            User user = this;
+            if (respond.RequestOrdered)
+            {
+                Model.NickName = model.NickName;
+                Model.Phone = phone;
+                Model.BirthDate = birth;
+                Model.IsBoy = IsBoy;
+            }
+            else if (respond.SuccesfullyMerged)
+            {
+                Zalesak.Users.RemoveLocal(respond.IdDeleted);
+                Zalesak.Users.RemoveLocal(respond.UserUpdated.Id);
+                user = new User(respond.UserUpdated);
+                Zalesak.Users.AddLocal(user);
+            }
+            return user;
         }
 
         /*rivate void ChangeIsPaid(bool value) {
