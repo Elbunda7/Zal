@@ -30,6 +30,7 @@
             <local:RankToImgConverter x:Key="rankToImgConverter"/>
             <local:RankToBoolConverter x:Key="rankToBoolConverter"/>
             <local:GroupToImgConverter x:Key="groupToImgConverter"/>
+            <local:ArticleTypeToImgConverter x:Key="articleTypeToImgConverter"/>
 
         </ResourceDictionary>
     </Application.Resources>

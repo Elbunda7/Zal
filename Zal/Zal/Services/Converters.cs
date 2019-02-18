@@ -75,4 +75,30 @@ namespace Zal.Services
             throw new NotImplementedException();
         }
     }
+
+    public class ArticleTypeToImgConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is ZAL.ArticleType)
+            {
+                switch ((ZAL.ArticleType)value)
+                {
+                    case ZAL.ArticleType.Article: return "news_80dp.png";
+                    case ZAL.ArticleType.Info: return "infoMap_80dp.png";
+                    case ZAL.ArticleType.Record: return "note_80dp.png";
+                    case ZAL.ArticleType.Link:
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
