@@ -91,7 +91,7 @@ namespace Zal.Domain.ActiveRecords
 
         private async Task<IEnumerable<Badge>> BudgesLazyLoad() {
             if (badges == null) {
-                badges = await Zalesak.Badges.GetAcquired(this) as List<Badge>;
+                badges = (await Zalesak.Badges.GetAcquired(this)).ToList();
             }
             return badges;
         }
