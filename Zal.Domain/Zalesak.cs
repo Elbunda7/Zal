@@ -32,6 +32,7 @@ namespace Zal.Domain
         public static UserSet Users { get; private set; } = new UserSet();
         public static ActualitySet Actualities { get; private set; } = new ActualitySet();
         public static ActionSet Actions { get; private set; } = new ActionSet();
+        public static GallerySet Galleries { get; private set; } = new GallerySet();
 
         [Obsolete]
         public static bool LoginAsGuest()

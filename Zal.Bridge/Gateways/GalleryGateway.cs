@@ -17,9 +17,10 @@ namespace Zal.Bridge.Gateways
             return SendRequestFor<IEnumerable<string>>(API.METHOD.GET, id);
         }
 
-        public Task<IEnumerable<GalleryModel>> GetAllAsync()
+        public async Task<IEnumerable<GalleryModel>> GetAllAsync()
         {
-            return SendRequestFor<IEnumerable<GalleryModel>>(API.METHOD.GET_ALL);
+            var respond = await SendRequestForNullable<IEnumerable<GalleryModel>>(API.METHOD.GET_ALL);
+            return respond ?? new List<GalleryModel>();
         }
 
         public Task<GalleryCreateRespondModel> AddAsync(GalleryModel model, string token)

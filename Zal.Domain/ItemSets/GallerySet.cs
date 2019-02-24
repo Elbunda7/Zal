@@ -28,22 +28,21 @@ namespace Zal.Domain.ItemSets
             }
         }
 
-        internal Task ReSynchronize()
+        public Task ReSynchronize()
         {
             lastCheck = ZAL.DATE_OF_ORIGIN;
             return Synchronize();
         }
 
-        public async Task<bool> Add(string name, int year, DateTime date)
+        public async Task<Gallery> Add(string name, int year, DateTime date)
         {
             var task = Gallery.Add(name, year, date);
             Gallery gallery = await ExecuteTask(task);
-            bool isAdded = gallery != null;
-            if (isAdded)
+            if (gallery != null)
             {
                 Data.Add(gallery);
             }
-            return isAdded;
+            return gallery;
         }
     }
 }

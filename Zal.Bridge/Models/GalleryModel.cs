@@ -10,6 +10,7 @@ namespace Zal.Bridge.Models
         public int Year { get; set; }
         public string Name { get; set; }
         public string File { get; set; }
+        public string MainImg { get; set; }
         public DateTime Date { get; set; }
     }
 }

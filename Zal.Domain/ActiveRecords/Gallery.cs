@@ -20,6 +20,7 @@ namespace Zal.Domain.ActiveRecords
         public int Year => Model.Year;
         public string Name => Model.Name;
         public string File => Model.File;
+        public string MainImg => Model.MainImg;
         public DateTime Date => Model.Date;
 
         private static GalleryGateway gateway;
@@ -33,7 +34,7 @@ namespace Zal.Domain.ActiveRecords
             return Gateway.UpdateAsync(Model, Zalesak.Session.Token);
         }
 
-        private async Task<IEnumerable<string>> ImagesLazyLoad()
+        public async Task<IEnumerable<string>> ImagesLazyLoad()
         {
             if (images == null)
             {

@@ -1,10 +1,5 @@
-﻿using Microsoft.AppCenter.Analytics;
-using Plugin.Media;
-using Plugin.Media.Abstractions;
-using Plugin.Permissions.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,24 +8,28 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Domain;
 using Zal.Domain.ActiveRecords;
-using Zal.Services;
-using Zal.Views.Pages.Galleries;
 
-namespace Zal.Views.Pages
+namespace Zal.Views.Pages.Galleries
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class GaleryMainPage : ContentPage
+	public partial class GalleryPage : ContentPage
 	{
         private int numOfColumns = 3;
         private double itemSize = 0;
         private double pageWidthSize = 0;
+        private Gallery gallery;
 
-		public GaleryMainPage ()
+        public GalleryPage ()
 		{
 			InitializeComponent ();
-            Title = "Galerie";
-            Analytics.TrackEvent("GaleryMainPage");
 		}
+
+        public GalleryPage(Gallery gallery)
+        {
+            InitializeComponent();
+            Title = gallery.Name;
+            this.gallery = gallery;
+        }
 
         protected override void OnAppearing()
         {
@@ -73,7 +72,7 @@ namespace Zal.Views.Pages
             }
         }
 
-        private void InitGrid()
+        private async void InitGrid()
         {
             ContentGrid.RowDefinitions = new RowDefinitionCollection();
             ContentGrid.ColumnDefinitions = new ColumnDefinitionCollection();
@@ -83,15 +82,15 @@ namespace Zal.Views.Pages
                 ContentGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
             }
             int index = 0;
-            int numOfRows = (Zalesak.Galleries.Data.Count + numOfColumns - 1) / numOfColumns;
+            var images = await gallery.ImagesLazyLoad();
+            int numOfRows = (images.Count() + numOfColumns - 1) / numOfColumns;
             for (int j = 0; j < numOfRows; j++)
             {
                 ContentGrid.RowDefinitions.Add(new RowDefinition() { Height = itemSize });
                 for (int i = 0; i < numOfColumns; i++)
                 {
-                    if (index >= Zalesak.Galleries.Data.Count) break;
-                    var gallery = Zalesak.Galleries.Data.ElementAt(index);
-                    string imgPath = "http://zalesak.hlucin.com/" + gallery.File + "small/" + gallery.MainImg;
+                    if (index >= images.Count()) break;
+                    string imgPath = "http://zalesak.hlucin.com/" + gallery.File + "small/" + images.ElementAt(index);
                     Image img = new Image()
                     {
                         Source = imgPath,
@@ -100,36 +99,17 @@ namespace Zal.Views.Pages
                     ContentGrid.Children.Add(img, i, j);
                     var onClick = new TapGestureRecognizer();
                     onClick.Tapped += TapGestureRecognizer_Tapped;
-                    onClick.CommandParameter = gallery;
+                    onClick.CommandParameter = images.ElementAt(index);
                     img.GestureRecognizers.Add(onClick);
                     index++;
                 }
             }
         }
 
-        private async void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
         {
-            Gallery gallery = (e as TappedEventArgs).Parameter as Gallery;
-            await Navigation.PushAsync(new GalleryPage(gallery));
+            string image = (e as TappedEventArgs).Parameter as string;
         }
 
-        private async void Button_Clicked(object sender, EventArgs e)
-        {
-            await CrossMedia.Current.Initialize();
-            if (await HavePermission.For(Permission.Storage))
-            {
-                var mediaFile = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions() { CompressionQuality = 90, });
-                if (mediaFile != null)
-                {
-                    byte[] rawImage = File.ReadAllBytes(mediaFile.Path);
-                    //var gallery = await Zalesak.Galleries.Add(galleryEntry.Text, DateTime.Now.Year, DateTime.Now);
-                    mediaFile.Dispose();
-                }
-
-                var a = await CrossMedia.Current.PickPhotoAsync();
-                var b = ImageSource.FromFile(a.Path);
-                //mainImage.Source = b;
-            }
-        }
     }
 }
