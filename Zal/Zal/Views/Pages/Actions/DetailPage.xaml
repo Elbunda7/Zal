@@ -6,7 +6,7 @@
              Title="{Binding Name}">
     <ContentPage.Content>
 
-        <StackLayout
+        <StackLayout VerticalOptions="FillAndExpand"
             Spacing="0">
 
             <Image 
@@ -70,7 +70,7 @@
                             Grid.Column="1"
                             Grid.Row="1" 
                             Icon="round_close_black_24.png" 
-                            OnClick="NotJoinButton_ClickedAsync"/>
+                            OnClick="DontJoinButton_Clicked"/>
                         
                         <local:ClickableImageLabel 
                             HorizontalOptions="Center"
@@ -95,28 +95,65 @@
 
             </Grid>
 
-            <StackLayout>
+            <StackLayout Padding="20" VerticalOptions="FillAndExpand">
 
+                <StackLayout Orientation="Horizontal">
+                    <Image Source="baseline_terrain_black_24.png"/>
+                    <Label Text="{Binding Type}" Margin="10,0,0,0"
+                    TextColor="{StaticResource DarkGrayColor}" />
+                </StackLayout>
+                
+                <StackLayout Orientation="Horizontal">
+                    <Image Source="ic_event_black_24dp.png"/>
+                    <Label Text="{Binding DateFrom, StringFormat='{0:d. M. yyyy}'}"
+                      Margin="10,0,0,0"
+                      TextColor="{StaticResource DarkGrayColor}" />
+                </StackLayout>
 
-                <Label Text="{Binding Type}" 
-                TextColor="{StaticResource DarkGrayColor}" />
+                <StackLayout Orientation="Horizontal">
+                    <Image Source="baseline_access_time_black_24.png"/>
+                    <Label Text="{Binding Days, StringFormat='{0} dny'}"
+                    Margin="10,0,0,0"
+                    TextColor="{StaticResource DarkGrayColor}" />
+                </StackLayout>
 
-                <Label Text="{Binding DateFrom}"
-                  HorizontalOptions="EndAndExpand"
-                  TextColor="{StaticResource DarkGrayColor}" />
+                <StackLayout Orientation="Horizontal" >
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMembers_Tapped"/>
+                    </StackLayout.GestureRecognizers>
+                    <Image Source="ic_people_black_24dp.png"/>
+                    <Label Text="{Binding MembersCount, StringFormat='{0} členů'}"
+                    Margin="10,0,0,0"
+                    TextColor="{StaticResource DarkGrayColor}" />
+                </StackLayout>
 
                 <Label Text="{Binding Garant}"/>
 
-                <Button
-        x:Name="InfoButton"
-        Text="Informačka"
-            
-        Clicked="InfoButton_ClickedAsync"/>
+                <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand" HorizontalOptions="CenterAndExpand">
+                    <Button
+                        x:Name="InfoButton"
+                        IsVisible="{Binding HasInfo}"
+                        Text="Informačka" Image="infoMap_80dp.png"
+                        BackgroundColor="White"
+                        ContentLayout="Top, 10" HorizontalOptions="Center"
+                        Clicked="InfoButton_ClickedAsync"/>
 
-                <Button
-        x:Name="RecordButton"
-        Text="Zápis z akce"
-        Clicked="RecordButton_ClickedAsync"/>
+                    <Button
+                        x:Name="RecordButton"
+                        IsVisible="{Binding HasGallery}"
+                        Text="Zápis" Image="note_80dp.png"
+                        BackgroundColor="White"
+                        ContentLayout="Top, 10" HorizontalOptions="Center"
+                        Clicked="RecordButton_ClickedAsync"/>
+
+                    <Button
+                        x:Name="GalleryButton"
+                        IsVisible="{Binding HasGallery}"
+                        BackgroundColor="White"
+                        Text="Galerie" Image="gallery_80dp.png"
+                        ContentLayout="Top, 10" HorizontalOptions="Center"
+                        Clicked="GalleryButton_ClickedAsync"/>
+                </StackLayout>
 
             </StackLayout>
         </StackLayout>

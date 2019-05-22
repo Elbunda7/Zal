@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Zal.Domain;
 using Zal.Domain.ActiveRecords;
 using Zal.Domain.Consts;
 
@@ -26,6 +27,7 @@ namespace Zal.Views.Pages.Actions
             this.action = action;
             InitializeComponent();
             BindingContext = action;
+            ParticipateCrossroadView.IsVisible = Zalesak.Session.IsUserLogged;
         }
 
         private async void InfoButton_ClickedAsync(object sender, EventArgs args)
@@ -52,7 +54,7 @@ namespace Zal.Views.Pages.Actions
             }
         }
 
-        private async void NotJoinButton_ClickedAsync()
+        private async void DontJoinButton_Clicked()
         {
             await action.Join(ZAL.Joining.False);
         }
@@ -65,6 +67,16 @@ namespace Zal.Views.Pages.Actions
         private async void JoinButton_ClickedAsync()
         {
             bool isSuccess = await action.Join(ZAL.Joining.True);
+        }
+
+        private async void GalleryButton_ClickedAsync(object sender, EventArgs e)
+        {
+
+        }
+
+        private async void OnMembers_Tapped(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new MembersOnActionPage(action));
         }
     }
 }

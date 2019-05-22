@@ -34,6 +34,7 @@ namespace Zal.Domain.ActiveRecords
         public bool IsOfficial => Model.IsOfficial;//todo přejmenovat nebo přidat IsPublished
         public bool HasInfo => Model.Id_Info.HasValue;
         public bool HasReport => Model.Id_Report.HasValue;
+        public bool HasGallery => Model.Id_Gallery.HasValue;
         public int Days {
             get {
                 TimeSpan ts = Model.Date_end - Model.Date_start;
@@ -49,6 +50,16 @@ namespace Zal.Domain.ActiveRecords
                 }
                 return ZAL.Joining.Unknow;
             }
+        }
+
+        public async Task<UserObservableSortedSet> Members()
+        {
+            UserObservableSortedSet members = new UserObservableSortedSet();
+            foreach (int id in Model.Members)
+            {
+                members.Add(await Zalesak.Users.Get(id));
+            }
+            return members;
         }
 
         //public int Price { get { return Data.Price; } }

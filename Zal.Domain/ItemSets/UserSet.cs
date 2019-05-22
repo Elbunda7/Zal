@@ -110,11 +110,15 @@ namespace Zal.Domain.ItemSets
         //    return User.Empty();
         //}
 
-        internal async Task<User> Get(int id) {
-            //return User.Select(email);
-
-            User a = Users.Single(user => user.Id == id);
-            if (a == null) {
+        internal async Task<User> Get(int id)
+        {
+            User a;
+            if (Users.Any(user => user.Id == id))
+            {
+                a = Users.Single(user => user.Id == id);
+            }
+            else
+            {
                 var task = User.GetAsync(id);
                 a = await ExecuteTask(task);
                 Users.Add(a);

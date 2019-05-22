@@ -27,6 +27,9 @@
     <Compile Update="Views\Pages\ActionMainPage.xaml.cs">
       <DependentUpon>ActionMainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\Pages\Actions\MembersOnActionPage.xaml.cs">
+      <DependentUpon>MembersOnActionPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\Pages\Actions\ActionsListPage.xaml.cs">
       <DependentUpon>ActionsListPage.xaml</DependentUpon>
     </Compile>
@@ -49,6 +52,9 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="ViewModels\ActualityListViewCell.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Pages\Actions\MembersOnActionPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\Pages\Actions\ActionsListPage.xaml">
