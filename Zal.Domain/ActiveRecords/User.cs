@@ -42,6 +42,8 @@ namespace Zal.Domain.ActiveRecords
         //public string Role { get { return model.Role; } }
         //public int Points { get { return model.Body; } }//todo
 
+        public bool IsSelected { get; set; } = false;
+
         //public bool PaidForMembership { get { return model.Zaplatil_prispevek; } }
         //public Collection<Badge> Budges { get { return BudgesLazyLoad(); } private set { budgets = value; } }
 

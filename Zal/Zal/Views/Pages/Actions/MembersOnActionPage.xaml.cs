@@ -9,7 +9,9 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Domain;
 using Zal.Domain.ActiveRecords;
+using Zal.Domain.Consts;
 using Zal.Domain.Models;
+using Zal.ViewModels;
 
 namespace Zal.Views.Pages.Actions
 {
@@ -17,7 +19,7 @@ namespace Zal.Views.Pages.Actions
     public partial class MembersOnActionPage : ContentPage
     {
         private ActionEvent action;
-
+        private List<MembersListModel> groupedMembersList;
 
         public MembersOnActionPage(ActionEvent action) : this()
         {
@@ -31,13 +33,13 @@ namespace Zal.Views.Pages.Actions
             Title = "Členové";
 
             //dev
-            var toolbarFilterOne = new ToolbarItem()
+            var toolbarEditOne = new ToolbarItem()
             {
-                Text = "Oddíloví",
+                Text = "Upravit seznam zúčastněných",
                 Order = ToolbarItemOrder.Secondary
             };
-            toolbarFilterOne.Clicked += FilterOne_ToolbarItemClicked;
-            ToolbarItems.Add(toolbarFilterOne);
+            toolbarEditOne.Clicked += SelectMembers_ToolbarItemClicked;
+            ToolbarItems.Add(toolbarEditOne);
 
             var toolbarFilterTwo = new ToolbarItem()
             {
@@ -57,12 +59,31 @@ namespace Zal.Views.Pages.Actions
 
         private async void Synchronize()
         {
-            MyListView.ItemsSource = await action.Members();
+            var membersTrue = await action.Members();
+            var membersMaybe = await action.Members(ZAL.Joining.Maybe);
+            var membersFalse = await action.Members(ZAL.Joining.False);
+            var leadersTrue = membersTrue.Where(x => x.Rank >= ZAL.Rank.Vedouci);
+            membersTrue = membersTrue.Where(x => x.Rank < ZAL.Rank.Vedouci);
+
+            groupedMembersList = new List<MembersListModel>();
+            if (leadersTrue.Count() > 0) groupedMembersList.Add(new MembersListModel(leadersTrue, "Vedoucí"));
+            if (membersTrue.Count() > 0) groupedMembersList.Add(new MembersListModel(membersTrue, "Členové"));
+            if (membersMaybe.Count() > 0) groupedMembersList.Add(new MembersListModel(membersMaybe, "Možná pojedou"));
+            if (membersFalse.Count() > 0) groupedMembersList.Add(new MembersListModel(membersFalse, "Nepojedou"));
+
+            MyListView.ItemsSource = groupedMembersList;
         }
 
-        private async void FilterOne_ToolbarItemClicked(object sender, EventArgs e)
+        private async void SelectMembers_ToolbarItemClicked(object sender, EventArgs e)
         {
-            await Zalesak.Users.Synchronize();
+            await Navigation.PushAsync(new MembersMainPage(action.RawMembers(), OnSelectionDone));
+        }
+
+        private async void OnSelectionDone(List<int> selected)
+        {
+            var a = UserFilterModel.Default;
+            a.Groups = Domain.Consts.ZAL.Group.CompletlyAll;
+            await Zalesak.Users.Synchronize(a);
         }
 
         private async void FilterTwo_ToolbarItemClicked(object sender, EventArgs e)

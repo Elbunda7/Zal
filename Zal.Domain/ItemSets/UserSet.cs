@@ -96,6 +96,19 @@ namespace Zal.Domain.ItemSets
             Users.Add(await ExecuteTask(task));
         }
 
+        public void SetSelections(List<int> ids)
+        {
+            var selected = AllUsers.Where(x => ids.Contains(x.Id));
+            foreach (User user in AllUsers) user.IsSelected = false;
+            foreach (User user in selected) user.IsSelected = true;
+        }
+
+        public List<int> GetSelections()
+        {
+            return AllUsers.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+        }
+
+
         //public User GetByEmail(string email) {
         //    foreach (User u in Users) {
         //        if (u.Has(CONST.USER.EMAIL, email)) {
@@ -113,15 +126,15 @@ namespace Zal.Domain.ItemSets
         internal async Task<User> Get(int id)
         {
             User a;
-            if (Users.Any(user => user.Id == id))
+            if (AllUsers.Any(user => user.Id == id))
             {
-                a = Users.Single(user => user.Id == id);
+                a = AllUsers.Single(user => user.Id == id);
             }
             else
             {
                 var task = User.GetAsync(id);
                 a = await ExecuteTask(task);
-                Users.Add(a);
+                AllUsers.Add(a);
             }
             return a;
         }

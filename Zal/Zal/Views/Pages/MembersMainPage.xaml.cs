@@ -16,8 +16,36 @@ namespace Zal.Views.Pages
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MembersMainPage : ContentPage
     {
+        private Action<List<int>> OnSelectionDone;
+        public static bool isSelectionModeOn = false;
+
+        public MembersMainPage(List<int> selected, Action<List<int>> actionOnSelection) : this()
+        {
+            isSelectionModeOn = true;
+            Zalesak.Users.SetSelections(selected);
+            OnSelectionDone = actionOnSelection;
+            MyListView.ItemsSource = null;
+            MyListView.ItemsSource = Zalesak.Users.Users;
+
+            var saveToolbarItem = new ToolbarItem()
+            {
+                Text = "Uložit",
+                Order = ToolbarItemOrder.Primary
+            };
+            saveToolbarItem.Clicked += Save_ToolbarItemClicked;
+            ToolbarItems.Add(saveToolbarItem);
+        }
+
+        private async void Save_ToolbarItemClicked(object sender, EventArgs e)
+        {
+            List<int> selected = Zalesak.Users.GetSelections();
+            OnSelectionDone.Invoke(selected);
+            await Navigation.PopAsync();
+        }
+
         public MembersMainPage()
         {
+            isSelectionModeOn = false;
             InitializeComponent();
             Analytics.TrackEvent("MembersMainPage");
             Title = "Členové";

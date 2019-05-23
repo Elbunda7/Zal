@@ -52,12 +52,30 @@ namespace Zal.Domain.ActiveRecords
             }
         }
 
-        public async Task<UserObservableSortedSet> Members()
+        public async Task<IEnumerable<User>> Members(ZAL.Joining isJoining = ZAL.Joining.True)
         {
-            UserObservableSortedSet members = new UserObservableSortedSet();
-            foreach (int id in Model.Members)
+            var members = new List<User>();
+            for (int i = 0; i < Model.Members.Count; i++)
             {
-                members.Add(await Zalesak.Users.Get(id));
+                if (Model.IsJoining[i] == (int)isJoining)
+                {
+                    int id = Model.Members[i];
+                    members.Add(await Zalesak.Users.Get(id));
+                }
+            }
+            return members;
+        }
+
+        public List<int> RawMembers(ZAL.Joining isJoining = ZAL.Joining.True)
+        {
+            var members = new List<int>();
+            for (int i = 0; i < Model.Members.Count; i++)
+            {
+                if (Model.IsJoining[i] == (int)isJoining)
+                {
+                    int id = Model.Members[i];
+                    members.Add(id);
+                }
             }
             return members;
         }

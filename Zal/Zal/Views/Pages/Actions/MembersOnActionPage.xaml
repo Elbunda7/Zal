@@ -5,10 +5,13 @@
              x:Class="Zal.Views.Pages.Actions.MembersOnActionPage">
 
         <ListView x:Name="MyListView" 
-          ItemsSource="{Binding Items}"
-          ItemTapped="Handle_ItemTapped"
-          SeparatorVisibility="None"
-          RowHeight="52">
+            ItemsSource="{Binding Items}"
+            ItemTapped="Handle_ItemTapped"
+            SeparatorVisibility="None"
+            RowHeight="52"
+            IsGroupingEnabled="True"
+            GroupDisplayBinding="{Binding GroupTitle}"
+            GroupShortNameBinding="{Binding GroupValue}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
