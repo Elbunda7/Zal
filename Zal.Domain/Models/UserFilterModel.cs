@@ -3,25 +3,25 @@ using Zal.Domain.Consts;
 
 namespace Zal.Domain.Models
 {
-    public class UserFilterModel
+    public struct UserFilterModel
     {
         public ZAL.Group Groups { get; set; }
         public ZAL.Rank Ranks { get; set; }
         public ZAL.UserAttribs Attribs { get; set; }
 
-        public static UserFilterModel Default {
-            get {
-                return new UserFilterModel() {
-                    Groups = ZAL.Group.AllClub,
-                    Ranks = ZAL.Rank.All,
-                    Attribs = ZAL.UserAttribs.All,
-                };
-            }
-        }
+        public static UserFilterModel Default { get; } = new UserFilterModel {
+            Groups = ZAL.Group.AllClub,
+            Ranks = ZAL.Rank.All,
+            Attribs = ZAL.UserAttribs.All,
+        };
 
-        public UserFilterModel() {
-            Clear();
-        }
+        public static readonly UserFilterModel Empty = new UserFilterModel
+        {
+            Groups = 0,
+            Ranks = 0,
+            Attribs = 0,
+        };
+
 
         public void Set(ZAL.Group groups, ZAL.Rank ranks, ZAL.UserAttribs attribs) {
             Groups = groups;

@@ -24,8 +24,6 @@ namespace Zal.Views.Pages
             isSelectionModeOn = true;
             Zalesak.Users.SetSelections(selected);
             OnSelectionDone = actionOnSelection;
-            MyListView.ItemsSource = null;
-            MyListView.ItemsSource = Zalesak.Users.Users;
 
             var saveToolbarItem = new ToolbarItem()
             {
@@ -39,7 +37,7 @@ namespace Zal.Views.Pages
         private async void Save_ToolbarItemClicked(object sender, EventArgs e)
         {
             List<int> selected = Zalesak.Users.GetSelections();
-            OnSelectionDone.Invoke(selected);
+            OnSelectionDone?.Invoke(selected);
             await Navigation.PopAsync();
         }
 
@@ -112,8 +110,15 @@ namespace Zal.Views.Pages
             if (e.Item is User)
             {
                 User currentUser = e.Item as User;
-                Analytics.TrackEvent("MembersMainPage_showUser", new Dictionary<string, string>() { { "toShow", currentUser.NickName } });
-                await Navigation.PushAsync(new Users.ProfilePage(currentUser));
+                if (isSelectionModeOn)
+                {
+                    currentUser.IsSelected = !currentUser.IsSelected;
+                }
+                else
+                {
+                    Analytics.TrackEvent("MembersMainPage_showUser", new Dictionary<string, string>() { { "toShow", currentUser.NickName } });
+                    await Navigation.PushAsync(new Users.ProfilePage(currentUser));
+                }
                 (sender as ListView).SelectedItem = null;
             }
         }

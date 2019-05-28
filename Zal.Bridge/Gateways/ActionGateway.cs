@@ -33,13 +33,13 @@ namespace Zal.Bridge
             return SendRequestFor<bool>(API.METHOD.JOIN, model);
         }
 
-        public Task<bool> DeleteAsync(int idAction, string token) {
-            return SendRequestFor<bool>(API.METHOD.DELETE, idAction, token);
+        public Task<bool> JoinManyAsync(List<ActionUserJoinModel> model)
+        {
+            return SendRequestFor<bool>(API.METHOD.JOIN_MANY, model);
         }
 
-        public async Task<IEnumerable<MembersOnActionModel>> GetUsersOnActionAsync(int id) {
-            var respond = await SendRequestForNullable<IEnumerable<MembersOnActionModel>>(API.METHOD.GET_USERS_ON_ACTION, id);
-            return respond ?? new List<MembersOnActionModel>();
+        public Task<bool> DeleteAsync(int idAction, string token) {
+            return SendRequestFor<bool>(API.METHOD.DELETE, idAction, token);
         }
 
         public Task<bool> UpdateAsync(ActionModel model, string token) {

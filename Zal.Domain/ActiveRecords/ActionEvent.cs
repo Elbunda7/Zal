@@ -52,6 +52,7 @@ namespace Zal.Domain.ActiveRecords
             }
         }
 
+        [Obsolete]
         public async Task<IEnumerable<User>> Members(ZAL.Joining isJoining = ZAL.Joining.True)
         {
             var members = new List<User>();
@@ -115,13 +116,7 @@ namespace Zal.Domain.ActiveRecords
         public async Task<IEnumerable<UserJoiningAction>> MembersLazyLoad(bool reload = false) {
             if (reload || users == null)
             {
-                var respond = await Gateway.GetUsersOnActionAsync(Id);
-                users = respond.Select(x => new UserJoiningAction
-                {
-                    Member = new User(x.Member),
-                    IsGarant = x.IsGarant,
-                    Joining = (ZAL.Joining)x.Joining
-                }).ToList();
+                users = await Zalesak.Users.GetUsersOnActionAsync(Model.Id);
             }
             return users;
         }
@@ -171,6 +166,61 @@ namespace Zal.Domain.ActiveRecords
                 Model.Id_Report = report.Id;
             }
             return wasAdded;
+        }
+
+        public async Task<bool> Join(IEnumerable<int> selected, IEnumerable<int> unselected)
+        {
+            //UserPermision.Validate(Zalesak.Session.CurrentUser, user, ZAL.Rank.Vedouci);
+            await MembersLazyLoad();
+            var requestModel = new List<ActionUserJoinModel>();
+            foreach (int id in selected)
+            {
+                requestModel.Add(new ActionUserJoinModel
+                {
+                    Id_User = id,
+                    Id_Action = Model.Id,
+                    IsGarant = false,
+                    IsJoining = (int)ZAL.Joining.True,
+                });
+            }
+            foreach (int id in unselected)
+            {
+                requestModel.Add(new ActionUserJoinModel
+                {
+                    Id_User = id,
+                    Id_Action = Model.Id,
+                    IsGarant = false,
+                    IsJoining = (int)ZAL.Joining.False,
+                });
+            }
+            bool respond = await Gateway.JoinManyAsync(requestModel);
+
+            if (respond)
+            {
+                foreach (int id in selected)
+                {
+                    if (users.Any(x => x.Member.Id == id))
+                    {
+                        var participant = users.Single(x => x.Member.Id == id);
+                        participant.Joining = ZAL.Joining.True;
+                    }
+                    else
+                    {
+                        users.Add(new UserJoiningAction
+                        {
+                            IsGarant = false,
+                            Joining = ZAL.Joining.True,
+                            Member = await Zalesak.Users.Get(id),
+                        });
+                    }
+                }
+                foreach (int id in unselected)
+                {
+                    var participant = users.Single(x => x.Member.Id == id);
+                    participant.Joining = ZAL.Joining.False;
+                }
+            }
+            return respond;
         }
 
         public Task<bool> Join(ZAL.Joining joining, bool asGarant = false) {

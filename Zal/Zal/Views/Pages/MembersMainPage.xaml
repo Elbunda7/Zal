@@ -28,7 +28,7 @@
 
                         <Image Source="{Binding Path=Rank, Converter={StaticResource rankToImgConverter}}" HeightRequest="30" WidthRequest="30"/>
 
-                        <Switch IsToggled="{Binding IsSelected}" IsVisible="{x:Static local:MembersMainPage.isSelectionModeOn}" HorizontalOptions="EndAndExpand"/>
+                        <Switch IsToggled="{Binding IsSelected, Mode=TwoWay}" IsVisible="{x:Static local:MembersMainPage.isSelectionModeOn}" HorizontalOptions="EndAndExpand"/>
 
                     </StackLayout>
                 </ViewCell>

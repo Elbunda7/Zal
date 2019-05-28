@@ -59,9 +59,9 @@ namespace Zal.Views.Pages.Actions
 
         private async void Synchronize()
         {
-            var membersTrue = await action.Members();
-            var membersMaybe = await action.Members(ZAL.Joining.Maybe);
-            var membersFalse = await action.Members(ZAL.Joining.False);
+            var membersTrue = (await action.MembersLazyLoad()).Where(x => x.Joining == ZAL.Joining.True).Select(x => x.Member);
+            var membersMaybe = (await action.MembersLazyLoad()).Where(x => x.Joining == ZAL.Joining.Maybe).Select(x => x.Member);
+            var membersFalse = (await action.MembersLazyLoad()).Where(x => x.Joining == ZAL.Joining.False).Select(x => x.Member);
             var leadersTrue = membersTrue.Where(x => x.Rank >= ZAL.Rank.Vedouci);
             membersTrue = membersTrue.Where(x => x.Rank < ZAL.Rank.Vedouci);
 
@@ -79,17 +79,24 @@ namespace Zal.Views.Pages.Actions
             await Navigation.PushAsync(new MembersMainPage(action.RawMembers(), OnSelectionDone));
         }
 
-        private async void OnSelectionDone(List<int> selected)
+        private async void OnSelectionDone(List<int> selections)//todo stale něco hapruje 
         {
-            var a = UserFilterModel.Default;
-            a.Groups = Domain.Consts.ZAL.Group.CompletlyAll;
-            await Zalesak.Users.Synchronize(a);
+            var joiningList = new List<UserJoiningAction>();
+            var currentMembers = action.RawMembers();
+            var unselected = currentMembers.Except(selections);
+            var selected = selections.Except(currentMembers).ToList();
+
+            if (selected.Count != 0 || unselected.Count() != 0)
+            {
+                await action.Join(selected, unselected);
+                await action.MembersLazyLoad(reload: true);
+            }
         }
 
         private async void FilterTwo_ToolbarItemClicked(object sender, EventArgs e)
         {
             var a = UserFilterModel.Default;
-            a.Groups = Domain.Consts.ZAL.Group.CompletlyAll;
+            a.Groups = ZAL.Group.CompletlyAll;
             await Zalesak.Users.Synchronize(a);
         }
 

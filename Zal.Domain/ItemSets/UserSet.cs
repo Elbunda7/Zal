@@ -17,70 +17,111 @@ namespace Zal.Domain.ItemSets
         private HashSet<User> AllUsers;
         private UserFilterModel currentFilter;
         private UserFilterModel cumulativeFilter;
+        private int extraUsersCount = 0;
 
         public UserSet() {
             Users = new UserObservableSortedSet();
             AllUsers = new HashSet<User>(ActiveRecordEqualityComparer.Instance);
             currentFilter = new UserFilterModel();
-            cumulativeFilter = UserFilterModel.Default;
+            cumulativeFilter = new UserFilterModel();
         }
 
-        public async Task ReSynchronize(UserFilterModel filter = null)//todo empty params?
+        public async Task ReSynchronize(UserFilterModel? filter = null)//todo empty params?
         {
             currentFilter.Clear();
-            cumulativeFilter = UserFilterModel.Default;
+            cumulativeFilter.Clear();
             AllUsers.Clear();
             Users.Clear();
+            extraUsersCount = 0;
             await Synchronize(filter);
         }
 
-        public async Task Synchronize(UserFilterModel filter = null)
+        public async Task Synchronize(UserFilterModel? userFilter = null)
         {
-            filter = filter ?? UserFilterModel.Default;
-            if (filter != currentFilter)
+            UserFilterModel filter = userFilter ?? UserFilterModel.Default;
+            if (cumulativeFilter == UserFilterModel.Empty)
             {
-                Users.RemoveAll();
-                Users.AddAll(AllUsers.Where(x => x.Match(filter)));
-                currentFilter = filter;
+                await LoadFirstTime(filter);
+                cumulativeFilter = filter;
             }
-            await LoadChangedUsers(cumulativeFilter);
-            if (filter.IsExtending(cumulativeFilter))
+            else
             {
-                var extendingFilter = cumulativeFilter.GetOnlyExtendigFilterFrom(filter);
-                await LoadMoreUsers(extendingFilter);
-                cumulativeFilter.CombineWith(filter);
+                await LoadChangedUsers(cumulativeFilter);
+                if (filter.IsExtending(cumulativeFilter))
+                {
+                    var extendingFilter = cumulativeFilter.GetOnlyExtendigFilterFrom(filter);
+                    await LoadMoreUsers(extendingFilter);
+                    cumulativeFilter.CombineWith(filter);
+                }
             }
+            Users.RemoveAll();
+            Users.AddAll(AllUsers.Where(x => x.Match(filter)));
+            currentFilter = filter;
         }
 
         private async Task LoadMoreUsers(UserFilterModel filter) {
             var task = User.GetMore(filter);
             var respond = await ExecuteTask(task);
-            Users.AddAll(respond.ActiveRecords);
+            int duplicates = respond.ActiveRecords.Intersect(AllUsers, ActiveRecordEqualityComparer.Instance).Count();
+            extraUsersCount -= duplicates;
+            //Users.AddAll(respond.ActiveRecords);
             AllUsers.UnionWith(respond.ActiveRecords);
         }
 
-        private async Task LoadChangedUsers(UserFilterModel filter) {
-            var task = User.GetChanged(filter, Users.LastSynchronization, AllUsers.Count());
+        private async Task LoadFirstTime(UserFilterModel filter)
+        {
+            var task = User.GetChanged(filter, Users.LastSynchronization, AllUsers.Count() - extraUsersCount);
             var respond = await ExecuteTask(task);
-            if (respond.IsHardChanged)
+            if (respond.IsChanged)
             {
-                Users.Clear();
-                Users.AddAll(respond.Changed);
-                AllUsers.Clear();
+                int duplicates = respond.Changed.Intersect(AllUsers, ActiveRecordEqualityComparer.Instance).Count();
+                extraUsersCount -= duplicates;
+                //Users.AddAll(respond.Changed);
                 AllUsers.UnionWith(respond.Changed);
                 Users.LastSynchronization = respond.Timestamp;
             }
+        }
+
+        private async Task LoadChangedUsers(UserFilterModel filter) {
+            var task = User.GetChanged(filter, Users.LastSynchronization, AllUsers.Count() - extraUsersCount);
+            var respond = await ExecuteTask(task);
+            if (respond.IsHardChanged)//todo když je loadnu pomocí get(id) tak to zvýší jejich počet a tim padem to vyvola IsHardChanged == true
+            {
+                //Users.Clear();
+                //Users.AddAll(respond.Changed);
+                AllUsers.Clear();
+                AllUsers.UnionWith(respond.Changed);
+                Users.LastSynchronization = respond.Timestamp;
+                extraUsersCount = 0;
+            }
             else if (respond.IsChanged)
             {
-                Users.RemoveByIds(respond.Deleted);
-                Users.AddOrUpdateAll(respond.Changed);
+                //Users.RemoveByIds(respond.Deleted);
+                //Users.AddOrUpdateAll(respond.Changed);
                 AllUsers.RemoveWhere(x => respond.Deleted.Contains(x.Id));
                 AllUsers.UnionWith(respond.Changed);
                 Users.LastSynchronization = respond.Timestamp;
             }
         }
 
-        
+        internal async Task<List<UserJoiningAction>> GetUsersOnActionAsync(int id)
+        {
+            var joiningUsers = await User.GetUsersOnActionAsync(id);
+            foreach (var model in joiningUsers)
+            {
+                if (AllUsers.Contains(model.Member))
+                {
+                    model.Member = AllUsers.Single(x => x.Id == model.Member.Id);
+                }
+                else
+                {
+                    AllUsers.Add(model.Member);
+                }
+            }
+            return joiningUsers;
+        }
+
+
 
         //internal Collection<User> GetByEmailList(List<string> list) {
         //    Collection<User> users = new Collection<User>();
@@ -93,7 +134,7 @@ namespace Zal.Domain.ItemSets
         public async Task AddNewUser(string name, string surname, ZAL.Group group, string nickname = null, string phone = null, string email = null, DateTime? birthDate = null) {
             //UserPermision.HasRank(Zal.Session.CurrentUser, ZAL.Rank.Vedouci);
             var task = User.AddNewUser(name, surname, group, nickname, phone, email, birthDate);
-            Users.Add(await ExecuteTask(task));
+            Users.Add(await ExecuteTask(task));//todo allUsers
         }
 
         public void SetSelections(List<int> ids)
@@ -133,6 +174,7 @@ namespace Zal.Domain.ItemSets
             else
             {
                 var task = User.GetAsync(id);
+                extraUsersCount++;
                 a = await ExecuteTask(task);
                 AllUsers.Add(a);
             }

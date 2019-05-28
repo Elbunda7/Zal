@@ -12,10 +12,12 @@ using Zal.Domain.Consts;
 using Newtonsoft.Json;
 using Zal.Domain.Tools;
 using Zal.Domain.Models;
+using System.ComponentModel;
 
 namespace Zal.Domain.ActiveRecords
 {
-    public class User : IActiveRecord {
+    public class User : IActiveRecord, INotifyPropertyChanged
+    {
 
         private UserModel Model;
 
@@ -42,7 +44,16 @@ namespace Zal.Domain.ActiveRecords
         //public string Role { get { return model.Role; } }
         //public int Points { get { return model.Body; } }//todo
 
-        public bool IsSelected { get; set; } = false;
+        private bool isSelected = false;
+        public bool IsSelected {
+            get {
+                return isSelected;
+            }
+            set {
+                isSelected = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsSelected"));
+            }
+        }
 
         //public bool PaidForMembership { get { return model.Zaplatil_prispevek; } }
         //public Collection<Badge> Budges { get { return BudgesLazyLoad(); } private set { budgets = value; } }
@@ -52,9 +63,12 @@ namespace Zal.Domain.ActiveRecords
 
         private UnitOfWork<UserUpdateModel> unitOfWork;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public UnitOfWork<UserUpdateModel> UnitOfWork => unitOfWork ?? (unitOfWork = new UnitOfWork<UserUpdateModel>(Model, OnUpdateCommited));
 
         private Task<bool> OnUpdateCommited() {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
             return Gateway.UpdateAsync(Model, Zalesak.Session.Token);
         }
 
@@ -89,6 +103,18 @@ namespace Zal.Domain.ActiveRecords
                 return new User(model);
             }
             return null;
+        }
+
+        internal static async Task<List<UserJoiningAction>> GetUsersOnActionAsync(int actionId)
+        {
+            var respond = await Gateway.GetUsersOnActionAsync(actionId);
+            var list = respond.Select(x => new UserJoiningAction
+            {
+                Member = new User(x.Member),
+                IsGarant = x.IsGarant,
+                Joining = (ZAL.Joining)x.Joining
+            }).ToList();
+            return list;
         }
 
         private async Task<IEnumerable<Badge>> BudgesLazyLoad() {

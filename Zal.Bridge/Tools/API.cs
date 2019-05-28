@@ -26,6 +26,7 @@ namespace Zal.Bridge.Tools
             public const string DELETE = "Delete";
             public const string JOIN = "Join";
             public const string UNJOIN = "UnJoin";
+            public const string JOIN_MANY = "JoinMany";
             public const string GET_CHANGED = "GetChanged";
             public const string GET_PAST_BY_YEAR = "GetAllByYear";//refactoring
             public const string REGISTER = "Register";

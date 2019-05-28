@@ -55,6 +55,12 @@ namespace Zal.Bridge
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<MembersOnActionModel>> GetUsersOnActionAsync(int id)
+        {
+            var respond = await SendRequestForNullable<IEnumerable<MembersOnActionModel>>(API.METHOD.GET_USERS_ON_ACTION, id);
+            return respond ?? new List<MembersOnActionModel>();
+        }
+
         public Task<string> UploadProfileImage(ImageUploadModel model, byte[] rawImage, string token)
         {
             return SendImageUploadRequestFor(API.METHOD.UPLOAD_IMAGE, rawImage, model, token);
