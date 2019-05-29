@@ -27,7 +27,8 @@ namespace Zal.Views.Pages.Actions
             this.action = action;
             InitializeComponent();
             BindingContext = action;
-            ParticipateCrossroadView.IsVisible = Zalesak.Session.IsUserLogged;
+            ParticipateCrossroadView.IsVisible = Zalesak.Session.IsUserLogged && action.DoIParticipate == ZAL.Joining.Unknow;
+            ParticipateView.IsVisible = Zalesak.Session.IsUserLogged && action.DoIParticipate != ZAL.Joining.Unknow;
         }
 
         private async void InfoButton_ClickedAsync(object sender, EventArgs args)
@@ -57,16 +58,22 @@ namespace Zal.Views.Pages.Actions
         private async void DontJoinButton_Clicked()
         {
             await action.Join(ZAL.Joining.False);
+            ParticipateCrossroadView.IsVisible = false;
+            ParticipateView.IsVisible = true;
         }
 
         private async void MaybeJoinButton_ClickedAsync()
         {
             await action.Join(ZAL.Joining.Maybe);
+            ParticipateCrossroadView.IsVisible = false;
+            ParticipateView.IsVisible = true;
         }
 
         private async void JoinButton_ClickedAsync()
         {
             bool isSuccess = await action.Join(ZAL.Joining.True);
+            ParticipateCrossroadView.IsVisible = false;
+            ParticipateView.IsVisible = true;
         }
 
         private async void GalleryButton_ClickedAsync(object sender, EventArgs e)
@@ -77,6 +84,11 @@ namespace Zal.Views.Pages.Actions
         private async void OnMembers_Tapped(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new MembersOnActionPage(action));
+        }
+
+        private void ParticipationButton_Clicked(object sender, EventArgs e)
+        {
+            ParticipateCrossroadView.IsVisible = true;
         }
     }
 }

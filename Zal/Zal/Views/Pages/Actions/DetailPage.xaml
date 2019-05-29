@@ -90,6 +90,7 @@
                         HorizontalOptions="Center"
                         Size="50"
                         x:Name="ParticipateView"
+                        Clicked="ParticipationButton_Clicked"
                         Image="ic_add_black.png"/>
                 </StackLayout>
 

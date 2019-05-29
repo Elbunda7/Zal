@@ -13,10 +13,11 @@ using Zal.Bridge.Models.ApiModels;
 using Newtonsoft.Json.Linq;
 using Zal.Domain.Models;
 using Zal.Domain.Tools.ARSets;
+using System.ComponentModel;
 
 namespace Zal.Domain.ActiveRecords
 {
-    public class ActionEvent : IActiveRecord//todo observable
+    public class ActionEvent : IActiveRecord, INotifyPropertyChanged
     {
         private ActionModel Model;
 
@@ -93,6 +94,9 @@ namespace Zal.Domain.ActiveRecords
         }
 
         private UnitOfWork<ActionUpdateModel> unitOfWork;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public UnitOfWork<ActionUpdateModel> UnitOfWork => unitOfWork ?? (unitOfWork = new UnitOfWork<ActionUpdateModel>(Model, OnUpdateCommited));
 
         private Task<bool> OnUpdateCommited() {
@@ -223,6 +227,7 @@ namespace Zal.Domain.ActiveRecords
                     Model.IsJoining[index] = (int)ZAL.Joining.False;
                     users[index].Joining = ZAL.Joining.False;
                 }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MembersCount"));
             }
             return respond;
         }
@@ -234,41 +239,38 @@ namespace Zal.Domain.ActiveRecords
         }
 
         public async Task<bool> Join(User user, ZAL.Joining joining, bool asGarant = false) {
-            UserPermision.Validate(Zalesak.Session.CurrentUser, user, ZAL.Rank.Vedouci);
-            if ((await MembersLazyLoad()).Select(x => x.Member).Contains(user, ActiveRecordEqualityComparer.Instance))
-            {
-                var userOnAction = users.Single(x => x.Member.Id == user.Id);
-                userOnAction.IsGarant = asGarant;
-                userOnAction.Joining = joining;
-            }
-            else
-            {
-                users.Add(new UserJoiningAction
-                {
-                    IsGarant = asGarant,
-                    Joining = joining,
-                    Member = user,
-                });
-            }
-
-            if (Model.Members.Contains(Zalesak.Session.CurrentUser.Id))
-            {
-                int index = Model.Members.IndexOf(Zalesak.Session.CurrentUser.Id);
-                Model.IsJoining[index] = (int)joining;
-            }
-            else
-            {
-                Model.Members.Add(user.Id);
-                Model.IsJoining.Add((int)joining);
-            }
-
+            UserPermision.Validate(Zalesak.Session.CurrentUser, user, ZAL.Rank.Vedouci);          
             var requestModel = new ActionUserJoinModel {
                 Id_User = user.Id,
                 Id_Action = Id,
                 IsGarant = asGarant,
                 IsJoining = (int)joining
             };
-            return await Gateway.JoinAsync(requestModel);
+            await MembersLazyLoad();
+            bool respond = await Gateway.JoinAsync(requestModel);
+            if (respond)
+            {
+                if (Model.Members.Contains(Zalesak.Session.CurrentUser.Id))
+                {
+                    int index = Model.Members.IndexOf(Zalesak.Session.CurrentUser.Id);
+                    Model.IsJoining[index] = (int)joining;
+                    users[index].Joining = joining;
+                    users[index].IsGarant = asGarant;
+                }
+                else
+                {
+                    Model.Members.Add(user.Id);
+                    Model.IsJoining.Add((int)joining);
+                    users.Add(new UserJoiningAction
+                    {
+                        IsGarant = asGarant,
+                        Joining = joining,
+                        Member = user,
+                    });
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MembersCount"));
+            }
+            return respond;
         }
 
 
