@@ -199,13 +199,16 @@ namespace Zal.Domain.ActiveRecords
             {
                 foreach (int id in selected)
                 {
-                    if (users.Any(x => x.Member.Id == id))
+                    int index = Model.Members.IndexOf(id);
+                    if (index != -1)
                     {
-                        var participant = users.Single(x => x.Member.Id == id);
-                        participant.Joining = ZAL.Joining.True;
+                        Model.IsJoining[index] = (int)ZAL.Joining.True;
+                        users[index].Joining = ZAL.Joining.True;
                     }
                     else
                     {
+                        Model.Members.Add(id);
+                        Model.IsJoining.Add((int)ZAL.Joining.True);
                         users.Add(new UserJoiningAction
                         {
                             IsGarant = false,
@@ -216,8 +219,9 @@ namespace Zal.Domain.ActiveRecords
                 }
                 foreach (int id in unselected)
                 {
-                    var participant = users.Single(x => x.Member.Id == id);
-                    participant.Joining = ZAL.Joining.False;
+                    int index = Model.Members.IndexOf(id);
+                    Model.IsJoining[index] = (int)ZAL.Joining.False;
+                    users[index].Joining = ZAL.Joining.False;
                 }
             }
             return respond;

@@ -59,9 +59,10 @@ namespace Zal.Views.Pages.Actions
 
         private async void Synchronize()
         {
-            var membersTrue = (await action.MembersLazyLoad()).Where(x => x.Joining == ZAL.Joining.True).Select(x => x.Member);
-            var membersMaybe = (await action.MembersLazyLoad()).Where(x => x.Joining == ZAL.Joining.Maybe).Select(x => x.Member);
-            var membersFalse = (await action.MembersLazyLoad()).Where(x => x.Joining == ZAL.Joining.False).Select(x => x.Member);
+            var allMembers = await action.MembersLazyLoad();
+            var membersTrue = allMembers.Where(x => x.Joining == ZAL.Joining.True).Select(x => x.Member);
+            var membersMaybe = allMembers.Where(x => x.Joining == ZAL.Joining.Maybe).Select(x => x.Member);
+            var membersFalse = allMembers.Where(x => x.Joining == ZAL.Joining.False).Select(x => x.Member);
             var leadersTrue = membersTrue.Where(x => x.Rank >= ZAL.Rank.Vedouci);
             membersTrue = membersTrue.Where(x => x.Rank < ZAL.Rank.Vedouci);
 
@@ -79,7 +80,7 @@ namespace Zal.Views.Pages.Actions
             await Navigation.PushAsync(new MembersMainPage(action.RawMembers(), OnSelectionDone));
         }
 
-        private async void OnSelectionDone(List<int> selections)//todo stale něco hapruje 
+        private async void OnSelectionDone(List<int> selections)
         {
             var joiningList = new List<UserJoiningAction>();
             var currentMembers = action.RawMembers();
@@ -91,6 +92,7 @@ namespace Zal.Views.Pages.Actions
                 await action.Join(selected, unselected);
                 await action.MembersLazyLoad(reload: true);
             }
+            Synchronize();
         }
 
         private async void FilterTwo_ToolbarItemClicked(object sender, EventArgs e)

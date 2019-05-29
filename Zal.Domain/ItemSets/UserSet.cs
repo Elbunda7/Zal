@@ -116,6 +116,7 @@ namespace Zal.Domain.ItemSets
                 else
                 {
                     AllUsers.Add(model.Member);
+                    extraUsersCount++;
                 }
             }
             return joiningUsers;

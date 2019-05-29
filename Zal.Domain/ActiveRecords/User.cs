@@ -50,8 +50,11 @@ namespace Zal.Domain.ActiveRecords
                 return isSelected;
             }
             set {
-                isSelected = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsSelected"));
+                if (isSelected != value)
+                {
+                    isSelected = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsSelected"));
+                }
             }
         }
 
