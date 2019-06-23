@@ -14,6 +14,7 @@ namespace Zal.Bridge.Tools
             public const string RANKS = "ranks";
             public const string USERS = "users";
             public const string SESSION = "session";
+            public const string GAME = "game";
         }
 
         internal abstract class METHOD

@@ -136,4 +136,8 @@
       <Generator>MSBuild:Compile</Generator>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Pages\Games\" />
+  </ItemGroup>
 </Project>
