@@ -32,7 +32,7 @@ namespace Zal
         {
             Zalesak.CommandExecutedOffline += OnCommandExecutedOffline;
             await Task.Run(async () => {
-                if (Current.Properties.ContainsKey(LOCAL_DATA))
+                if (Current.Properties.ContainsKey(LOCAL_DATA))//todo future akce se zobrazí jeno když dojde k synchronizaci
                 {
                     var fileData = (string)Current.Properties[LOCAL_DATA];
                     Zalesak.LoadDataFrom(fileData);

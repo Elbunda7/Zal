@@ -9,6 +9,7 @@ using Xamarin.Forms.Xaml;
 using Zal.Domain;
 using Zal.Domain.ActiveRecords;
 using Zal.Domain.Consts;
+using Zal.Views.Pages.Games;
 
 namespace Zal.Views.Pages.Actions
 {
@@ -89,6 +90,11 @@ namespace Zal.Views.Pages.Actions
         private void ParticipationButton_Clicked(object sender, EventArgs e)
         {
             ParticipateCrossroadView.IsVisible = true;
+        }
+
+        private async void GameButton_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new GameCollectionsPage());
         }
     }
 }

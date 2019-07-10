@@ -130,6 +130,12 @@
 
                 <Label Text="{Binding Garant}"/>
 
+                <Button
+                        x:Name="GameButton[DEV]"
+                        Text="Hry" Image="infoMap_80dp.png"
+                        BackgroundColor="White"
+                        Clicked="GameButton_Clicked"/>
+
                 <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand" HorizontalOptions="CenterAndExpand">
                     <Button
                         x:Name="InfoButton"

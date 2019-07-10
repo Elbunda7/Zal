@@ -8,15 +8,20 @@ using Zal.Bridge.Tools;
 
 namespace Zal.Bridge.Gateways
 {
-    class GameGateway : Gateway
+    public class GameGateway : Gateway
     {
-        public GameGateway() : base(API.ENDPOINT.GAME) { }
+        public GameGateway() : base(API.ENDPOINT.GAMES) { }
 
-        /*public Task<IEnumerable<string>> GetAsync(int id)
+        public Task<IEnumerable<GameCollectionRespondModel>> GetCollectionAsync(int id_action)
         {
-            return SendRequestFor<IEnumerable<string>>(API.METHOD.GET, id);
+            return SendRequestFor<IEnumerable<GameCollectionRespondModel>>(API.METHOD.GET_ALL, id_action);
         }
 
+        public Task<IEnumerable<GameRespondModel>> GetGameAsync(int id_gameCollection)
+        {
+            return SendRequestFor<IEnumerable<GameRespondModel>>(API.METHOD.GET, id_gameCollection);
+        }
+        /*
         public async Task<IEnumerable<GalleryModel>> GetAllAsync()
         {
             var respond = await SendRequestForNullable<IEnumerable<GalleryModel>>(API.METHOD.GET_ALL);
