@@ -29,6 +29,7 @@ namespace Zal.Services
         }
     }
 
+
     public class RankToBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -50,6 +51,7 @@ namespace Zal.Services
             throw new NotImplementedException();
         }
     }
+
 
     public class GroupToImgConverter : IValueConverter
     {
@@ -76,6 +78,7 @@ namespace Zal.Services
         }
     }
 
+
     public class ArticleTypeToImgConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -99,6 +102,32 @@ namespace Zal.Services
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class TrueToAccentConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+              return (value is bool && (bool)value) ? Color.Accent : Color.Default;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class FalseToAccentConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (value is bool && !(bool)value) ? Color.Accent : Color.Default;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
         }
     }
 }

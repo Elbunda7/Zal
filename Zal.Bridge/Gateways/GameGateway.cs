@@ -12,25 +12,33 @@ namespace Zal.Bridge.Gateways
     {
         public GameGateway() : base(API.ENDPOINT.GAMES) { }
 
-        public Task<IEnumerable<GameCollectionRespondModel>> GetCollectionAsync(int id_action)
+        public async Task<IEnumerable<GameCollectionRespondModel>> GetCollectionAsync(int id_action)
         {
-            return SendRequestFor<IEnumerable<GameCollectionRespondModel>>(API.METHOD.GET_ALL, id_action);
+            var respond = await SendRequestForNullable<IEnumerable<GameCollectionRespondModel>>(API.METHOD.GET_ALL, id_action);
+            return respond ?? new List<GameCollectionRespondModel>();
         }
 
-        public Task<IEnumerable<GameRespondModel>> GetGameAsync(int id_gameCollection)
+        public Task<IEnumerable<GameRespondModel>> GetGameAsync(int id_multipartGame)
         {
-            return SendRequestFor<IEnumerable<GameRespondModel>>(API.METHOD.GET, id_gameCollection);
+            return SendRequestFor<IEnumerable<GameRespondModel>>(API.METHOD.GET, id_multipartGame);
+        }
+
+        public async Task<bool> AddGameCollection(Games_ActionModel model, string token)
+        {
+            model.Id = await SendRequestFor<int>(API.METHOD.ADD_GAME_COLL, model, token);
+            return model.Id != -1;
+        }
+
+        public async Task<bool> AddMultiGame(MultiGameModel model, string token)
+        {
+            model.Id = await SendRequestFor<int>(API.METHOD.ADD_GAME_COLL, model, token);
+            return model.Id != -1;
         }
         /*
         public async Task<IEnumerable<GalleryModel>> GetAllAsync()
         {
             var respond = await SendRequestForNullable<IEnumerable<GalleryModel>>(API.METHOD.GET_ALL);
             return respond ?? new List<GalleryModel>();
-        }
-
-        public Task<GalleryCreateRespondModel> AddAsync(GalleryModel model, string token)
-        {
-            return SendRequestFor<GalleryCreateRespondModel>(API.METHOD.ADD, model, token);
         }
 
         public Task<bool> UpdateAsync(GalleryModel model, string token)

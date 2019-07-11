@@ -38,9 +38,9 @@ namespace Zal.Domain.ActiveRecords
         private static GameGateway gateway;
         private static GameGateway Gateway => gateway ?? (gateway = new GameGateway());
 
-        internal static async Task<IEnumerable<Game>> Get()
+        internal static async Task<IEnumerable<Game>> Get(int id_multipartGame)
         {
-            var respond = await Gateway.GetGameAsync(1);
+            var respond = await Gateway.GetGameAsync(id_multipartGame);
             return respond.Select(x => new Game(x));
         }
     }

@@ -24,6 +24,7 @@ namespace Zal.Domain.ActiveRecords
         private List<UserJoiningAction> users;
         private Article report;
         private Article info;
+        private List<GameCollection> games;
         
         public int Id => Model.Id;
         public string Type => Model.EventType;
@@ -125,6 +126,15 @@ namespace Zal.Domain.ActiveRecords
             return users;
         }
 
+        public async Task<IEnumerable<GameCollection>> GamesLazyLoad(bool reload = false)
+        {
+            if (reload || games == null)
+            {
+                games = (await GameCollection.GetAsync(Id)).ToList();
+            }
+            return games;
+        }
+
         public static async Task<ActionEvent> AddAsync(string name, string type, DateTime start, DateTime end, int fromRank, bool isOfficial = true) {
             ActionModel model = new ActionModel {
                 Id = -1,
@@ -168,6 +178,17 @@ namespace Zal.Domain.ActiveRecords
             bool wasAdded = report != null;
             if (wasAdded) {
                 Model.Id_Report = report.Id;
+            }
+            return wasAdded;
+        }
+
+        public async Task<bool> AddNewGameCollection(string name, bool isPointRated, bool isIndividuals)
+        {
+            var respondItem = await GameCollection.Add(Id, name, isPointRated, isIndividuals);
+            bool wasAdded = respondItem != null;
+            if (wasAdded)
+            {
+                games.Add(respondItem);
             }
             return wasAdded;
         }

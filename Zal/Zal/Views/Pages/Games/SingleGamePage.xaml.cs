@@ -12,18 +12,26 @@ using Zal.Domain.ActiveRecords;
 namespace Zal.Views.Pages.Games
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class GamePage : ContentPage
+	public partial class SingleGamePage : ContentPage
 	{
         private MultiGame multiGame;
+        private Game game;
 
-        public GamePage(MultiGame multiGame):this()
+        public SingleGamePage(MultiGame multiGame) : this()
         {
             this.multiGame = multiGame;
+            Title = multiGame.Name;
         }
 
-        public GamePage ()
+        public SingleGamePage(Game game):this()
+        {
+            this.game = game;
+            Title = game.Name;
+        }
+
+        public SingleGamePage ()
 		{
-			InitializeComponent ();
+			InitializeComponent();
         }
 
         protected override void OnAppearing()
@@ -34,12 +42,13 @@ namespace Zal.Views.Pages.Games
 
         private async void Synchronize()
         {
-            MyListView.ItemsSource = await multiGame.GamesLazyLoad();
+            if (game == null) game = (await multiGame.GamesLazyLoad()).First();
+            MyListView.ItemsSource = game.Scores;
         }
 
-        private async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
+        private void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
         {
-            await Navigation.PushAsync(new SingleGamePage(e.Item as Game));
+
         }
     }
 }

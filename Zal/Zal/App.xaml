@@ -31,6 +31,8 @@
             <local:RankToBoolConverter x:Key="rankToBoolConverter"/>
             <local:GroupToImgConverter x:Key="groupToImgConverter"/>
             <local:ArticleTypeToImgConverter x:Key="articleTypeToImgConverter"/>
+            <local:FalseToAccentConverter x:Key="falseToAccentConverter"/>
+            <local:TrueToAccentConverter x:Key="trueToAccentConverter"/>
 
         </ResourceDictionary>
     </Application.Resources>

@@ -36,6 +36,8 @@ namespace Zal.Bridge.Tools
             public const string LOGOUT = "Logout";
             public const string GET_USERS_ON_ACTION = "GetUsersOnAction";
             public const string ADD_BADGE_TO = "AddBadgeTo";
+            public const string ADD_GAME_COLL = "AddGameColl";
+            public const string ADD_MULTI_GAME = "AddMultiGame";
             public const string LOAD_TOP_TEN = "LoadTopTen";
             public const string LOAD_NEXT = "LoadNext";
             public const string UPLOAD_IMAGE = "UploadImage";

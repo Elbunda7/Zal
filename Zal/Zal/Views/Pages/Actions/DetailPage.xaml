@@ -131,8 +131,8 @@
                 <Label Text="{Binding Garant}"/>
 
                 <Button
-                        x:Name="GameButton[DEV]"
-                        Text="Hry" Image="infoMap_80dp.png"
+                        x:Name="GameButton"
+                        Text="Hry[DEV]" Image="infoMap_80dp.png"
                         BackgroundColor="White"
                         Clicked="GameButton_Clicked"/>
 

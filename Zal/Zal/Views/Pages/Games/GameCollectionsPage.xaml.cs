@@ -14,8 +14,14 @@ namespace Zal.Views.Pages.Games
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class GameCollectionsPage : ContentPage
 	{
+        private ActionEvent action;
 
-		public GameCollectionsPage ()
+        public GameCollectionsPage(ActionEvent action):this()
+        {
+            this.action = action;
+        }
+
+        public GameCollectionsPage ()
 		{
 			InitializeComponent ();
         }
@@ -28,12 +34,29 @@ namespace Zal.Views.Pages.Games
 
         private async void Synchronize()
         {
-            MyListView.ItemsSource = await Zalesak.Games.GetGameCollection();
+            var gameCollections = await action.GamesLazyLoad();
+            if (gameCollections.Count() == 1)
+            {
+                await NavigateToLowerLevels(gameCollections.First());
+                Navigation.RemovePage(this);
+            }
+            else
+            {
+                MyListView.ItemsSource = gameCollections;
+            }
         }
 
         private async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
         {
-            await Navigation.PushAsync(new MultiGamePage((e.Item as GameCollection).GameList));
+            var item = e.Item as GameCollection;
+            await NavigateToLowerLevels(item);
+        }
+
+        private async Task NavigateToLowerLevels(GameCollection gameColl)
+        {
+            if (gameColl.HasManyGames) await Navigation.PushAsync(new MultiGamePage(gameColl.GameList));
+            else if (gameColl.HasOneMultiGame) await Navigation.PushAsync(new GamePage(gameColl.GameList.First()));
+            else if (gameColl.HasOneSimpleGame) await Navigation.PushAsync(new SingleGamePage(gameColl.GameList.First()));
         }
     }
 }

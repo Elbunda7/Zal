@@ -21,15 +21,6 @@ namespace Zal.Domain.ItemSets
             lastCheck = ZAL.DATE_OF_ORIGIN;
         }
 
-        public Task<IEnumerable<GameCollection>> GetGameCollection()
-        {
-            return GameCollection.GetAsync(122);
-        }
-
-        public async Task<Game> GetGame()
-        {
-            return (await Game.Get()).First();
-        }
 
         /*public async Task Synchronize()
         {

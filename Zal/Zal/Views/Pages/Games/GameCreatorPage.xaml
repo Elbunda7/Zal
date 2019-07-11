@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ie="clr-namespace:IconEntry.FormsPlugin.Abstractions;assembly=IconEntry.FormsPlugin.Abstractions"
+             x:Class="Zal.Views.Pages.Games.GameCreatorPage">
+    <ContentPage.Content>
+
+        <StackLayout Padding="10,5">
+
+            <ie:IconEntry 
+                x:Name="GameCollNameEntry"
+                Placeholder="Jméno kolekce"
+                Icon="ic_email_black_24dp.png"/>
+
+            <StackLayout Padding="10,5">
+
+                <Label Text="Družiny"
+                       TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource falseToAccentConverter}}"/>
+
+                <Switch x:Name="IsIndividualSwitch"/>
+                
+                <Label Text="Jednotlivci"
+                       TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource trueToAccentConverter}}"/>
+
+            </StackLayout>
+
+            <ie:IconEntry                             
+                x:Name="MultiGameNameEntry"
+                Placeholder="Jméno hry"
+                Icon="ic_person_black_24dp.png"/>
+
+            <ie:IconEntry 
+                x:Name="GameNameEntry"
+                Placeholder="Jméno hry"
+                Icon="ic_person_black_24dp.png"/>
+
+            <ie:IconEntry                             
+                x:Name="UnitsEntry"
+                Placeholder="jednotky"
+                Icon="ic_phone_black_24dp.png"/>
+
+            <ie:IconEntry 
+                x:Name="EvaluationStyleEntry"
+                Placeholder="Heslo"
+                Icon="ic_lock_black_24dp.png"/>
+
+            <Button x:Name="ConfirmationButton"
+                BackgroundColor="{StaticResource Accent}"
+                HorizontalOptions="Center"
+                Text="Potvrdit"
+                Clicked="ConfirmationButton_Click"
+                Margin="0,25,0,0"/>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

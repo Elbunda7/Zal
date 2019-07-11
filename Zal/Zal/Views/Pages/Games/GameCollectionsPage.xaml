@@ -12,7 +12,7 @@
               CachingStrategy="RecycleElement"
               SeparatorVisibility="None"
               RowHeight="120"
-              BackgroundColor="{StaticResource GrayBackgroundColor}">
+              BackgroundColor="{StaticResource LightBackgroundColor}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>

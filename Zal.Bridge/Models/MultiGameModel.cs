@@ -9,5 +9,6 @@ namespace Zal.Bridge.Models
         public int Id { get; set; }
         public int Id_Games_on_Action { get; set; }
         public string Name { get; set; }
+        public int GamesCount { get; set; }
     }
 }

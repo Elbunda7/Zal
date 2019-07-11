@@ -18,18 +18,29 @@ namespace Zal.Views.Pages.Actions
 	{
         private ActionEvent action;
 
-        public DetailPage()
-        {
-            InitializeComponent();
-        }
-
-        public DetailPage(ActionEvent action)
+        public DetailPage(ActionEvent action):this()
         {
             this.action = action;
-            InitializeComponent();
             BindingContext = action;
             ParticipateCrossroadView.IsVisible = Zalesak.Session.IsUserLogged && action.DoIParticipate == ZAL.Joining.Unknow;
             ParticipateView.IsVisible = Zalesak.Session.IsUserLogged && action.DoIParticipate != ZAL.Joining.Unknow;
+            var toolbarItem = new ToolbarItem()
+            {
+                Text = "Nový",
+                Order = ToolbarItemOrder.Secondary
+            };
+            toolbarItem.Clicked += NewGame_ToolbarItemClicked;
+            ToolbarItems.Add(toolbarItem);
+        }
+
+        private async void NewGame_ToolbarItemClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new GameCreatorPage());
+        }
+
+        public DetailPage()
+        {
+            InitializeComponent();
         }
 
         private async void InfoButton_ClickedAsync(object sender, EventArgs args)
@@ -94,7 +105,7 @@ namespace Zal.Views.Pages.Actions
 
         private async void GameButton_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new GameCollectionsPage());
+            await Navigation.PushAsync(new GameCollectionsPage(action));
         }
     }
 }
