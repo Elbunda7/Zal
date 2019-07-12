@@ -9,6 +9,8 @@
             <Color x:Key="Primary">#2E7D32</Color>
             <Color x:Key="PrimaryDark">#1B5E20</Color>
             <Color x:Key="PrimaryExtraDark">#174f1b</Color>
+            <Color x:Key="PrimaryLight">#469e4a</Color>
+            <Color x:Key="PrimaryExtraLight">#86bf86</Color>
             <Color x:Key="Accent">#FFB300</Color>
             <Color x:Key="LightBackgroundColor">#E8F5E9</Color>
             <Color x:Key="GrayBackgroundColor">#C0C0C0</Color>
@@ -33,6 +35,7 @@
             <local:ArticleTypeToImgConverter x:Key="articleTypeToImgConverter"/>
             <local:FalseToAccentConverter x:Key="falseToAccentConverter"/>
             <local:TrueToAccentConverter x:Key="trueToAccentConverter"/>
+            <local:BoolNegationConverter x:Key="boolNegationConverter"/> 
 
         </ResourceDictionary>
     </Application.Resources>

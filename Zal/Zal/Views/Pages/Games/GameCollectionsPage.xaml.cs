@@ -57,6 +57,7 @@ namespace Zal.Views.Pages.Games
             if (gameColl.HasManyGames) await Navigation.PushAsync(new MultiGamePage(gameColl.GameList));
             else if (gameColl.HasOneMultiGame) await Navigation.PushAsync(new GamePage(gameColl.GameList.First()));
             else if (gameColl.HasOneSimpleGame) await Navigation.PushAsync(new SingleGamePage(gameColl.GameList.First()));
+            //todo jedna kolekce ale nic dalšího
         }
     }
 }

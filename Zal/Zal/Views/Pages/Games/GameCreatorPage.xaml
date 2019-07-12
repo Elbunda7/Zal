@@ -5,52 +5,96 @@
              x:Class="Zal.Views.Pages.Games.GameCreatorPage">
     <ContentPage.Content>
 
-        <StackLayout Padding="10,5">
+        <StackLayout Padding="10,5" VerticalOptions="FillAndExpand" BackgroundColor="{StaticResource GrayBackgroundColor}">
 
-            <ie:IconEntry 
-                x:Name="GameCollNameEntry"
-                Placeholder="Jméno kolekce"
-                Icon="ic_email_black_24dp.png"/>
+            <Frame BackgroundColor="White" CornerRadius="5">
+                <StackLayout x:Name="CollectionLayout" IsVisible="{Binding DoCollection}">
+                    <ie:IconEntry 
+                        x:Name="GameCollNameEntry"
+                        Placeholder="Jméno kolekce"
+                        Icon="ic_email_black_24dp.png"/>
 
-            <StackLayout Padding="10,5">
+                    <StackLayout Padding="10,5" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+                        <Label Text="Družiny"
+                               TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource falseToAccentConverter}}"/>
+                        <Switch x:Name="IsIndividualSwitch"/>
+                        <Label Text="Jednotlivci"
+                               TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource trueToAccentConverter}}"/>
+                    </StackLayout>
+                </StackLayout>
+            </Frame>
 
-                <Label Text="Družiny"
-                       TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource falseToAccentConverter}}"/>
+            <StackLayout x:Name="NewGameLayout" IsVisible="{Binding DoGame}">
 
-                <Switch x:Name="IsIndividualSwitch"/>
-                
-                <Label Text="Jednotlivci"
-                       TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource trueToAccentConverter}}"/>
+                <Frame BackgroundColor="White" CornerRadius="5" IsVisible="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled}">
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+                        <Label Text="Jednoduchá hra"
+                               TextColor="{Binding Source={x:Reference IsMultiGameSwitch}, Path=IsToggled, Converter={StaticResource falseToAccentConverter}}"/>
+                        <Switch x:Name="IsMultiGameSwitch"/>
+                        <Label Text="Hra z více částí"
+                               TextColor="{Binding Source={x:Reference IsMultiGameSwitch}, Path=IsToggled, Converter={StaticResource trueToAccentConverter}}"/>
+                    </StackLayout>
+                </Frame>
 
+                <Frame BackgroundColor="White" CornerRadius="5">
+                    <StackLayout>
+                        <Frame BackgroundColor="{StaticResource PrimaryLight}" HasShadow="False" CornerRadius="50" Padding="15, 0" Margin="20,0">
+                            <ie:IconEntry                             
+                                x:Name="GameNameEntry"                              
+                                Placeholder="Jméno hry"
+                                Icon="ic_person_black_24dp.png"/>
+                        </Frame>
+
+                        <StackLayout Orientation="Horizontal"
+                                     IsVisible="{Binding Source={x:Reference IsMultiGameSwitch}, Path=IsToggled, Converter={StaticResource boolNegationConverter}}">
+                            <Label Text="Jednotky: " VerticalOptions="Center"/>
+                            <Entry x:Name="UnitsEntry" HorizontalOptions="FillAndExpand"/>
+                        </StackLayout>
+
+                        <StackLayout Orientation="Horizontal"
+                                     IsVisible="{Binding Source={x:Reference IsMultiGameSwitch}, Path=IsToggled, Converter={StaticResource boolNegationConverter}}">
+                            <Label Text="Způsob hodnocení: " VerticalOptions="Center"/>
+                            <Entry x:Name="EvaluationStyleEntry" HorizontalOptions="FillAndExpand"/>
+                        </StackLayout>
+
+                        <StackLayout IsVisible="{Binding Source={x:Reference IsMultiGameSwitch}, Path=IsToggled}">
+                            <Grid x:Name="MultiGamesGrid">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Text="Jméno hry"
+                                    Grid.Column="0" Grid.Row="0"/>
+
+                                <Label Text="Jednotky"
+                                    Grid.Column="1" Grid.Row="0"/>
+
+                                <Label Text="Styl hodnocení"
+                                    Grid.Column="2" Grid.Row="0"/>
+                            </Grid>
+                        </StackLayout>
+
+
+                    </StackLayout>
+                </Frame>
             </StackLayout>
 
-            <ie:IconEntry                             
-                x:Name="MultiGameNameEntry"
-                Placeholder="Jméno hry"
-                Icon="ic_person_black_24dp.png"/>
-
-            <ie:IconEntry 
-                x:Name="GameNameEntry"
-                Placeholder="Jméno hry"
-                Icon="ic_person_black_24dp.png"/>
-
-            <ie:IconEntry                             
-                x:Name="UnitsEntry"
-                Placeholder="jednotky"
-                Icon="ic_phone_black_24dp.png"/>
-
-            <ie:IconEntry 
-                x:Name="EvaluationStyleEntry"
-                Placeholder="Heslo"
-                Icon="ic_lock_black_24dp.png"/>
-
-            <Button x:Name="ConfirmationButton"
-                BackgroundColor="{StaticResource Accent}"
-                HorizontalOptions="Center"
-                Text="Potvrdit"
-                Clicked="ConfirmationButton_Click"
-                Margin="0,25,0,0"/>
-
+            <Frame Padding="0" CornerRadius="5"
+                    HorizontalOptions="Center" 
+                    VerticalOptions="EndAndExpand"
+                    Margin="0,25,0,8">
+                <Button x:Name="ConfirmationButton"
+                    BackgroundColor="{StaticResource Accent}"
+                    Text="Potvrdit"
+                    Clicked="ConfirmationButton_Click"/>
+            </Frame>
+            
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
