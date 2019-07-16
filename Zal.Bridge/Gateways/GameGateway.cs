@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Zal.Bridge.Models;
@@ -31,8 +32,23 @@ namespace Zal.Bridge.Gateways
 
         public async Task<bool> AddMultiGame(MultiGameModel model, string token)
         {
-            model.Id = await SendRequestFor<int>(API.METHOD.ADD_GAME_COLL, model, token);
+            model.Id = await SendRequestFor<int>(API.METHOD.ADD_MULTI_GAME, model, token);
             return model.Id != -1;
+        }
+
+        public async Task<bool> AddGames(GameModel[] model, string token)
+        {
+            int lastId = await SendRequestFor<int>(API.METHOD.ADD, model, token);
+            bool isSuccess = lastId != -1;
+            if (isSuccess)
+            {
+                int firstId = lastId - model.Length + 1;
+                for (int i = 0; i < model.Length; i++)
+                {
+                    model[i].Id = firstId + i;
+                }
+            }
+            return isSuccess;
         }
         /*
         public async Task<IEnumerable<GalleryModel>> GetAllAsync()

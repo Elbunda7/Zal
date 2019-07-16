@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Zal.Bridge.Models
+namespace Zal.Domain.Models
 {
-    public class GameModel:IModel
+    public class GameBaseModel
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Variable { get; set; }
         public bool RatingStyle { get; set; }
-        public int Id_Multipart_Games { get; set; }
     }
 }

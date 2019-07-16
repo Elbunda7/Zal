@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Zal.Bridge.Gateways;
 using Zal.Bridge.Models;
 using Zal.Bridge.Models.ApiModels;
+using Zal.Domain.Models;
 
 namespace Zal.Domain.ActiveRecords
 {
@@ -13,7 +14,6 @@ namespace Zal.Domain.ActiveRecords
     {
         private GameCollectionRespondModel Model;
 
-        private IEnumerable<Game> Games;
         private List<MultiGame> gameList;
 
         public int Id => Model.Id;
@@ -34,8 +34,16 @@ namespace Zal.Domain.ActiveRecords
             Model = model;
         }
 
-        public async Task<bool> AddMultiGame(string name)
+        public async Task<MultiGame> AddMultiGame(string name, params GameBaseModel[] games)
         {
+            MultiGame multiGame = await AddMultiGame(name);
+            await multiGame.AddGames(games);
+            return multiGame;
+        }
+
+        public async Task<MultiGame> AddMultiGame(string name)
+        {
+            MultiGame multiGame = null;
             var model = new MultiGameModel
             {
                 Name = name,
@@ -48,9 +56,10 @@ namespace Zal.Domain.ActiveRecords
                 var tmp = Model.MultiGames.ToList();
                 tmp.Add(model);
                 Model.MultiGames = tmp.ToArray();
-                GameList.Add(new MultiGame(model));
+                multiGame = new MultiGame(model);
+                GameList.Add(multiGame);
             }
-            return isSuccess;
+            return multiGame;
         }
 
         internal static async Task<IEnumerable<GameCollection>> GetAsync(int idAction)
@@ -71,6 +80,11 @@ namespace Zal.Domain.ActiveRecords
             bool isSuccess = await Gateway.AddGameCollection(model, "todo token");
             return isSuccess ? new GameCollection(model) : null;
         }
+
+        internal static Task<bool> AddGames(List<GameModel> models)
+        {
+            return Gateway.AddGames(models.ToArray(), "todo token");
+        }
     }
 
     public class MultiGame
@@ -82,7 +96,7 @@ namespace Zal.Domain.ActiveRecords
         public bool HasMultipleParts => NumOfGames > 1;
         public bool HasOnePart => NumOfGames == 1;
 
-        private IEnumerable<Game> games;
+        private IEnumerable<Game> _games;
 
         public MultiGame(MultiGameModel model)
         {
@@ -91,13 +105,35 @@ namespace Zal.Domain.ActiveRecords
             NumOfGames = model.GamesCount;
         }
 
+        public async Task<bool> AddGames(params GameBaseModel[] games)
+        {
+            var models = new List<GameModel>();
+            foreach (GameBaseModel game in games)
+            {
+                models.Add(new GameModel
+                {
+                    Name = game.Name,
+                    Variable = game.Variable,
+                    RatingStyle = game.RatingStyle,
+                    Id_Multipart_Games = Id,
+                });
+            }
+            bool isSuccess = await GameCollection.AddGames(models);
+            if (isSuccess)
+            {
+               _games = _games.Union(models.Select(x => new Game(x)));
+                NumOfGames += models.Count;
+            }
+            return isSuccess;
+        }
+
         public async Task<IEnumerable<Game>> GamesLazyLoad(bool reload = false)
         {
-            if (reload || games == null)
+            if (reload || _games == null)
             {
-                games = await Game.Get(Id);
+                _games = await Game.Get(Id);
             }
-            return games;
+            return _games;
         }
 
         public override string ToString()

@@ -182,7 +182,7 @@ namespace Zal.Domain.ActiveRecords
             return wasAdded;
         }
 
-        public async Task<bool> AddNewGameCollection(string name, bool isPointRated, bool isIndividuals)
+        public async Task<GameCollection> AddNewGameCollection(string name, bool isPointRated, bool isIndividuals)
         {
             var respondItem = await GameCollection.Add(Id, name, isPointRated, isIndividuals);
             bool wasAdded = respondItem != null;
@@ -190,7 +190,7 @@ namespace Zal.Domain.ActiveRecords
             {
                 games.Add(respondItem);
             }
-            return wasAdded;
+            return respondItem;
         }
 
         public async Task<bool> Join(IEnumerable<int> selected, IEnumerable<int> unselected)

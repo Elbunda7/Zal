@@ -28,6 +28,11 @@ namespace Zal.Domain.ActiveRecords
             Model = model;
         }
 
+        public Game(GameModel model)
+        {
+            Model = new GameRespondModel(model);
+        }
+
         public async void test()
         {
             var a = await Gateway.GetCollectionAsync(122);

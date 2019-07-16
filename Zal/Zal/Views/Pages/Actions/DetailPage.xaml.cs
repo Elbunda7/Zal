@@ -35,7 +35,7 @@ namespace Zal.Views.Pages.Actions
 
         private async void NewGame_ToolbarItemClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new GameCreatorPage());
+            await Navigation.PushAsync(new GameCreatorPage(action));
         }
 
         public DetailPage()
