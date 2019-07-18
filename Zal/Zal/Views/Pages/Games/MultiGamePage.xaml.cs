@@ -14,29 +14,37 @@ namespace Zal.Views.Pages.Games
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class MultiGamePage : ContentPage
 	{
-        private List<MultiGame> gameList;
+        private GameCollection gameColl;
+
+        public MultiGamePage(GameCollection gameColl):this()
+        {
+            this.gameColl = gameColl;
+            Title = gameColl.Name;
+            var toolbarItem = new ToolbarItem()
+            {
+                Text = "Nová hra",
+                Order = ToolbarItemOrder.Secondary
+            };
+            toolbarItem.Clicked += NewGame_ToolbarItemClicked;
+            ToolbarItems.Add(toolbarItem);
+        }
 
         public MultiGamePage ()
 		{
 			InitializeComponent ();
         }
 
-        public MultiGamePage(List<MultiGame> gameList):this()
+        private async void NewGame_ToolbarItemClicked(object sender, EventArgs e)
         {
-            this.gameList = gameList;
-            MyListView.ItemsSource = gameList;
+            await Navigation.PushAsync(new GameCreatorPage(gameColl));
         }
 
-        /*protected override void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
-            Synchronize();
+            MyListView.ItemsSource = null;
+            MyListView.ItemsSource = gameColl.GameList;
         }
-
-        private async void Synchronize()
-        {
-            MyListView.ItemsSource = await Zalesak.Games.GetGameCollection();
-        }*/
 
         private async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
         {

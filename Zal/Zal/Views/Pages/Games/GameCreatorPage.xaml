@@ -8,28 +8,80 @@
         <ScrollView>
             <StackLayout Padding="10,5" VerticalOptions="FillAndExpand" BackgroundColor="{StaticResource GrayBackgroundColor}">
 
-                <Frame BackgroundColor="White" CornerRadius="5">
-                    <StackLayout x:Name="CollectionLayout" IsVisible="{Binding DoCollection}">
+                <StackLayout IsVisible="{Binding DoCollection}" x:Name="CollectionLayout">
+                    <Frame BackgroundColor="White" CornerRadius="5" >
+                        <StackLayout>
+                            <StackLayout Padding="30, 0" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                                <elements:TintImage TintColor="{StaticResource Primary}" Source="ic_twoDices_24dp.png"/>
+                                <Entry                             
+                                        x:Name="GameCollNameEntry"    
+                                        TextColor="{StaticResource Primary}" FontSize="Large" HorizontalOptions="FillAndExpand" 
+                                        HorizontalTextAlignment="Center"
+                                        PlaceholderColor="{StaticResource PrimaryExtraLight}"
+                                        Placeholder="Jméno kolekce"/>
+                            </StackLayout>
 
-                        <StackLayout Padding="30, 0" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                            <elements:TintImage TintColor="{StaticResource Primary}" Source="ic_twoDices_24dp.png"/>
-                            <Entry                             
-                                    x:Name="GameCollNameEntry"    
-                                    TextColor="{StaticResource Primary}" FontSize="Large" HorizontalOptions="FillAndExpand" 
-                                    HorizontalTextAlignment="Center"
-                                    PlaceholderColor="{StaticResource PrimaryExtraLight}"
-                                    Placeholder="Jméno kolekce"/>
+                            <StackLayout Padding="10,5" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+                                <Label Text="Družiny"
+                                       TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource falseToAccentConverter}}"/>
+                                <Switch x:Name="IsIndividualSwitch"/>
+                                <Label Text="Jednotlivci"
+                                       TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource trueToAccentConverter}}"/>
+                            </StackLayout>
                         </StackLayout>
+                    </Frame>
 
-                        <StackLayout Padding="10,5" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
-                            <Label Text="Družiny"
-                                   TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource falseToAccentConverter}}"/>
-                            <Switch x:Name="IsIndividualSwitch"/>
-                            <Label Text="Jednotlivci"
-                                   TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource trueToAccentConverter}}"/>
+                    <Frame BackgroundColor="White" CornerRadius="5" IsVisible="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled}">
+                        <StackLayout>
+                            <Label Text="Rozdělení do kategorií"/>
+
+                            <StackLayout Padding="30, 0" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                                <Label Text="Počet kategorií:"/>
+                                <Entry                             
+                                        x:Name="CategoryCountEntry"    
+                                        TextColor="{StaticResource Primary}" FontSize="Large" HorizontalOptions="FillAndExpand" 
+                                    Keyboard="Numeric"
+                                        Text="1"/>
+                            </StackLayout>
+
                         </StackLayout>
-                    </StackLayout>
-                </Frame>
+                    </Frame>
+
+                    <Frame BackgroundColor="White" CornerRadius="5" IsVisible="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled}">
+                        <StackLayout VerticalOptions="Start">
+
+                            <ListView x:Name="CategoryList" VerticalOptions="Start"
+                                    ItemsSource="{Binding Items}"
+                                    ItemTapped="CategoryItem_Tapped"
+                                    SeparatorVisibility="None"
+                                    RowHeight="35"
+                                    IsGroupingEnabled="True"
+                                    GroupDisplayBinding="{Binding GroupTitle}" 
+                                    GroupShortNameBinding="{Binding GroupValue}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <ViewCell>
+                                            <StackLayout Orientation="Horizontal" Margin="15, 6" >
+
+                                                <Label Text="{Binding NickName}"
+                                                       FontSize="Medium"
+                                                       TextColor="Black"
+                                                       Opacity="0.87"
+                                                       Margin="10,0,0,0"
+                                                       VerticalTextAlignment="Center"/>
+
+                                                <!--<Image Source="{Binding Path=Rank, Converter={StaticResource rankToImgConverter}}" HeightRequest="30" WidthRequest="30"/>
+-->
+                                            </StackLayout>
+                                        </ViewCell>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+
+                        </StackLayout>
+                    </Frame>
+
+                </StackLayout>
 
                 <StackLayout x:Name="NewGameLayout" IsVisible="{Binding DoGame}">
 

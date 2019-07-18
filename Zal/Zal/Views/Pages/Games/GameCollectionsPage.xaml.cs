@@ -19,6 +19,19 @@ namespace Zal.Views.Pages.Games
         public GameCollectionsPage(ActionEvent action):this()
         {
             this.action = action;
+            Title = "Kolekce her";
+            var toolbarItem = new ToolbarItem()
+            {
+                Text = "Nová kolekce",
+                Order = ToolbarItemOrder.Secondary
+            };
+            toolbarItem.Clicked += NewCollection_ToolbarItemClicked;
+            ToolbarItems.Add(toolbarItem);
+        }
+
+        private async void NewCollection_ToolbarItemClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new GameCreatorPage(action, makeGame: false));
         }
 
         public GameCollectionsPage ()
@@ -49,12 +62,12 @@ namespace Zal.Views.Pages.Games
         private async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             var item = e.Item as GameCollection;
-            await NavigateToLowerLevels(item);
+            await Navigation.PushAsync(new MultiGamePage(item));
         }
 
         private async Task NavigateToLowerLevels(GameCollection gameColl)
         {
-            if (gameColl.HasManyGames) await Navigation.PushAsync(new MultiGamePage(gameColl.GameList));
+            if (gameColl.HasManyGames) await Navigation.PushAsync(new MultiGamePage(gameColl));
             else if (gameColl.HasOneMultiGame) await Navigation.PushAsync(new GamePage(gameColl.GameList.First()));
             else if (gameColl.HasOneSimpleGame) await Navigation.PushAsync(new SingleGamePage(gameColl.GameList.First()));
             //todo jedna kolekce ale nic dalšího

@@ -17,8 +17,8 @@ namespace Zal.Domain.ActiveRecords
         private List<MultiGame> gameList;
 
         public int Id => Model.Id;
-        public List<MultiGame> GameList => gameList ?? (gameList = Model.MultiGames.Select(x => new MultiGame(x)).ToList());
-        public int NumOfGames => Model.MultiGames.Count();
+        public List<MultiGame> GameList => gameList ?? (gameList = Model.GetMultiGames().Select(x => new MultiGame(x)).ToList());
+        public int NumOfGames => Model.GetMultiGames().Count();
         public string Name => Model.Name;
 
         public bool HasManyGames => NumOfGames > 1;
@@ -37,7 +37,7 @@ namespace Zal.Domain.ActiveRecords
         public async Task<MultiGame> AddMultiGame(string name, params GameBaseModel[] games)
         {
             MultiGame multiGame = await AddMultiGame(name);
-            await multiGame.AddGames(games);
+            await multiGame.AddGamesFirstTime(games);
             return multiGame;
         }
 
@@ -53,11 +53,11 @@ namespace Zal.Domain.ActiveRecords
             bool isSuccess = await Gateway.AddMultiGame(model, "todo token");
             if (isSuccess)
             {
-                var tmp = Model.MultiGames.ToList();
+                var tmp = Model.GetMultiGames().ToList();
                 tmp.Add(model);
                 Model.MultiGames = tmp.ToArray();
                 multiGame = new MultiGame(model);
-                GameList.Add(multiGame);
+                GameList.Add(multiGame);//todo někde to vytváří 2 hry najednou ?
             }
             return multiGame;
         }
@@ -89,9 +89,11 @@ namespace Zal.Domain.ActiveRecords
 
     public class MultiGame
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int NumOfGames { get; set; }
+        private MultiGameModel Model;
+
+        public int Id => Model.Id;
+        public string Name => Model.Name;
+        public int NumOfGames => Model.GamesCount;
 
         public bool HasMultipleParts => NumOfGames > 1;
         public bool HasOnePart => NumOfGames == 1;
@@ -100,9 +102,13 @@ namespace Zal.Domain.ActiveRecords
 
         public MultiGame(MultiGameModel model)
         {
-            Id = model.Id;
-            Name = model.Name;
-            NumOfGames = model.GamesCount;
+            Model = model;
+        }
+
+        internal Task<bool> AddGamesFirstTime(params GameBaseModel[] games)
+        {
+            _games = new List<Game>();
+            return AddGames(games);
         }
 
         public async Task<bool> AddGames(params GameBaseModel[] games)
@@ -113,7 +119,7 @@ namespace Zal.Domain.ActiveRecords
                 models.Add(new GameModel
                 {
                     Name = game.Name,
-                    Variable = game.Variable,
+                    Variables = game.Variable,
                     RatingStyle = game.RatingStyle,
                     Id_Multipart_Games = Id,
                 });
@@ -122,7 +128,7 @@ namespace Zal.Domain.ActiveRecords
             if (isSuccess)
             {
                _games = _games.Union(models.Select(x => new Game(x)));
-                NumOfGames += models.Count;
+                Model.GamesCount += models.Count;
             }
             return isSuccess;
         }

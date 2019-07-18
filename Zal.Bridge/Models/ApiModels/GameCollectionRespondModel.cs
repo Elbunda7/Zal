@@ -8,6 +8,11 @@ namespace Zal.Bridge.Models.ApiModels
     {
         public MultiGameModel[] MultiGames { get; set; }
 
+        public MultiGameModel[] GetMultiGames()
+        {
+            return MultiGames ?? (MultiGames = new MultiGameModel[0]);
+        }
+
         public GameCollectionRespondModel(Games_ActionModel model)
         {
             Id = model.Id;

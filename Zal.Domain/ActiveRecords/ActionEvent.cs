@@ -184,6 +184,7 @@ namespace Zal.Domain.ActiveRecords
 
         public async Task<GameCollection> AddNewGameCollection(string name, bool isPointRated, bool isIndividuals)
         {
+            await GamesLazyLoad();
             var respondItem = await GameCollection.Add(Id, name, isPointRated, isIndividuals);
             bool wasAdded = respondItem != null;
             if (wasAdded)

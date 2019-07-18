@@ -16,7 +16,7 @@ namespace Zal.Domain.ActiveRecords
 
         public int Id => Model.Id;
         public string Name => Model.Name;
-        public List<Score> Scores => Model.Scores.Select(x => new Score(x)).ToList();
+        public List<Score> Scores => Model.GetScores().Select(x => new Score(x)).ToList();
 
         public Game()
         {
