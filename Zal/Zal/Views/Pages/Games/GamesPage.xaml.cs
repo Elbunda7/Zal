@@ -12,18 +12,18 @@ using Zal.Domain.ActiveRecords;
 namespace Zal.Views.Pages.Games
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class GamePage : ContentPage
+	public partial class GamesPage : ContentPage
 	{
         private GameCollection gameColl;
         private MultiGame multiGame;
 
-        public GamePage(GameCollection gameColl, MultiGame multiGame):this()
+        public GamesPage(GameCollection gameColl, MultiGame multiGame):this()
         {
             this.gameColl = gameColl;
             this.multiGame = multiGame;
         }
 
-        public GamePage ()
+        public GamesPage ()
 		{
 			InitializeComponent ();
         }

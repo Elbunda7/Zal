@@ -33,6 +33,12 @@
     <Compile Update="Views\Pages\Actions\ActionsListPage.xaml.cs">
       <DependentUpon>ActionsListPage.xaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\Pages\Games\GamesPage.xaml.cs">
+      <DependentUpon>GamesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Pages\Games\MultiGamesPage.xaml.cs">
+      <DependentUpon>MultiGamesPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\Pages\InfoMainPage.xaml.cs">
       <DependentUpon>InfoMainPage.xaml</DependentUpon>
     </Compile>
@@ -93,10 +99,10 @@
     <EmbeddedResource Update="Views\Pages\Games\GameCreatorPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\Pages\Games\GamePage.xaml">
+    <EmbeddedResource Update="Views\Pages\Games\GamesPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Views\Pages\Games\MultiGamePage.xaml">
+    <EmbeddedResource Update="Views\Pages\Games\MultiGamesPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\Pages\Games\SingleGamePage.xaml">

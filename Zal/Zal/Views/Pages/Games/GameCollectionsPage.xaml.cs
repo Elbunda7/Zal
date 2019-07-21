@@ -62,13 +62,13 @@ namespace Zal.Views.Pages.Games
         private async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             var item = e.Item as GameCollection;
-            await Navigation.PushAsync(new MultiGamePage(item));
+            await Navigation.PushAsync(new MultiGamesPage(item));
         }
 
         private async Task NavigateToLowerLevels(GameCollection gameColl)
         {
-            if (gameColl.HasManyGames) await Navigation.PushAsync(new MultiGamePage(gameColl));
-            else if (gameColl.HasOneMultiGame) await Navigation.PushAsync(new GamePage(gameColl, gameColl.GameList.First()));
+            if (gameColl.HasManyGames) await Navigation.PushAsync(new MultiGamesPage(gameColl));
+            else if (gameColl.HasOneMultiGame) await Navigation.PushAsync(new GamesPage(gameColl, gameColl.GameList.First()));
             else if (gameColl.HasOneSimpleGame) await Navigation.PushAsync(new SingleGamePage(gameColl, gameColl.GameList.First()));
             //todo jedna kolekce ale nic dalšího
         }

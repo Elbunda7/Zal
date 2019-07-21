@@ -81,7 +81,7 @@ namespace Zal.Views.Pages.Games
                         };
                     }
                     var multiGame = await gameColl.AddMultiGame(GameNameEntry.Text, models);
-                    await Navigation.PushAsync(new GamePage(gameColl, multiGame));
+                    await Navigation.PushAsync(new GamesPage(gameColl, multiGame));
                 }
                 else
                 {

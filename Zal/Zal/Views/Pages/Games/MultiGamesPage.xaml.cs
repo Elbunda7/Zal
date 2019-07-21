@@ -12,11 +12,11 @@ using Zal.Domain.ActiveRecords;
 namespace Zal.Views.Pages.Games
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MultiGamePage : ContentPage
+	public partial class MultiGamesPage : ContentPage
 	{
         private GameCollection gameColl;
 
-        public MultiGamePage(GameCollection gameColl):this()
+        public MultiGamesPage(GameCollection gameColl):this()
         {
             this.gameColl = gameColl;
             Title = gameColl.Name;
@@ -29,7 +29,7 @@ namespace Zal.Views.Pages.Games
             ToolbarItems.Add(toolbarItem);
         }
 
-        public MultiGamePage ()
+        public MultiGamesPage ()
 		{
 			InitializeComponent ();
         }
@@ -49,7 +49,7 @@ namespace Zal.Views.Pages.Games
         private async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             var multiGame = e.Item as MultiGame;
-            if (multiGame.HasMultipleParts) await Navigation.PushAsync(new GamePage(gameColl, multiGame));
+            if (multiGame.HasMultipleParts) await Navigation.PushAsync(new GamesPage(gameColl, multiGame));
             else if (multiGame.HasOnePart) await Navigation.PushAsync(new SingleGamePage(gameColl, multiGame)); 
         }
     }
