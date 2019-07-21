@@ -7,10 +7,16 @@ namespace Zal.Bridge.Models.ApiModels
     public class GameCollectionRespondModel: Games_ActionModel
     {
         public MultiGameModel[] MultiGames { get; set; }
+        public GameCategoryModel[] Categories { get; set; }
 
         public MultiGameModel[] GetMultiGames()
         {
             return MultiGames ?? (MultiGames = new MultiGameModel[0]);
+        }
+
+        public GameCategoryModel[] GetCategories()
+        {
+            return Categories ?? (Categories = new GameCategoryModel[0]);
         }
 
         public GameCollectionRespondModel(Games_ActionModel model)

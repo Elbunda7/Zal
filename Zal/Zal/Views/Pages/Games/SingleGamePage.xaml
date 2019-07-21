@@ -4,28 +4,41 @@
              x:Class="Zal.Views.Pages.Games.SingleGamePage">
     <ContentPage.Content>
         <StackLayout>
-            <ListView x:Name="MyListView"
-              AbsoluteLayout.LayoutBounds="0,0,1,1"  
-              AbsoluteLayout.LayoutFlags="All"    
-              ItemsSource="{Binding Items}"
-              ItemTapped="Handle_ItemTapped"
-              CachingStrategy="RecycleElement"
-              SeparatorVisibility="None"
-              RowHeight="120"
-              BackgroundColor="{StaticResource GrayBackgroundColor}">
+            <ListView x:Name="UserList" VerticalOptions="Start"
+                                    ItemsSource="{Binding Items}"
+                                    ItemTapped="UserItem_Tapped"
+                                    SeparatorVisibility="None"
+                                    RowHeight="35"
+                                    IsGroupingEnabled="True"
+                                    GroupDisplayBinding="{Binding GroupTitle}" 
+                                    GroupShortNameBinding="{Binding GroupValue}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <StackLayout Orientation="Horizontal" Margin="15, 6" >
 
-                                <Label Text="{Binding UserName}"/>
-                                <Label Text="{Binding Value}"/>
+                                <Label Text="{Binding NickName}"
+                                                       FontSize="Medium"
+                                                       TextColor="Black"
+                                                       Opacity="0.87"
+                                                       Margin="10,0,0,0"
+                                                       VerticalTextAlignment="Center"/>
+
+                                <Entry IsVisible="{Binding HasValue, Converter={StaticResource boolNegationConverter}}"
+                                       Completed="Entry_Completed"
+                                       Margin="0"
+                                       HorizontalOptions="End" MinimumWidthRequest="60"/>
+
+                                <Label Text="{Binding Value}" IsVisible="{Binding HasValue}"
+                                       HorizontalOptions="End" />
+
+                                <!--<Image Source="{Binding Path=Rank, Converter={StaticResource rankToImgConverter}}" HeightRequest="30" WidthRequest="30"/>-->
 
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-            </ListView>
+            </ListView>           
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

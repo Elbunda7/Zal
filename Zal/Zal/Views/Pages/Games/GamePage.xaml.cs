@@ -14,10 +14,12 @@ namespace Zal.Views.Pages.Games
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class GamePage : ContentPage
 	{
+        private GameCollection gameColl;
         private MultiGame multiGame;
 
-        public GamePage(MultiGame multiGame):this()
+        public GamePage(GameCollection gameColl, MultiGame multiGame):this()
         {
+            this.gameColl = gameColl;
             this.multiGame = multiGame;
         }
 
@@ -39,7 +41,7 @@ namespace Zal.Views.Pages.Games
 
         private async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
         {
-            await Navigation.PushAsync(new SingleGamePage(e.Item as Game));
+            await Navigation.PushAsync(new SingleGamePage(gameColl, e.Item as Game));
         }
     }
 }

@@ -68,8 +68,8 @@ namespace Zal.Views.Pages.Games
         private async Task NavigateToLowerLevels(GameCollection gameColl)
         {
             if (gameColl.HasManyGames) await Navigation.PushAsync(new MultiGamePage(gameColl));
-            else if (gameColl.HasOneMultiGame) await Navigation.PushAsync(new GamePage(gameColl.GameList.First()));
-            else if (gameColl.HasOneSimpleGame) await Navigation.PushAsync(new SingleGamePage(gameColl.GameList.First()));
+            else if (gameColl.HasOneMultiGame) await Navigation.PushAsync(new GamePage(gameColl, gameColl.GameList.First()));
+            else if (gameColl.HasOneSimpleGame) await Navigation.PushAsync(new SingleGamePage(gameColl, gameColl.GameList.First()));
             //todo jedna kolekce ale nic dalšího
         }
     }

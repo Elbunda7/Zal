@@ -4,15 +4,14 @@ using System.Text;
 using Zal.Domain.ActiveRecords;
 using Zal.Domain.Tools.ARSets;
 
-namespace Zal.ViewModels
+namespace Zal.Domain.Models
 {
-    [Obsolete]
-    public class MembersListModel : UserObservableSortedSet
+    public class UserGroupedList : UserObservableSortedSet
     {
         public string GroupTitle { get; set; }
         public string GroupValue { get; set; }
 
-        public MembersListModel(IEnumerable<User> users, string group) : base(users)
+        public UserGroupedList(IEnumerable<User> users, string group) : base(users)
         {
             GroupTitle = group;
             GroupValue = group;

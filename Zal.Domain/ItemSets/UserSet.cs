@@ -182,12 +182,22 @@ namespace Zal.Domain.ItemSets
             return a;
         }
 
-        internal async Task<IEnumerable<User>> Get(List<int> ids) {
-            IEnumerable<User> users = Users.Where(user => ids.Any(id => id == user.Id));
+        internal async Task<IEnumerable<User>> Get(IEnumerable<int> ids) {
+            IEnumerable<User> users = Users.Where(user => ids.Any(id => id == user.Id));//todo allUsers?
             var notLoadedIds = ids.Where(id => users.All(user => user.Id != id));
             var task = User.GetAsync(notLoadedIds);
             users.Union(await ExecuteTask(task));
             return users;
+        }
+
+        internal IEnumerable<User> GetAvailable(IEnumerable<int> ids)
+        {
+            return AllUsers.Where(user => ids.Any(id => id == user.Id));
+        }
+
+        internal User GetAvailable(int id)
+        {
+            return AllUsers.Single(user => id == user.Id);
         }
 
         internal void RemoveLocal(int id) => AllUsers.RemoveWhere(x => x.Id == id);

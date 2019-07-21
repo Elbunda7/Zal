@@ -7,6 +7,8 @@ using Zal.Bridge;
 using Zal.Bridge.Gateways;
 using Zal.Bridge.Models;
 using Zal.Bridge.Models.ApiModels;
+using Zal.Domain.Models;
+using Zal.Domain.Tools;
 
 namespace Zal.Domain.ActiveRecords
 {
@@ -33,6 +35,21 @@ namespace Zal.Domain.ActiveRecords
             Model = new GameRespondModel(model);
         }
 
+        public List<ScoreGroupedList> GetCategorizedScores(Dictionary<string, int[]> categories)
+        {
+            var list = new List<ScoreGroupedList>();
+            var AllScores = Scores;
+            var AllScoreIds = AllScores.Select(x => x.Id);
+            foreach (var cat in categories)
+            {
+                var voidScoreIds = cat.Value.Where(id => !AllScoreIds.Contains(id));
+                var scores = AllScores.Where(x => cat.Value.Contains(x.Id));
+                scores = scores.Union(voidScoreIds.Select(x => new Score(this, x))).OrderBy(x=>x.NickName);
+                list.Add(new ScoreGroupedList(scores, cat.Key));
+            }
+            return list;
+        }
+
         public async void test()
         {
             var a = await Gateway.GetCollectionAsync(122);
@@ -52,23 +69,61 @@ namespace Zal.Domain.ActiveRecords
 
     public class Score
     {
-        public int Id { get; set; }
-        public string Value { get; set; }
-        public string UserName { get; set; }
+        private ScoreModel Model;
+
+        public int Id => Model.Id;
+        public string Value => Model.Value;
+        public bool HasValue => Value != null;
+        public int IdUser => Model._Users_Id.Value;
+        public string NickName { get; private set; }
+        public string Variable { get; private set; }
+
+        private static GameGateway gateway;
+        private static GameGateway Gateway => gateway ?? (gateway = new GameGateway());
 
         public Score(ScoreModel model)
         {
-            Id = model.Id;
-            Value = model.Value;
+            Model = model;
+            TrySetNickName();
+
+        }
+
+        internal Score(Game game, int idUser)
+        {
+            Model = new ScoreModel
+            {
+                Id_Game = game.Id,
+                Value = null,
+                _Users_Id = idUser,
+            };
+            TrySetNickName();
+        }
+
+        private void TrySetNickName()
+        {
             try
             {
-                UserName = Zalesak.Users.Users.Single(x => x.Id == model._Users_Id).NickName;
+                NickName = Zalesak.Users.GetAvailable(IdUser).NickName;
             }
             catch (Exception)
             {
-                UserName = "Exception";
+                NickName = "Exception";
             }
-           
+        }
+
+        private UnitOfWork<ScoreUpdateModel> unitOfWork;
+        public UnitOfWork<ScoreUpdateModel> UnitOfWork => unitOfWork ?? (unitOfWork = new UnitOfWork<ScoreUpdateModel>(Model, OnUpdateCommited));
+
+        private Task<bool> OnUpdateCommited()
+        {
+            if (Id != 0)
+            {
+                return Gateway.UpdateScoreAsync(Model, Zalesak.Session.Token);
+            }
+            else
+            {
+                return Gateway.AddScoreAsync(Model, Zalesak.Session.Token);
+            }
         }
     }
 }

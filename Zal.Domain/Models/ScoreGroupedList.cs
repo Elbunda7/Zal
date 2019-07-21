@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using Zal.Domain.ActiveRecords;
-using Zal.Domain.Tools.ARSets;
 
-namespace Zal.ViewModels
+namespace Zal.Domain.Models
 {
-    [Obsolete]
-    public class MembersListModel : UserObservableSortedSet
+    public class ScoreGroupedList : ObservableCollection<Score>
     {
         public string GroupTitle { get; set; }
         public string GroupValue { get; set; }
 
-        public MembersListModel(IEnumerable<User> users, string group) : base(users)
+        public ScoreGroupedList(IEnumerable<Score> scores, string group) : base(scores)
         {
             GroupTitle = group;
             GroupValue = group;
         }
+        
     }
 }

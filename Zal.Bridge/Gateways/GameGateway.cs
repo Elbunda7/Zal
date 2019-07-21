@@ -50,23 +50,49 @@ namespace Zal.Bridge.Gateways
             }
             return isSuccess;
         }
+
+        public async Task<bool> AddCategories(GameCategoryModel[] model, string token)
+        {
+            int lastId = await SendRequestFor<int>(API.METHOD.ADD_CATEGORY, model, token);
+            bool isSuccess = lastId != -1;
+            if (isSuccess)
+            {
+                int firstId = lastId - model.Length + 1;
+                for (int i = 0; i < model.Length; i++)
+                {
+                    model[i].Id = firstId + i;
+                }
+            }
+            return isSuccess;
+        }
+
+        public async Task<bool> AddScoreAsync(ScoreModel model, string token)
+        {
+            model.Id = await SendRequestFor<int>(API.METHOD.ADD_SCORE, model, token);
+            return model.Id != -1;
+        }
+
+        public Task<bool> UpdateScoreAsync(ScoreModel model, string token)
+        {
+            return SendRequestFor<bool>(API.METHOD.UPDATE_SCORE, model, token);
+        }
         /*
-        public async Task<IEnumerable<GalleryModel>> GetAllAsync()
-        {
-            var respond = await SendRequestForNullable<IEnumerable<GalleryModel>>(API.METHOD.GET_ALL);
-            return respond ?? new List<GalleryModel>();
-        }
+public async Task<IEnumerable<GalleryModel>> GetAllAsync()
+{
+var respond = await SendRequestForNullable<IEnumerable<GalleryModel>>(API.METHOD.GET_ALL);
+return respond ?? new List<GalleryModel>();
+}
 
-        public Task<bool> UpdateAsync(GalleryModel model, string token)
-        {
-            //return SendRequestFor<bool>(API.METHOD.UPDATE, model, token);
-            throw new NotImplementedException();
-        }
+public Task<bool> UpdateAsync(GalleryModel model, string token)
+{
+//return SendRequestFor<bool>(API.METHOD.UPDATE, model, token);
+throw new NotImplementedException();
+}
 
-        public async Task<bool> UploadImage(ImageUploadModel model, byte[] rawImage, string token)
-        {
-            string respond = await SendImageUploadRequestFor(API.METHOD.UPLOAD_IMAGE, rawImage, model, token);
-            return respond == "1";
-        }*/
+public async Task<bool> UploadImage(ImageUploadModel model, byte[] rawImage, string token)
+{
+string respond = await SendImageUploadRequestFor(API.METHOD.UPLOAD_IMAGE, rawImage, model, token);
+return respond == "1";
+}*/
     }
 }

@@ -18,7 +18,7 @@ namespace Zal.Views.Pages.Games
 	public partial class GameCreatorPage : ContentPage
 	{
         private GameCreatorVisibilitySettings creatorSettings;
-        private GameCollection gameCollection;
+        private GameCollection gameColl;
         private ActionEvent action;
 
         List<MembersListModel> groupedCategoryList;
@@ -39,7 +39,7 @@ namespace Zal.Views.Pages.Games
 
         public GameCreatorPage(GameCollection coll) : this()
         {
-            gameCollection = coll;
+            gameColl = coll;
             creatorSettings = new GameCreatorVisibilitySettings { DoCollection = false, DoGame = true };
             AddGameEntries();
             AddGameEntries();
@@ -55,7 +55,16 @@ namespace Zal.Views.Pages.Games
         {
             if (creatorSettings.DoCollection)
             {
-                gameCollection = await action.AddNewGameCollection(GameCollNameEntry.Text, false, IsIndividualSwitch.IsToggled);//todo dopracovat ať funguje
+                gameColl = await action.AddNewGameCollection(GameCollNameEntry.Text, false, IsIndividualSwitch.IsToggled);//todo dopracovat ať funguje
+                if (IsIndividualSwitch.IsToggled)
+                {
+                    var categories = new Dictionary<string, User[]>();
+                    for (int i = 0; i < groupedCategoryList.Count-1; i++)
+                    {
+                        categories.Add(groupedCategoryList[i].GroupTitle, groupedCategoryList[i].ToArray());
+                    }
+                    bool isSuccess = await gameColl.AddCategories(categories);
+                }
             }
             if (creatorSettings.DoGame)
             {
@@ -71,18 +80,18 @@ namespace Zal.Views.Pages.Games
                             Variable = games[i].Variable,
                         };
                     }
-                    var multiGame = await gameCollection.AddMultiGame(GameNameEntry.Text, models);
-                    await Navigation.PushAsync(new GamePage(multiGame));
+                    var multiGame = await gameColl.AddMultiGame(GameNameEntry.Text, models);
+                    await Navigation.PushAsync(new GamePage(gameColl, multiGame));
                 }
                 else
                 {
-                    var multiGame = await gameCollection.AddMultiGame(GameNameEntry.Text, new GameBaseModel
+                    var multiGame = await gameColl.AddMultiGame(GameNameEntry.Text, new GameBaseModel
                     {
                         Name = GameNameEntry.Text,
                         RatingStyle = isSortingDown,
                         Variable = UnitsEntry.Text,
                     });
-                    await Navigation.PushAsync(new SingleGamePage(multiGame));
+                    await Navigation.PushAsync(new SingleGamePage(gameColl, multiGame));
                 }
             }
             else
@@ -99,9 +108,11 @@ namespace Zal.Views.Pages.Games
             var leaders = members.Where(x => x.Rank >= ZAL.Rank.Vedouci);
             members = members.Where(x => x.Rank < ZAL.Rank.Vedouci);
 
-            groupedCategoryList = new List<MembersListModel>();
-            groupedCategoryList.Add(new MembersListModel(members, "Kategorie 1"));
-            groupedCategoryList.Add(new MembersListModel(leaders, "Nehrající"));
+            groupedCategoryList = new List<MembersListModel>
+            {
+                new MembersListModel(members, "Kategorie 1"),
+                new MembersListModel(leaders, "Nehrající")
+            };
 
             CategoryList.ItemsSource = groupedCategoryList; //todo https://github.com/daniel-luberda/DLToolkit.Forms.Controls/tree/master/FlowListView
         }

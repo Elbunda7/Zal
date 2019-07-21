@@ -49,8 +49,8 @@ namespace Zal.Views.Pages.Games
         private async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             var multiGame = e.Item as MultiGame;
-            if (multiGame.HasMultipleParts) await Navigation.PushAsync(new GamePage(multiGame));
-            else if (multiGame.HasOnePart) await Navigation.PushAsync(new SingleGamePage(multiGame)); 
+            if (multiGame.HasMultipleParts) await Navigation.PushAsync(new GamePage(gameColl, multiGame));
+            else if (multiGame.HasOnePart) await Navigation.PushAsync(new SingleGamePage(gameColl, multiGame)); 
         }
     }
 }

@@ -94,10 +94,9 @@ namespace Zal.Domain.ActiveRecords
             Model = model as ActionModel;
         }
 
-        private UnitOfWork<ActionUpdateModel> unitOfWork;
-
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private UnitOfWork<ActionUpdateModel> unitOfWork;
         public UnitOfWork<ActionUpdateModel> UnitOfWork => unitOfWork ?? (unitOfWork = new UnitOfWork<ActionUpdateModel>(Model, OnUpdateCommited));
 
         private Task<bool> OnUpdateCommited() {

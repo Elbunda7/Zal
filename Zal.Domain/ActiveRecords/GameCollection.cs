@@ -15,11 +15,14 @@ namespace Zal.Domain.ActiveRecords
         private GameCollectionRespondModel Model;
 
         private List<MultiGame> gameList;
+        private List<UserGroupedList> categorizedUsers;
 
         public int Id => Model.Id;
         public List<MultiGame> GameList => gameList ?? (gameList = Model.GetMultiGames().Select(x => new MultiGame(x)).ToList());
+        public List<UserGroupedList> CategorizedUsers => categorizedUsers ?? ParseCategoriesFromModel();
         public int NumOfGames => Model.GetMultiGames().Count();
         public string Name => Model.Name;
+        public Dictionary<string, int[]> Categories => Model.Categories.ToDictionary(x => x.Name, y => y.MembersArray);
 
         public bool HasManyGames => NumOfGames > 1;
         public bool HasOneMultiGame => NumOfGames == 1 && GameList[0].HasMultipleParts;
@@ -34,6 +37,14 @@ namespace Zal.Domain.ActiveRecords
             Model = model;
         }
 
+        private List<UserGroupedList> ParseCategoriesFromModel()
+        {
+            categorizedUsers = Model.GetCategories().Select(
+                    x => new UserGroupedList(Zalesak.Users.GetAvailable(x.MembersArray), x.Name)
+                ).ToList();
+            return categorizedUsers;
+        }
+        
         public async Task<MultiGame> AddMultiGame(string name, params GameBaseModel[] games)
         {
             MultiGame multiGame = await AddMultiGame(name);
@@ -66,6 +77,23 @@ namespace Zal.Domain.ActiveRecords
         {
             var respond = await Gateway.GetCollectionAsync(idAction);
             return respond.Select(x => new GameCollection(x));
+        }
+
+        public async Task<bool> AddCategories(Dictionary<string, User[]> categories)
+        {
+            var model = categories.Select(x => new GameCategoryModel
+            {
+                Id_Games_on_Action = Id,
+                Name = x.Key,
+                MembersArray = x.Value.Select(y => y.Id).ToArray(),
+            });
+            bool isSuccess = await Gateway.AddCategories(model.ToArray(), "todo token");
+            if (isSuccess)
+            {
+                Model.Categories = model.ToArray();
+                categorizedUsers = null;
+            }
+            return isSuccess;
         }
 
         internal static async Task<GameCollection> Add(int idAction, string name, bool isPointRated, bool isIndividuals)
