@@ -14,9 +14,10 @@ namespace Zal.Domain.ActiveRecords
     {
         private GameRespondModel Model;
 
+        private List<ScoreGroupedList> _scores;
+
         public int Id => Model.Id;
         public string Name => Model.Name;
-        public List<Score> Scores => Model.GetScores().Select(x => new Score(x)).ToList();
 
         private static GameGateway gateway;
         private static GameGateway Gateway => gateway ?? (gateway = new GameGateway());
@@ -31,19 +32,42 @@ namespace Zal.Domain.ActiveRecords
             Model = new GameRespondModel(model);
         }
 
+        private void Score_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            var tmpScore = sender as Score;
+            if (e.PropertyName == "Id")
+            {
+                var tmpScores = Model.Scores.ToList();
+                tmpScores.Add(tmpScore.Model);
+                Model.Scores = tmpScores.ToArray();
+            }
+            else if (e.PropertyName == "Value")
+            {
+                var scoreModel = Model.Scores.Single(x => x.Id == tmpScore.Id);
+                scoreModel.Value = tmpScore.Value;
+            }
+        }
+
         public List<ScoreGroupedList> GetCategorizedScores(Dictionary<string, int[]> categories)
         {
-            var list = new List<ScoreGroupedList>();
-            var AllScores = Scores;
-            var AllScoreIds = AllScores.Select(x => x.Id);
-            foreach (var cat in categories)
+            if (_scores == null)
             {
-                var voidScoreIds = cat.Value.Where(id => !AllScoreIds.Contains(id));
-                var scores = AllScores.Where(x => cat.Value.Contains(x.Id));
-                scores = scores.Union(voidScoreIds.Select(x => new Score(this, x))).OrderBy(x=>x.NickName);
-                list.Add(new ScoreGroupedList(scores, cat.Key));
+                _scores = new List<ScoreGroupedList>();
+                var AllScores = Model.GetScores().Select(x => new Score(x)).ToList();
+                var AllScoreIds = AllScores.Select(x => x.IdUser);
+                foreach (var cat in categories)
+                {
+                    var voidScoreIds = cat.Value.Where(id => !AllScoreIds.Contains(id));
+                    var scores = AllScores.Where(x => cat.Value.Contains(x.IdUser));
+                    scores = scores.Union(voidScoreIds.Select(x => new Score(this, x))).OrderBy(x => x.NickName);
+                    foreach (var item in scores)
+                    {
+                        item.PropertyChanged += Score_PropertyChanged;
+                    }
+                    _scores.Add(new ScoreGroupedList(scores, cat.Key));
+                }
             }
-            return list;
+            return _scores;
         }
 
         internal static async Task<IEnumerable<Game>> Get(int id_multipartGame)

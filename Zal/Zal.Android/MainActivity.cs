@@ -20,6 +20,7 @@ namespace Zal.Droid
 
             base.OnCreate(savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            Rg.Plugins.Popup.Popup.Init(this, savedInstanceState);
             ImageCircle.Forms.Plugin.Droid.ImageCircleRenderer.Init();
             IconEntry.FormsPlugin.Android.IconEntryRenderer.Init();
             Plugin.CurrentActivity.CrossCurrentActivity.Current.Init(this, savedInstanceState);
@@ -30,6 +31,11 @@ namespace Zal.Droid
         {
             PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        public override void OnBackPressed()
+        {
+            Rg.Plugins.Popup.Popup.SendBackPressed(base.OnBackPressed);
         }
     }
 }

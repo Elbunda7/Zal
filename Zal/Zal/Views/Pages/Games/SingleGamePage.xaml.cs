@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rg.Plugins.Popup.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,8 +7,8 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using Zal.Domain;
 using Zal.Domain.ActiveRecords;
+using Zal.ViewModels;
 
 namespace Zal.Views.Pages.Games
 {
@@ -17,6 +18,8 @@ namespace Zal.Views.Pages.Games
         private GameCollection gameColl;
         private MultiGame multiGame;
         private Game game;
+
+        private Score selectedScore;
 
         public SingleGamePage(GameCollection gameColl, MultiGame multiGame) : this()
         {
@@ -50,26 +53,25 @@ namespace Zal.Views.Pages.Games
             UserList.ItemsSource = game.GetCategorizedScores(gameColl.Categories);
         }
 
-        private void UserItem_Tapped(object sender, ItemTappedEventArgs e)
+        private async void UserItem_Tapped(object sender, ItemTappedEventArgs e)
         {
-
+            selectedScore = e.Item as Score;
+            await PopupNavigation.Instance.PushAsync(new EntryPopup(selectedScore.NickName + " - upravit výsledek", SaveNewValue, selectedScore.Value, selectedScore.Value, Keyboard.Numeric));
         }
 
-        private async void Entry_Completed(object sender, EventArgs e)
+        private void Entry_Completed(object sender, EventArgs e)
         {
-            var entry = sender as Entry;
-            double value;
-            bool isNumber = double.TryParse(entry.Text, out value);
-            if (isNumber)
+            var entry = sender as Entry;            
+            selectedScore = (entry.Parent.Parent as ViewCell).BindingContext as Score;
+            SaveNewValue(entry.Text);            
+        }
+
+        private async void SaveNewValue(string txt)
+        {
+            if (double.TryParse(txt, out double value))
             {
-                var cell = (entry.Parent.Parent as ViewCell);
-                var score = cell.BindingContext as Score;
-                score.UnitOfWork.ToUpdate.Value = entry.Text;
-                bool isSuccess = await score.UnitOfWork.CommitAsync();
-            }
-            else
-            {
-                entry.Text = "";
+                selectedScore.UnitOfWork.ToUpdate.Value = value.ToString();//todo value as double
+                bool isSuccess = await selectedScore.UnitOfWork.CommitAsync();
             }
         }
     }

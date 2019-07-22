@@ -6,31 +6,33 @@
         <StackLayout>
             <ListView x:Name="UserList" VerticalOptions="Start"
                                     ItemsSource="{Binding Items}"
-                                    ItemTapped="UserItem_Tapped"
+                                    ItemTapped="UserItem_Tapped"                                    
                                     SeparatorVisibility="None"
-                                    RowHeight="35"
+                                    RowHeight="40"
                                     IsGroupingEnabled="True"
                                     GroupDisplayBinding="{Binding GroupTitle}" 
                                     GroupShortNameBinding="{Binding GroupValue}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout Orientation="Horizontal" Margin="15, 6" >
+                            <StackLayout Orientation="Horizontal" Margin="25,0,50,0" >
 
                                 <Label Text="{Binding NickName}"
                                                        FontSize="Medium"
                                                        TextColor="Black"
                                                        Opacity="0.87"
-                                                       Margin="10,0,0,0"
-                                                       VerticalTextAlignment="Center"/>
+                                                       VerticalTextAlignment="Center" HorizontalOptions="StartAndExpand"/>
 
                                 <Entry IsVisible="{Binding HasValue, Converter={StaticResource boolNegationConverter}}"
-                                       Completed="Entry_Completed"
-                                       Margin="0"
-                                       HorizontalOptions="End" MinimumWidthRequest="60"/>
+                                       Unfocused="Entry_Completed" VerticalOptions="End" 
+                                       Margin="0" BackgroundColor="White" Keyboard="Numeric"
+                                       HorizontalOptions="End" WidthRequest="100" />
 
                                 <Label Text="{Binding Value}" IsVisible="{Binding HasValue}"
-                                       HorizontalOptions="End" />
+                                       HorizontalOptions="End" VerticalTextAlignment="Center"
+                                                       FontSize="Medium" HorizontalTextAlignment="Start"
+                                                       TextColor="Black"  WidthRequest="100"
+                                                       Opacity="0.87"/>
 
                                 <!--<Image Source="{Binding Path=Rank, Converter={StaticResource rankToImgConverter}}" HeightRequest="30" WidthRequest="30"/>-->
 

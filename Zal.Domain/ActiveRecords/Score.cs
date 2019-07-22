@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using Zal.Bridge.Gateways;
@@ -9,9 +10,11 @@ using Zal.Domain.Tools;
 
 namespace Zal.Domain.ActiveRecords
 {
-    public class Score
+    public class Score : INotifyPropertyChanged
     {
-        private ScoreModel Model;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        internal ScoreModel Model;
 
         public int Id => Model.Id;
         public string Value => Model.Value;
@@ -23,11 +26,13 @@ namespace Zal.Domain.ActiveRecords
         private static GameGateway gateway;
         private static GameGateway Gateway => gateway ?? (gateway = new GameGateway());
 
+        private UnitOfWork<ScoreUpdateModel> unitOfWork;
+        public UnitOfWork<ScoreUpdateModel> UnitOfWork => unitOfWork ?? (unitOfWork = new UnitOfWork<ScoreUpdateModel>(Model, OnUpdateCommited));
+
         public Score(ScoreModel model)
         {
             Model = model;
             TrySetNickName();
-
         }
 
         internal Score(Game game, int idUser)
@@ -53,19 +58,21 @@ namespace Zal.Domain.ActiveRecords
             }
         }
 
-        private UnitOfWork<ScoreUpdateModel> unitOfWork;
-        public UnitOfWork<ScoreUpdateModel> UnitOfWork => unitOfWork ?? (unitOfWork = new UnitOfWork<ScoreUpdateModel>(Model, OnUpdateCommited));
-
-        private Task<bool> OnUpdateCommited()
+        private async Task<bool> OnUpdateCommited()
         {
+            bool isSuccess;
             if (Id != 0)
             {
-                return Gateway.UpdateScoreAsync(Model, Zalesak.Session.Token);
+                isSuccess = await Gateway.UpdateScoreAsync(Model, Zalesak.Session.Token);
             }
             else
             {
-                return Gateway.AddScoreAsync(Model, Zalesak.Session.Token);
+                isSuccess = await Gateway.AddScoreAsync(Model, Zalesak.Session.Token);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Id"));
             }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HasValue"));
+            return isSuccess;
         }
     }
 }
