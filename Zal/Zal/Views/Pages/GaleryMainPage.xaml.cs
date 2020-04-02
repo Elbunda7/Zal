@@ -1,7 +1,7 @@
 ﻿using Microsoft.AppCenter.Analytics;
 using Plugin.Media;
 using Plugin.Media.Abstractions;
-using Plugin.Permissions.Abstractions;
+using Xamarin.Essentials;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -91,7 +91,7 @@ namespace Zal.Views.Pages
                 {
                     if (index >= Zalesak.Galleries.Data.Count) break;
                     var gallery = Zalesak.Galleries.Data.ElementAt(index);
-                    string imgPath = "http://zalesak.hlucin.com/" + gallery.File + "small/" + gallery.MainImg;
+                    string imgPath = "http://zalesak.hlucin.com/galerie/albums/" + gallery.File + "small/" + gallery.MainImg;
                     Image img = new Image()
                     {
                         Source = imgPath,
@@ -116,19 +116,19 @@ namespace Zal.Views.Pages
         private async void Button_Clicked(object sender, EventArgs e)
         {
             await CrossMedia.Current.Initialize();
-            if (await HavePermission.For(Permission.Storage))
+            if (await HavePermission.For<Permissions.StorageRead>())
             {
-                var mediaFile = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions() { CompressionQuality = 90, });
+                var mediaFile = await CrossMedia.Current.PickPhotosAsync(new PickMediaOptions() { CompressionQuality = 92, });
                 if (mediaFile != null)
                 {
-                    byte[] rawImage = File.ReadAllBytes(mediaFile.Path);
+                    byte[] rawImage = File.ReadAllBytes(mediaFile[0].Path);
                     //var gallery = await Zalesak.Galleries.Add(galleryEntry.Text, DateTime.Now.Year, DateTime.Now);
-                    mediaFile.Dispose();
+                    var b = ImageSource.FromFile(mediaFile[0].Path);
+                    mainImage.Source = b;
+                    mediaFile[0].Dispose();
                 }
-
-                var a = await CrossMedia.Current.PickPhotoAsync();
-                var b = ImageSource.FromFile(a.Path);
-                //mainImage.Source = b;
+                
+                
             }
         }
     }

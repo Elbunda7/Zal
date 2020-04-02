@@ -11,7 +11,7 @@
               ItemTapped="Handle_ItemTapped"
               CachingStrategy="RecycleElement"
               SeparatorVisibility="None"
-              RowHeight="120"
+              RowHeight="40"
               BackgroundColor="{StaticResource LightBackgroundColor}">
                 <ListView.ItemTemplate>
                     <DataTemplate>

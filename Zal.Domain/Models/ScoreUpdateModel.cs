@@ -7,7 +7,7 @@ namespace Zal.Domain.Models
 {
     public class ScoreUpdateModel : IUpdatableModel
     {
-        public string Value { get; set; }
+        public double Value { get; set; }
 
         public void CopyInto(IModel apiModel)
         {
@@ -18,7 +18,7 @@ namespace Zal.Domain.Models
         public void CopyFrom(IModel apiModel)
         {
             ScoreModel model = apiModel as ScoreModel;
-            Value = model.Value;
+            Value = model.Value ?? 0;
         }
     }
 }

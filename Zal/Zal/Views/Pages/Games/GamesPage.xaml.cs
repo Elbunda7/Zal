@@ -21,6 +21,7 @@ namespace Zal.Views.Pages.Games
         {
             this.gameColl = gameColl;
             this.multiGame = multiGame;
+            Title = multiGame.Name;
         }
 
         public GamesPage ()

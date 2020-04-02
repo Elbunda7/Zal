@@ -8,8 +8,8 @@ namespace Zal.Bridge.Models
     {
         public int Id { get; set; }
         public int Id_Game { get; set; }
-        public string Value { get; set; }
-        public int? Order { get; set; }
+        public double? Value { get; set; }
+        public double OrderPoints { get; set; }
         public int? _Users_Id { get; set; }
         public int? _Teams_Id { get; set; }
     }

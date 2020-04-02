@@ -32,7 +32,7 @@ namespace Zal.Views.Pages.Games
         {
             this.gameColl = gameColl;
             this.game = game;
-            Title = game.Name;
+            Title = $"{game.Name} [{game.Variable}]";
         }
 
         public SingleGamePage ()
@@ -48,15 +48,18 @@ namespace Zal.Views.Pages.Games
 
         private async void Synchronize()
         {
-            if (game == null) game = (await multiGame.GamesLazyLoad()).First();
-            //UserList.ItemsSource = game.Scores;
+            if (game == null)
+            {
+                game = (await multiGame.GamesLazyLoad()).First();
+                Title = $"{multiGame.Name} [{game.Variable}]";
+            }
             UserList.ItemsSource = game.GetCategorizedScores(gameColl.Categories);
         }
 
         private async void UserItem_Tapped(object sender, ItemTappedEventArgs e)
         {
             selectedScore = e.Item as Score;
-            await PopupNavigation.Instance.PushAsync(new EntryPopup(selectedScore.NickName + " - upravit výsledek", SaveNewValue, selectedScore.Value, selectedScore.Value, Keyboard.Numeric));
+            await PopupNavigation.Instance.PushAsync(new EntryPopup(selectedScore.NickName + " - upravit výsledek", SaveNewValue, selectedScore.Value.ToString(), selectedScore.Value.ToString(), Keyboard.Numeric));
         }
 
         private void Entry_Completed(object sender, EventArgs e)
@@ -70,7 +73,7 @@ namespace Zal.Views.Pages.Games
         {
             if (double.TryParse(txt, out double value))
             {
-                selectedScore.UnitOfWork.ToUpdate.Value = value.ToString();//todo value as double
+                selectedScore.UnitOfWork.ToUpdate.Value = value;
                 bool isSuccess = await selectedScore.UnitOfWork.CommitAsync();
             }
         }

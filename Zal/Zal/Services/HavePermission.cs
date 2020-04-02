@@ -1,5 +1,4 @@
-﻿using Plugin.Permissions;
-using Plugin.Permissions.Abstractions;
+﻿using Xamarin.Essentials;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,13 +8,12 @@ namespace Zal.Services
 {
     public static class HavePermission
     {
-        public async static Task<bool> For(Permission permission)
+        public async static Task<bool> For<TPermission>() where TPermission : Permissions.BasePlatformPermission, new()
         {
-            var status = await CrossPermissions.Current.CheckPermissionStatusAsync(permission);
+            var status = await Permissions.CheckStatusAsync<TPermission>();
             if (status != PermissionStatus.Granted)
             {
-                var dictionary = await CrossPermissions.Current.RequestPermissionsAsync(permission);
-                status = dictionary[permission];
+                status = await Permissions.RequestAsync<TPermission>();
             }
             return status == PermissionStatus.Granted;
         }

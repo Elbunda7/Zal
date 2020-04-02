@@ -103,16 +103,31 @@ namespace Zal.Views.Pages.Games
 
         private async void SetCategoryList()
         {
+            int numOfCategories = int.Parse(CategoryCountEntry.Text);
             var allMembers = await action.MembersLazyLoad();
             var members = allMembers.Where(x => x.Joining == ZAL.Joining.True).Select(x => x.Member);
             var leaders = members.Where(x => x.Rank >= ZAL.Rank.Vedouci);
-            members = members.Where(x => x.Rank < ZAL.Rank.Vedouci);
+            members = members.Where(x => x.Rank < ZAL.Rank.Vedouci).OrderByDescending(x=>x.Age);
 
-            groupedCategoryList = new List<MembersListModel>
+            /*groupedCategoryList = new List<MembersListModel>();
+            double groupSize = members.Count() / (double)numOfCategories;
+            double d = groupSize;
+            for (int i = 0; i < members.Count(); i = (int)Math.Floor(d),d+=groupSize)
             {
-                new MembersListModel(members, "Kategorie 1"),
-                new MembersListModel(leaders, "Nehrající")
-            };
+                groupedCategoryList.Add(new MembersListModel(members.Skip(i).Take((int)Math.Floor(d - i)), "Kategorie " + i));
+            }
+            groupedCategoryList.Add(new MembersListModel(leaders, "Nehrající"));*/
+
+            groupedCategoryList = new List<MembersListModel>();
+            double groupSize = members.Count() / (double)numOfCategories;
+            int toSkip = 0;
+            for (int i = 0; i < numOfCategories; i++)
+            {
+                int toTake = (int)Math.Floor((i + 1) * groupSize) - toSkip;
+                groupedCategoryList.Add(new MembersListModel(members.Skip(toSkip).Take(toTake), "Kategorie " + i));
+                toSkip += toTake;
+            }
+            groupedCategoryList.Add(new MembersListModel(leaders, "Nehrající"));
 
             CategoryList.ItemsSource = groupedCategoryList; //todo https://github.com/daniel-luberda/DLToolkit.Forms.Controls/tree/master/FlowListView
         }
@@ -172,6 +187,11 @@ namespace Zal.Views.Pages.Games
                 group.Remove(item);
                 groupedCategoryList.Single(x=>x.GroupTitle == action).Add(item);
             }
+        }
+
+        private void CategoryCountEntry_Unfocused(object sender, FocusEventArgs e)
+        {
+            SetCategoryList();
         }
     }
 

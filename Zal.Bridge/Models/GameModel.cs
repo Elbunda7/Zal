@@ -9,7 +9,7 @@ namespace Zal.Bridge.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Variables { get; set; }
-        public bool RatingStyle { get; set; } //todo rename
+        public bool FromBestToDown { get; set; } //todo rename
         public int Id_Multipart_Games { get; set; }
     }
 }

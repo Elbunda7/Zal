@@ -15,7 +15,7 @@
             Id_Multipart_Games = model.Id_Multipart_Games;
             Name = model.Name;
             Variables = model.Variables;
-            RatingStyle = model.RatingStyle;
+            FromBestToDown = model.FromBestToDown;
         }
 
         public GameRespondModel() { }

@@ -6,7 +6,7 @@
         <StackLayout>
             <Entry x:Name="galleryEntry"/>
             <Button Text="Vytvořit galerii" Clicked="Button_Clicked"></Button>
-            <!--<Image x:Name="mainImage" Source="Splash.png" />-->
+            <Image x:Name="mainImage" Source="Splash.png" />
             <Grid x:Name="ContentGrid"         
                   ColumnSpacing="1"
                   RowSpacing="1"

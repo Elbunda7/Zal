@@ -1,7 +1,7 @@
 ﻿using Microsoft.AppCenter.Analytics;
 using Plugin.Media;
 using Plugin.Media.Abstractions;
-using Plugin.Permissions.Abstractions;
+using Xamarin.Essentials;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -75,7 +75,7 @@ namespace Zal.Views.Pages.Users
         private async void EditButton_Clicked(object sender, EventArgs e)
         {
             await CrossMedia.Current.Initialize();
-            if (await HavePermission.For(Permission.Storage))
+            if (await HavePermission.For<Permissions.StorageRead>())
             {
                 var mediaFile = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions() { CompressionQuality = 90, });
                 if (mediaFile != null)

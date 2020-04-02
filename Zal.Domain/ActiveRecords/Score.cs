@@ -17,8 +17,8 @@ namespace Zal.Domain.ActiveRecords
         internal ScoreModel Model;
 
         public int Id => Model.Id;
-        public string Value => Model.Value;
-        public bool HasValue => Value != null;
+        public double Value => Model.Value.Value;
+        public bool HasValue => Model.Value.HasValue;
         public int IdUser => Model._Users_Id.Value;
         public string NickName { get; private set; }
         public string Variable { get; private set; }

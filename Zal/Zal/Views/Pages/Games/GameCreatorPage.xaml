@@ -24,7 +24,7 @@
                             <StackLayout Padding="10,5" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
                                 <Label Text="Družiny"
                                        TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource falseToAccentConverter}}"/>
-                                <Switch x:Name="IsIndividualSwitch"/>
+                                <Switch x:Name="IsIndividualSwitch" IsToggled="True" IsEnabled="False"/>
                                 <Label Text="Jednotlivci"
                                        TextColor="{Binding Source={x:Reference IsIndividualSwitch}, Path=IsToggled, Converter={StaticResource trueToAccentConverter}}"/>
                             </StackLayout>
@@ -41,7 +41,7 @@
                                         x:Name="CategoryCountEntry"    
                                         TextColor="{StaticResource Primary}" FontSize="Large" HorizontalOptions="FillAndExpand" 
                                     Keyboard="Numeric"
-                                        Text="1"/>
+                                        Text="1" Unfocused="CategoryCountEntry_Unfocused"/>
                             </StackLayout>
 
                         </StackLayout>
@@ -64,6 +64,13 @@
                                             <StackLayout Orientation="Horizontal" Margin="15, 6" >
 
                                                 <Label Text="{Binding NickName}"
+                                                       FontSize="Medium"
+                                                       TextColor="Black"
+                                                       Opacity="0.87"
+                                                       Margin="10,0,0,0"
+                                                       VerticalTextAlignment="Center"/>
+
+                                                <Label Text="{Binding Age}"
                                                        FontSize="Medium"
                                                        TextColor="Black"
                                                        Opacity="0.87"

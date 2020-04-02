@@ -20,7 +20,7 @@ namespace Zal.Domain.ActiveRecords
         public bool HasMultipleParts => NumOfGames > 1;
         public bool HasOnePart => NumOfGames == 1;
 
-        private IEnumerable<Game> _games;
+        private List<Game> _games;
 
         private static GameGateway gateway;
         private static GameGateway Gateway => gateway ?? (gateway = new GameGateway());
@@ -45,14 +45,17 @@ namespace Zal.Domain.ActiveRecords
                 {
                     Name = game.Name,
                     Variables = game.Variable,
-                    RatingStyle = game.RatingStyle,
+                    FromBestToDown = game.RatingStyle,
                     Id_Multipart_Games = Id,
                 });
             }
             bool isSuccess = await Gateway.AddGames(models.ToArray(), "todo token");
             if (isSuccess)
             {
-                _games = _games.Union(models.Select(x => new Game(x)));
+                foreach (GameModel model in models)
+                {
+                    _games.Add(new Game(model));
+                }
                 Model.GamesCount += models.Count;
             }
             return isSuccess;
@@ -62,7 +65,7 @@ namespace Zal.Domain.ActiveRecords
         {
             if (reload || _games == null)
             {
-                _games = await Game.Get(Id);
+                _games = (await Game.Get(Id)).ToList();
             }
             return _games;
         }

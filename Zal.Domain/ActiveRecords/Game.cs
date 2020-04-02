@@ -18,6 +18,8 @@ namespace Zal.Domain.ActiveRecords
 
         public int Id => Model.Id;
         public string Name => Model.Name;
+        public string Variable => Model.Variables;
+        public bool TopToWorst => Model.FromBestToDown;
 
         private static GameGateway gateway;
         private static GameGateway Gateway => gateway ?? (gateway = new GameGateway());
