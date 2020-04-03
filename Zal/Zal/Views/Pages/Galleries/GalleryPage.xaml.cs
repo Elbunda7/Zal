@@ -14,10 +14,12 @@ namespace Zal.Views.Pages.Galleries
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class GalleryPage : ContentPage
 	{
+        const int thumbnailSize = 200;
+        private double maxImgSize = 0;
         private int numOfColumns = 3;
         private double itemSize = 0;
-        private double pageWidthSize = 0;
         private Gallery gallery;
+        private bool wasDeviceVertically = true;
 
         public GalleryPage ()
 		{
@@ -39,32 +41,32 @@ namespace Zal.Views.Pages.Galleries
 
         private async void Synchronize()
         {
-            await Zalesak.Galleries.ReSynchronize();
+            await gallery.ImagesLazyLoad();
             InitGrid();
         }
 
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            if (pageWidthSize != width)
+            bool isDeviceVertically = width < height;
+            if (maxImgSize == 0)
             {
-                pageWidthSize = width;
+                wasDeviceVertically = !isDeviceVertically;
+                maxImgSize = isDeviceVertically ? width / 3 : height / 3;
+                if (maxImgSize > thumbnailSize) maxImgSize = thumbnailSize;
+            }
+            if (isDeviceVertically != wasDeviceVertically)
+            {
+                wasDeviceVertically = isDeviceVertically;
                 OnOrientationChanged(width, height);
             }
         }
 
         private void OnOrientationChanged(double width, double height)
         {
-            if (width > height)
-            {
-                numOfColumns = 5;
-            }
-            else
-            {
-                numOfColumns = 3;
-            }
-            double spaces = ContentGrid.ColumnSpacing;
-            double newItemSize = (width - spaces * (numOfColumns + 1)) / numOfColumns;
+            numOfColumns = (int)((width - 50) / maxImgSize + 1);
+            double spacingSize = ContentGrid.ColumnSpacing * (numOfColumns - 1);
+            double newItemSize = (width - spacingSize) / numOfColumns;
             if (itemSize != newItemSize)
             {
                 itemSize = newItemSize;
@@ -90,7 +92,7 @@ namespace Zal.Views.Pages.Galleries
                 for (int i = 0; i < numOfColumns; i++)
                 {
                     if (index >= images.Count()) break;
-                    string imgPath = "http://zalesak.hlucin.com/" + gallery.File + "small/" + images.ElementAt(index);
+                    string imgPath = "http://zalesak.hlucin.com/galerie/albums/" + gallery.File + "small/" + images.ElementAt(index);
                     Image img = new Image()
                     {
                         Source = imgPath,

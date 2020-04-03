@@ -21,51 +21,59 @@ namespace Zal.Views.Pages
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class GaleryMainPage : ContentPage
 	{
+        const int thumbnailSize = 200;
         private int numOfColumns = 3;
         private double itemSize = 0;
-        private double pageWidthSize = 0;
+        private bool wasDeviceVertically = true;
+        private double maxImgSize = 0;
+        private bool isLoaded = false;
 
 		public GaleryMainPage ()
 		{
 			InitializeComponent ();
             Title = "Galerie";
             Analytics.TrackEvent("GaleryMainPage");
-		}
+        }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            Synchronize();
+            if (!isLoaded)
+            {
+                Synchronize();
+            }
         }
 
         private async void Synchronize()
         {
             await Zalesak.Galleries.ReSynchronize();
-            InitGrid();
+            isLoaded = true;
+            OnSizeAllocated(Width, Height);
         }
 
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            if (pageWidthSize != width)
+            if (!isLoaded) return;
+            bool isDeviceVertically = width < height;
+            if (maxImgSize == 0)
             {
-                pageWidthSize = width;
+                wasDeviceVertically = !isDeviceVertically;
+                maxImgSize = isDeviceVertically ? width / 3 : height / 3;
+                if (maxImgSize > thumbnailSize) maxImgSize = thumbnailSize;
+            }
+            if (isDeviceVertically != wasDeviceVertically)
+            {
+                wasDeviceVertically = isDeviceVertically;
                 OnOrientationChanged(width, height);
             }
         }
 
         private void OnOrientationChanged(double width, double height)
         {
-            if (width > height)
-            {
-                numOfColumns = 5;
-            }
-            else
-            {
-                numOfColumns = 3;
-            }
-            double spaces = ContentGrid.ColumnSpacing;
-            double newItemSize = (width - spaces * (numOfColumns + 1)) / numOfColumns;
+            numOfColumns = (int)((width - 50) / maxImgSize + 1);
+            double spacingSize = ContentGrid.ColumnSpacing * (numOfColumns - 1);
+            double newItemSize = (width - spacingSize) / numOfColumns;
             if (itemSize != newItemSize)
             {
                 itemSize = newItemSize;
@@ -86,22 +94,38 @@ namespace Zal.Views.Pages
             int numOfRows = (Zalesak.Galleries.Data.Count + numOfColumns - 1) / numOfColumns;
             for (int j = 0; j < numOfRows; j++)
             {
-                ContentGrid.RowDefinitions.Add(new RowDefinition() { Height = itemSize });
+                ContentGrid.RowDefinitions.Add(new RowDefinition() { Height = itemSize + 50 });
                 for (int i = 0; i < numOfColumns; i++)
                 {
                     if (index >= Zalesak.Galleries.Data.Count) break;
                     var gallery = Zalesak.Galleries.Data.ElementAt(index);
                     string imgPath = "http://zalesak.hlucin.com/galerie/albums/" + gallery.File + "small/" + gallery.MainImg;
+                    StackLayout cell = new StackLayout
+                    {
+                        Orientation = StackOrientation.Vertical,
+                        Padding = 0,
+                    };
                     Image img = new Image()
                     {
                         Source = imgPath,
                         ClassId = index.ToString(),
+                        HeightRequest = itemSize,
                     };
-                    ContentGrid.Children.Add(img, i, j);
+                    Label label = new Label()
+                    {
+                        Text = gallery.Name,
+                        TextColor = (Color)Application.Current.Resources["PrimaryDark"],
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        Margin = new Thickness(5, 0, 5, 5),
+                        MaxLines = 2
+                    };
+                    cell.Children.Add(img);
+                    cell.Children.Add(label);
+                    ContentGrid.Children.Add(cell, i, j);
                     var onClick = new TapGestureRecognizer();
                     onClick.Tapped += TapGestureRecognizer_Tapped;
                     onClick.CommandParameter = gallery;
-                    img.GestureRecognizers.Add(onClick);
+                    cell.GestureRecognizers.Add(onClick);
                     index++;
                 }
             }
@@ -124,7 +148,6 @@ namespace Zal.Views.Pages
                     byte[] rawImage = File.ReadAllBytes(mediaFile[0].Path);
                     //var gallery = await Zalesak.Galleries.Add(galleryEntry.Text, DateTime.Now.Year, DateTime.Now);
                     var b = ImageSource.FromFile(mediaFile[0].Path);
-                    mainImage.Source = b;
                     mediaFile[0].Dispose();
                 }
                 

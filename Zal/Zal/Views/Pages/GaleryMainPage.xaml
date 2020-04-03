@@ -3,17 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Zal.Views.Pages.GaleryMainPage">
     <ContentPage.Content>
-        <StackLayout>
-            <Entry x:Name="galleryEntry"/>
-            <Button Text="Vytvořit galerii" Clicked="Button_Clicked"></Button>
-            <Image x:Name="mainImage" Source="Splash.png" />
-            <Grid x:Name="ContentGrid"         
-                  ColumnSpacing="1"
-                  RowSpacing="1"
-                  HorizontalOptions="FillAndExpand"
-                  VerticalOptions="FillAndExpand"
-                  >
-            </Grid>
-        </StackLayout>
+        
+        <ScrollView 
+                Padding="0"                    
+                BackgroundColor="White"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+
+            <StackLayout>
+                <Button Text="Vytvořit galerii" Clicked="Button_Clicked"></Button>
+
+                <Grid x:Name="ContentGrid"         
+                      ColumnSpacing="1.5"
+                      RowSpacing="1.5"
+                      HorizontalOptions="FillAndExpand"
+                      VerticalOptions="FillAndExpand">
+                </Grid>
+
+            </StackLayout>
+        </ScrollView>
+        
     </ContentPage.Content>
 </ContentPage>
