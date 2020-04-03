@@ -9,6 +9,7 @@ using Zal.Views.Pages;
 using Zal.Domain;
 using Zal.Domain.ActiveRecords;
 using Zal.Services;
+using Zal.Views.Pages.Galleries;
 
 namespace Zal.Views
 {
@@ -32,7 +33,7 @@ namespace Zal.Views
                 new HomeMenuItem("Aktuality", typeof(ActualityMainPage), "ic_explore_black_24dp.png"),
                 new HomeMenuItem("Plán akcí", typeof(ActionMainPage), "ic_event_black_24dp.png"),
                 new HomeMenuItem("Členové", typeof(MembersMainPage), "ic_people_black_24dp.png"),
-                new HomeMenuItem("Galerie", typeof(GaleryMainPage), "ic_photo_library_black_24dp.png"),
+                new HomeMenuItem("Galerie", typeof(GalleryPage), "ic_photo_library_black_24dp.png"),
                 new HomeMenuItem("Studnice vědění", typeof(InfoMainPage), "ic_apps_black_24dp.png"),
             };
             ListViewMenu.SelectionMode = ListViewSelectionMode.None;

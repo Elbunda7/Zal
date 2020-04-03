@@ -11,9 +11,10 @@
                 VerticalOptions="FillAndExpand">
 
             <StackLayout>
+                <!--<Button Text="Vytvořit galerii" Clicked="Button_Clicked"></Button>-->
                 <Grid x:Name="ContentGrid"         
-                      ColumnSpacing="1"
-                      RowSpacing="1"
+                      ColumnSpacing="1.5"
+                      RowSpacing="1.5"
                       HorizontalOptions="FillAndExpand"
                       VerticalOptions="FillAndExpand"
                       >

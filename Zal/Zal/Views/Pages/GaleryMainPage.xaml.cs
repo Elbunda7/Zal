@@ -18,6 +18,7 @@ using Zal.Views.Pages.Galleries;
 
 namespace Zal.Views.Pages
 {
+    //todo deprecated smazat
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class GaleryMainPage : ContentPage
 	{
@@ -134,7 +135,7 @@ namespace Zal.Views.Pages
         private async void TapGestureRecognizer_Tapped(object sender, EventArgs e)
         {
             Gallery gallery = (e as TappedEventArgs).Parameter as Gallery;
-            await Navigation.PushAsync(new GalleryPage(gallery));
+            await Navigation.PushAsync(new GalleryPage(/*gallery*/));
         }
 
         private async void Button_Clicked(object sender, EventArgs e)

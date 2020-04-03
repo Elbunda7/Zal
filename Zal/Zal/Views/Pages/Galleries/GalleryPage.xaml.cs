@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AppCenter.Analytics;
+using Plugin.Media;
+using Plugin.Media.Abstractions;
+using System;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Domain;
 using Zal.Domain.ActiveRecords;
+using Zal.Services;
 
 namespace Zal.Views.Pages.Galleries
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+    [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class GalleryPage : ContentPage
 	{
         const int thumbnailSize = 200;
@@ -19,11 +21,15 @@ namespace Zal.Views.Pages.Galleries
         private int numOfColumns = 3;
         private double itemSize = 0;
         private Gallery gallery;
+        private bool IsConcreteGallery => gallery != null;
         private bool wasDeviceVertically = true;
+        private bool isLoaded = false;
 
         public GalleryPage ()
 		{
 			InitializeComponent ();
+            Title = "Galerie";
+            Analytics.TrackEvent("GaleryPage-main");
 		}
 
         public GalleryPage(Gallery gallery)
@@ -36,18 +42,30 @@ namespace Zal.Views.Pages.Galleries
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            Synchronize();
+            if (!isLoaded)
+            {
+                Synchronize();
+            }
         }
 
         private async void Synchronize()
         {
-            await gallery.ImagesLazyLoad();
-            InitGrid();
+            if (IsConcreteGallery)
+            {
+                await gallery.ImagesLazyLoad();
+            }
+            else
+            {
+                await Zalesak.Galleries.ReSynchronize();
+            }
+            isLoaded = true;
+            OnSizeAllocated(Width, Height);
         }
 
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
+            if (!isLoaded) return;
             bool isDeviceVertically = width < height;
             if (maxImgSize == 0)
             {
@@ -66,12 +84,8 @@ namespace Zal.Views.Pages.Galleries
         {
             numOfColumns = (int)((width - 50) / maxImgSize + 1);
             double spacingSize = ContentGrid.ColumnSpacing * (numOfColumns - 1);
-            double newItemSize = (width - spacingSize) / numOfColumns;
-            if (itemSize != newItemSize)
-            {
-                itemSize = newItemSize;
-                InitGrid();
-            }
+            itemSize = (width - spacingSize) / numOfColumns;
+            InitGrid();
         }
 
         private async void InitGrid()
@@ -84,34 +98,96 @@ namespace Zal.Views.Pages.Galleries
                 ContentGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
             }
             int index = 0;
-            var images = await gallery.ImagesLazyLoad();
-            int numOfRows = (images.Count() + numOfColumns - 1) / numOfColumns;
+            var images = IsConcreteGallery ? await gallery.ImagesLazyLoad() : Zalesak.Galleries.Data.Select(x=>x.MainImg);
+            double height = IsConcreteGallery ? itemSize : itemSize + 50;
+            int imagesCount = images.Count();
+            int numOfRows = (imagesCount + numOfColumns - 1) / numOfColumns;
             for (int j = 0; j < numOfRows; j++)
             {
-                ContentGrid.RowDefinitions.Add(new RowDefinition() { Height = itemSize });
+                ContentGrid.RowDefinitions.Add(new RowDefinition() { Height = height });
                 for (int i = 0; i < numOfColumns; i++)
                 {
-                    if (index >= images.Count()) break;
-                    string imgPath = "http://zalesak.hlucin.com/galerie/albums/" + gallery.File + "small/" + images.ElementAt(index);
-                    Image img = new Image()
-                    {
-                        Source = imgPath,
-                        ClassId = index.ToString(),
-                    };
-                    ContentGrid.Children.Add(img, i, j);
-                    var onClick = new TapGestureRecognizer();
-                    onClick.Tapped += TapGestureRecognizer_Tapped;
-                    onClick.CommandParameter = images.ElementAt(index);
-                    img.GestureRecognizers.Add(onClick);
+                    if (index >= imagesCount) break;
+                    Gallery gal = IsConcreteGallery ? gallery : Zalesak.Galleries.Data.ElementAt(index);
+                    string imgName = images.ElementAt(index);
+                    string imgLink = "http://zalesak.hlucin.com/galerie/albums/" + gal.File + "small/" + imgName;
+
+                    View cell = IsConcreteGallery ? MakeCell_ConcreteGallery(imgLink, imgName) : MakeCell_Galleries(imgLink, imgName, gal);//todo save localy
+                    ContentGrid.Children.Add(cell, i, j);
                     index++;
                 }
             }
         }
 
-        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        private View MakeCell_ConcreteGallery(string imgLink, string imgName)
+        {
+            Image img = new Image()
+            {
+                Source = imgLink,
+                ClassId = imgName,
+            };
+            var onClick = new TapGestureRecognizer();
+            onClick.Tapped += OpenImage_Tapped;
+            onClick.CommandParameter = imgName;
+            img.GestureRecognizers.Add(onClick);
+            return img;
+        }
+
+        private View MakeCell_Galleries(string imgLink, string imgName, Gallery gal)
+        {
+            StackLayout cell = new StackLayout
+            {
+                Orientation = StackOrientation.Vertical,
+                Padding = 0,
+            };
+            Image img = new Image()
+            {
+                Source = imgLink,
+                ClassId = imgName,
+                HeightRequest = itemSize,
+            };
+            Label label = new Label()
+            {
+                Text = gal.Name,
+                TextColor = (Color)Application.Current.Resources["PrimaryDark"],
+                HorizontalTextAlignment = TextAlignment.Center,
+                Margin = new Thickness(5, 0, 5, 5),
+                MaxLines = 2
+            };
+            cell.Children.Add(img);
+            cell.Children.Add(label);
+            var onClick = new TapGestureRecognizer();
+            onClick.Tapped += OpenGallery_Tapped;
+            onClick.CommandParameter = gal;
+            cell.GestureRecognizers.Add(onClick);
+            return cell;
+        }
+
+        private void OpenImage_Tapped(object sender, EventArgs e)
         {
             string image = (e as TappedEventArgs).Parameter as string;
         }
 
+        private async void OpenGallery_Tapped(object sender, EventArgs e)
+        {            
+            Gallery gal = (e as TappedEventArgs).Parameter as Gallery;
+            await Navigation.PushAsync(new GalleryPage(gal));
+        }
+
+        private async void Button_Clicked(object sender, EventArgs e)
+        {
+            await CrossMedia.Current.Initialize();
+            if (await HavePermission.For<Permissions.StorageRead>())
+            {
+                var mediaFile = await CrossMedia.Current.PickPhotosAsync(new PickMediaOptions() { CompressionQuality = 92, });
+                if (mediaFile != null)
+                {
+                    byte[] rawImage = File.ReadAllBytes(mediaFile[0].Path);
+                    //var gallery = await Zalesak.Galleries.Add(galleryEntry.Text, DateTime.Now.Year, DateTime.Now);
+                    var b = ImageSource.FromFile(mediaFile[0].Path);
+                    mediaFile[0].Dispose();
+                }
+            }
+        }
     }
 }
