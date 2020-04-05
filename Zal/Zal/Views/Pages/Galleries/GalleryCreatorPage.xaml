@@ -69,18 +69,10 @@
                             <!--<Image x:Name="firstImage" HorizontalOptions="Fill"/>-->
                         </StackLayout>
 
-
-                        <ActivityIndicator 
-                                x:Name="pickingImagesIndicator"    
-                                IsVisible="False"
-                                IsRunning="True" 
-                                VerticalOptions="CenterAndExpand"/>
-
                         <StackLayout VerticalOptions="End" HorizontalOptions="Center">
                             <Button
                                 BackgroundColor="{StaticResource Accent}"                                
                                 WidthRequest="140"
-                                x:Name="saveButton"
                                 Text="Uložit na web"
                                 Clicked="SaveGallery_Click"/>
                         </StackLayout>
@@ -88,6 +80,11 @@
 
                 </Frame>
 
+                <ActivityIndicator 
+                    x:Name="pickingImagesIndicator"    
+                    IsVisible="False"
+                    IsRunning="True" 
+                    VerticalOptions="CenterAndExpand"/>
 
             </StackLayout>
 

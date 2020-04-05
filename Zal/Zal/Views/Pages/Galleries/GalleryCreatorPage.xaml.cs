@@ -29,26 +29,25 @@ namespace Zal.Views.Pages.Galleries
             await CrossMedia.Current.Initialize();
             if (await HavePermission.For<Permissions.StorageRead>())
             {
-                saveButton.IsEnabled = false;
                 var pickingTask = CrossMedia.Current.PickPhotosAsync(new PickMediaOptions() { CompressionQuality = 92, });
                 await Task.Delay(300);
                 IndicateActivity(true);
-                mediaFiles = await pickingTask;
+                var tmpMediaFiles = await pickingTask;
+                if (tmpMediaFiles != null) mediaFiles = tmpMediaFiles;
                 IndicateActivity(false);
                 if (mediaFiles != null)
                 {
                     var b = ImageSource.FromFile(mediaFiles[0].Path);
                     //firstImage.Source = b;
                     infoLabel.Text = "Fotek vybráno: " + mediaFiles.Count;
-                    saveButton.IsEnabled = true;
+                    infoFrame.IsVisible = true;
                 }
             }
         }
 
         private void IndicateActivity(bool isRunning)
         {
-            infoLayout.IsVisible = !isRunning;
-            saveButton.IsVisible = !isRunning;
+            if (isRunning) infoFrame.IsVisible = !isRunning;
             pickingImagesIndicator.IsVisible = isRunning;
         }
 
