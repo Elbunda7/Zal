@@ -1,15 +1,10 @@
 ﻿using Microsoft.AppCenter.Analytics;
-using Plugin.Media;
-using Plugin.Media.Abstractions;
 using System;
-using System.IO;
 using System.Linq;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Domain;
 using Zal.Domain.ActiveRecords;
-using Zal.Services;
 
 namespace Zal.Views.Pages.Galleries
 {
@@ -29,6 +24,13 @@ namespace Zal.Views.Pages.Galleries
 		{
 			InitializeComponent ();
             Title = "Galerie";
+            var toolbarItem = new ToolbarItem()
+            {
+                Text = "vytvořit novou galerii",
+                Order = ToolbarItemOrder.Secondary
+            };
+            toolbarItem.Clicked += NewGalery_ToolbarItemClicked;
+            ToolbarItems.Add(toolbarItem);
             Analytics.TrackEvent("GaleryPage-main");
 		}
 
@@ -163,6 +165,11 @@ namespace Zal.Views.Pages.Galleries
             return cell;
         }
 
+        private async void NewGalery_ToolbarItemClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new GalleryCreatorPage());
+        }
+
         private void OpenImage_Tapped(object sender, EventArgs e)
         {
             string image = (e as TappedEventArgs).Parameter as string;
@@ -172,22 +179,6 @@ namespace Zal.Views.Pages.Galleries
         {            
             Gallery gal = (e as TappedEventArgs).Parameter as Gallery;
             await Navigation.PushAsync(new GalleryPage(gal));
-        }
-
-        private async void Button_Clicked(object sender, EventArgs e)
-        {
-            await CrossMedia.Current.Initialize();
-            if (await HavePermission.For<Permissions.StorageRead>())
-            {
-                var mediaFile = await CrossMedia.Current.PickPhotosAsync(new PickMediaOptions() { CompressionQuality = 92, });
-                if (mediaFile != null)
-                {
-                    byte[] rawImage = File.ReadAllBytes(mediaFile[0].Path);
-                    //var gallery = await Zalesak.Galleries.Add(galleryEntry.Text, DateTime.Now.Year, DateTime.Now);
-                    var b = ImageSource.FromFile(mediaFile[0].Path);
-                    mediaFile[0].Dispose();
-                }
-            }
         }
     }
 }
