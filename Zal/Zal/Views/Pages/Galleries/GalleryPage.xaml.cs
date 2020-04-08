@@ -29,7 +29,7 @@ namespace Zal.Views.Pages.Galleries
                 Text = "vytvořit novou galerii",
                 Order = ToolbarItemOrder.Secondary
             };
-            toolbarItem.Clicked += NewGalery_ToolbarItemClicked;
+            toolbarItem.Clicked += AddGallery_ToolbarItemClicked;
             ToolbarItems.Add(toolbarItem);
             Analytics.TrackEvent("GaleryPage-main");
 		}
@@ -39,6 +39,13 @@ namespace Zal.Views.Pages.Galleries
             InitializeComponent();
             Title = gallery.Name;
             this.gallery = gallery;
+            var toolbarItem = new ToolbarItem()
+            {
+                Text = "přidat fotky",
+                Order = ToolbarItemOrder.Secondary
+            };
+            toolbarItem.Clicked += AddGallery_ToolbarItemClicked;
+            ToolbarItems.Add(toolbarItem);
         }
 
         protected override void OnAppearing()
@@ -90,7 +97,7 @@ namespace Zal.Views.Pages.Galleries
             InitGrid();
         }
 
-        private async void InitGrid()
+        private async void InitGrid()//todo when uploadin deleting images -> redraw
         {
             ContentGrid.RowDefinitions = new RowDefinitionCollection();
             ContentGrid.ColumnDefinitions = new ColumnDefinitionCollection();
@@ -165,9 +172,9 @@ namespace Zal.Views.Pages.Galleries
             return cell;
         }
 
-        private async void NewGalery_ToolbarItemClicked(object sender, EventArgs e)
+        private async void AddGallery_ToolbarItemClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new GalleryCreatorPage());
+            await Navigation.PushAsync(new GalleryCreatorPage(gallery));
         }
 
         private void OpenImage_Tapped(object sender, EventArgs e)

@@ -10,7 +10,7 @@ namespace Zal.Views
     {
         public AboutPage()
         {
-            InitializeComponent();
+            InitializeComponent();           
         }
     }
 }

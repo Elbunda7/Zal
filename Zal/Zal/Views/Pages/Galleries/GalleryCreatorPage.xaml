@@ -12,6 +12,7 @@
                 VerticalOptions="FillAndExpand">
 
                 <Frame 
+                    x:Name="settingsFrame"
                     Padding="10" 
                     CornerRadius="10" 
                     BackgroundColor="WhiteSmoke">
@@ -44,6 +45,7 @@
                         </StackLayout>
 
                         <Button
+                            x:Name="inFramePickPhotosButton"
                             BackgroundColor="{StaticResource Accent}"
                             HorizontalOptions="Center"
                             WidthRequest="140"
@@ -52,6 +54,14 @@
 
                     </StackLayout>
                 </Frame>
+
+                <Button
+                    x:Name="soloPickPhotosButton"
+                    BackgroundColor="{StaticResource Accent}"
+                    HorizontalOptions="Center"
+                    WidthRequest="140"
+                    Text="Vybrat fotky"
+                    Clicked="PickPhotos_Click"/>
 
                 <Frame 
                     x:Name="infoFrame"
@@ -64,9 +74,19 @@
 
                     <StackLayout VerticalOptions="FillAndExpand">
                         <StackLayout x:Name="infoLayout" VerticalOptions="StartAndExpand"
-                                     HorizontalOptions="Center">
-                            <Label x:Name="infoLabel"/>
-                            <!--<Image x:Name="firstImage" HorizontalOptions="Fill"/>-->
+                                     HorizontalOptions="CenterAndExpand">
+                            <Label x:Name="infoLabel"
+                                   HorizontalOptions="Center"/>
+                            <Label x:Name="infoLabel2"
+                                   HorizontalOptions="Center"/>
+                            <Frame WidthRequest="150"
+                                   HeightRequest="150"
+                                   Padding="1.5"       
+                                   BorderColor="{StaticResource PrimaryDark}"
+                                   HasShadow="True">
+                                <Image x:Name="firstImage" 
+                                       Aspect="AspectFill"/>
+                            </Frame>
                         </StackLayout>
 
                         <StackLayout VerticalOptions="End" HorizontalOptions="Center">

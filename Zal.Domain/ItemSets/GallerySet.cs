@@ -34,9 +34,9 @@ namespace Zal.Domain.ItemSets
             return Synchronize();
         }
 
-        public async Task<Gallery> Add(string name, int year, DateTime date)
+        public async Task<Gallery> Add(string name, int year, DateTime date, string mainImgName = "")
         {
-            var task = Gallery.Add(name, year, date);
+            var task = Gallery.Add(name, year, date, mainImgName);
             Gallery gallery = await ExecuteTask(task);
             if (gallery != null)
             {

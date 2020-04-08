@@ -12,9 +12,10 @@ namespace Zal.Bridge.Gateways
     {
         public GalleryGateway() : base(API.ENDPOINT.GALLERY) { }
 
-        public Task<IEnumerable<string>> GetAsync(int id)
+        public async Task<IEnumerable<string>> GetAsync(int id)
         {
-            return SendRequestFor<IEnumerable<string>>(API.METHOD.GET, id);
+            var respond = await SendRequestForNullable<IEnumerable<string>>(API.METHOD.GET, id);
+            return respond ?? new List<string>();
         }
 
         public async Task<IEnumerable<GalleryModel>> GetAllAsync()

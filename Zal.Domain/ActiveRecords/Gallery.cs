@@ -36,11 +36,11 @@ namespace Zal.Domain.ActiveRecords
 
         public async Task<IEnumerable<string>> ImagesLazyLoad()
         {
-            if (images == null)
-            {
-                images = (await Gateway.GetAsync(Id)).ToList();
-            }
-            return images;
+            //if (images == null)
+            //{
+            //    images = (await Gateway.GetAsync(Id)).ToList();
+            //}
+            return images ?? (images = (await Gateway.GetAsync(Id)).ToList());
         }
 
         internal Gallery(GalleryModel model)
@@ -57,7 +57,7 @@ namespace Zal.Domain.ActiveRecords
                 Name = imageName,
             };
             bool isUploaded = await Gateway.UploadImage(model, rawImage, "Zalesak.Session.Token");
-            if (isUploaded) images.Add(imageName);
+            if (isUploaded) images?.Add(imageName);
             return isUploaded;
         }
 
@@ -68,13 +68,14 @@ namespace Zal.Domain.ActiveRecords
             return galleries;
         }
 
-        internal static async Task<Gallery> Add(string name, int year, DateTime date)
+        internal static async Task<Gallery> Add(string name, int year, DateTime date, string mainImgName)
         {
             var model = new GalleryModel
             {
                 Name = name,
                 Year = year,
                 Date = date,
+                MainImg = mainImgName,
             };
             var respond = await Gateway.AddAsync(model, "galToken");
             if (respond.Id != -1)
