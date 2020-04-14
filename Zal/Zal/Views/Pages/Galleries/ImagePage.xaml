@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Zal.Views.Pages.Galleries.ImagePage"
+             xmlns:local="clr-namespace:Zal.Elements"
+             xmlns:pinch="clr-namespace:Xamarin.Forms.PinchZoomImage;assembly=Xamarin.Forms.PinchZoomImage" >
+    <ContentPage.Content>
+        <StackLayout HorizontalOptions="FillAndExpand"
+                     VerticalOptions="FillAndExpand">
+            <!--<local:ZoomImage x:Name="imageView"
+                             HorizontalOptions="FillAndExpand"
+                             VerticalOptions="FillAndExpand"/>-->
+
+            <local:PinchZoom BackgroundColor="Aqua"
+                             VerticalOptions="FillAndExpand"
+                             >
+                <local:PinchZoom.Content >
+                    <Image x:Name="imageView" />
+                </local:PinchZoom.Content>
+            </local:PinchZoom>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

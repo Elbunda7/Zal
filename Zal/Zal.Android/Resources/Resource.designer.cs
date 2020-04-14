@@ -8521,26 +8521,26 @@ namespace Zal.Droid
 			// aapt resource value: 0x7f020054
 			public const int avd_hide_password = 2130837588;
 			
+			// aapt resource value: 0x7f020169
+			public const int avd_hide_password_1 = 2130837865;
+			
+			// aapt resource value: 0x7f02016a
+			public const int avd_hide_password_2 = 2130837866;
+			
 			// aapt resource value: 0x7f02016b
-			public const int avd_hide_password_1 = 2130837867;
-			
-			// aapt resource value: 0x7f02016c
-			public const int avd_hide_password_2 = 2130837868;
-			
-			// aapt resource value: 0x7f02016d
-			public const int avd_hide_password_3 = 2130837869;
+			public const int avd_hide_password_3 = 2130837867;
 			
 			// aapt resource value: 0x7f020055
 			public const int avd_show_password = 2130837589;
 			
+			// aapt resource value: 0x7f02016c
+			public const int avd_show_password_1 = 2130837868;
+			
+			// aapt resource value: 0x7f02016d
+			public const int avd_show_password_2 = 2130837869;
+			
 			// aapt resource value: 0x7f02016e
-			public const int avd_show_password_1 = 2130837870;
-			
-			// aapt resource value: 0x7f02016f
-			public const int avd_show_password_2 = 2130837871;
-			
-			// aapt resource value: 0x7f020170
-			public const int avd_show_password_3 = 2130837872;
+			public const int avd_show_password_3 = 2130837870;
 			
 			// aapt resource value: 0x7f020056
 			public const int baseline_access_time_black_24 = 2130837590;
@@ -9307,11 +9307,11 @@ namespace Zal.Droid
 			// aapt resource value: 0x7f020154
 			public const int notification_icon_background = 2130837844;
 			
-			// aapt resource value: 0x7f020169
-			public const int notification_template_icon_bg = 2130837865;
+			// aapt resource value: 0x7f020167
+			public const int notification_template_icon_bg = 2130837863;
 			
-			// aapt resource value: 0x7f02016a
-			public const int notification_template_icon_low_bg = 2130837866;
+			// aapt resource value: 0x7f020168
+			public const int notification_template_icon_low_bg = 2130837864;
 			
 			// aapt resource value: 0x7f020155
 			public const int notification_tile_bg = 2130837845;
@@ -9359,19 +9359,13 @@ namespace Zal.Droid
 			public const int tooltip_frame_light = 2130837859;
 			
 			// aapt resource value: 0x7f020164
-			public const int trees = 2130837860;
+			public const int trosky_40dp = 2130837860;
 			
 			// aapt resource value: 0x7f020165
-			public const int trosky_40dp = 2130837861;
+			public const int veverka_40dp = 2130837861;
 			
 			// aapt resource value: 0x7f020166
-			public const int veverka_40dp = 2130837862;
-			
-			// aapt resource value: 0x7f020167
-			public const int xamarin_logo = 2130837863;
-			
-			// aapt resource value: 0x7f020168
-			public const int znak = 2130837864;
+			public const int xamarin_logo = 2130837862;
 			
 			static Drawable()
 			{

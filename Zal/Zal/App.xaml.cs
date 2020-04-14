@@ -9,6 +9,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using System;
 using System.Xml.Linq;
+using Zal.Views.Pages.Galleries;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace Zal
@@ -51,7 +52,8 @@ namespace Zal
 
         private void OnAppReady()
         {
-            MainPage = new MainPage();
+             MainPage = new MainPage();
+            //MainPage = new ImagePage("http://zalesak.hlucin.com/galerie/albums/2019/vanocka/DSC_1060.jpg");
         }
 
 

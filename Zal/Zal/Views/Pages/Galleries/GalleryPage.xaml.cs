@@ -119,7 +119,7 @@ namespace Zal.Views.Pages.Galleries
                     if (index >= imagesCount) break;
                     Gallery gal = IsConcreteGallery ? gallery : Zalesak.Galleries.Data.ElementAt(index);
                     string imgName = images.ElementAt(index);
-                    string imgLink = "http://zalesak.hlucin.com/galerie/albums/" + gal.File + "small/" + imgName;
+                    string imgLink = "http://zalesak.hlucin.com/galerie/albums/" + gal.File;
 
                     View cell = IsConcreteGallery ? MakeCell_ConcreteGallery(imgLink, imgName) : MakeCell_Galleries(imgLink, imgName, gal);//todo save localy
                     ContentGrid.Children.Add(cell, i, j);
@@ -132,12 +132,12 @@ namespace Zal.Views.Pages.Galleries
         {
             Image img = new Image()
             {
-                Source = imgLink,
+                Source = imgLink + "small/" + imgName,
                 ClassId = imgName,
             };
             var onClick = new TapGestureRecognizer();
             onClick.Tapped += OpenImage_Tapped;
-            onClick.CommandParameter = imgName;
+            onClick.CommandParameter = imgLink + imgName;
             img.GestureRecognizers.Add(onClick);
             return img;
         }
@@ -151,7 +151,7 @@ namespace Zal.Views.Pages.Galleries
             };
             Image img = new Image()
             {
-                Source = imgLink,
+                Source = imgLink + "small/" + imgName,
                 ClassId = imgName,
                 HeightRequest = itemSize,
             };
@@ -177,9 +177,10 @@ namespace Zal.Views.Pages.Galleries
             await Navigation.PushAsync(new GalleryCreatorPage(gallery));
         }
 
-        private void OpenImage_Tapped(object sender, EventArgs e)
+        private async void OpenImage_Tapped(object sender, EventArgs e)
         {
             string image = (e as TappedEventArgs).Parameter as string;
+            await Navigation.PushAsync(new ImagePage(image));
         }
 
         private async void OpenGallery_Tapped(object sender, EventArgs e)
