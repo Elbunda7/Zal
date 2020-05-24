@@ -20,7 +20,11 @@ namespace Zal.Elements
         double currentScale = 1;
         double startScale = 1;
         double xOffset = 0;
+        private double startMidY;
+        private double originY;
         double yOffset = 0, startTargetX, startTargetY;
+        private double startMidX;
+        private double originX;
 
         public PinchZoom()
         {
@@ -31,6 +35,16 @@ namespace Zal.Elements
             var panGesture = new PanGestureRecognizer();
             panGesture.PanUpdated += OnPanUpdated;
             GestureRecognizers.Add(panGesture);
+
+            var doublePan = new PanGestureRecognizer();
+            doublePan.PanUpdated += DoublePan_PanUpdated;
+            doublePan.TouchPoints = 2;
+            GestureRecognizers.Add(doublePan);
+        }
+
+        private void DoublePan_PanUpdated(object sender, PanUpdatedEventArgs e)
+        {
+            Console.Write("Double Pan");
         }
 
         protected override void OnChildAdded(Element child)
@@ -42,6 +56,7 @@ namespace Zal.Elements
 
         private void PinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
         {
+            Console.Write("Pinch");
             if (Animation != null && !Animation.IsCompleted) return;
             if (panIsRunning) CompletePan();
 
@@ -56,12 +71,14 @@ namespace Zal.Elements
                 double renderedX = Content.X + xOffset;
                 double deltaX = renderedX / Width;
                 double deltaWidth = Width / (Content.Width * startScale);
-                double originX = (e.ScaleOrigin.X - Content.AnchorX - deltaX) * deltaWidth;
+                startMidX = - deltaX * deltaWidth;
+                originX = (e.ScaleOrigin.X - Content.AnchorX - deltaX) * deltaWidth;
 
-                double renderedY = Content.Y + yOffset;
+                double renderedY = /*Content.Y +*/ yOffset;
                 double deltaY = renderedY / Height;
-                double deltaHeight = Height / (Content.Height * startScale);
-                double originY = (e.ScaleOrigin.Y - Content.AnchorY - deltaY) * deltaHeight;
+                double deltaHeight = Content.Height / (Content.Height * startScale);
+                startMidY = - deltaY * deltaHeight;
+                originY = (e.ScaleOrigin.Y - Content.AnchorY - deltaY) * deltaHeight;
 
                 startTargetX = xOffset - (originX * Content.Width) * (currentScale - startScale);
                 startTargetY = yOffset - (originY * Content.Height) * (currentScale - startScale);
@@ -72,28 +89,35 @@ namespace Zal.Elements
                 double currentScale = Content.Scale + (e.Scale - 1) * startScale;
                 currentScale = Math.Max(1-OVERSHOOT, currentScale);
 
-                //double renderedX = Content.X + xOffset;
-                //double deltaX = renderedX / Width;
-                //double deltaWidth = Width / (Content.Width * startScale);
+                double renderedX = Content.X + xOffset;
+                double deltaX = renderedX / Width;
+                double deltaWidth = Width / (Content.Width * startScale);
                 //double originX = (e.ScaleOrigin.X - Content.AnchorX - deltaX) * deltaWidth;
 
-                //double renderedY = Content.Y + yOffset;
-                //double deltaY = renderedY / Height;
-                //double deltaHeight = Height / (Content.Height * startScale);
+                double renderedY = Content.Y + yOffset;
+                double deltaY = renderedY / Height;
+                double deltaHeight = Height / (Content.Height * startScale);
                 //double originY = (e.ScaleOrigin.Y - Content.AnchorY - deltaY) * deltaHeight;
 
-                //double targetX = xOffset - (originX * Content.Width) * (currentScale - startScale);
-                //double targetY = yOffset - (originY * Content.Height) * (currentScale - startScale);
+                double targetX = xOffset - (originX * Content.Width) * (currentScale - startScale);
+                double targetY = yOffset - (originY * Content.Height) * (currentScale - startScale);
 
                 double totalX = e.ScaleOrigin.X * Content.Width;
                 double totalY = e.ScaleOrigin.Y * Content.Height;
 
-                //Translate(totalX - StartX, totalY - StartY);
+                //Console.WriteLine($"Pinch {totalX - StartX}, {totalY - StartY}");
+                //Translate(originX * currentScale * Width, originY * currentScale * Height);
+
+                double changeCoef = currentScale / startScale;
+                //double changeCoef
+                double dir = changeCoef > 0 ? 1 - changeCoef : -1 - changeCoef;
+                Content.TranslationX = GetTranslationX(startMidX, currentScale);// -startMidX * currentScale * Width;
+                Content.TranslationY = GetTranslationY(startMidY, currentScale); //-startMidY * currentScale * Height;
 
                 if (currentScale > 1)
                 {
-                    Content.TranslationX = Math.Min(Content.Width / 2 * (currentScale - 1), Math.Max(startTargetX, -Content.Width / 2 * (currentScale - 1)));
-                    Content.TranslationY = Math.Min(Content.Height / 2 * (currentScale - 1), Math.Max(startTargetY, -Content.Height / 2 * (currentScale - 1)));
+                    Content.TranslationX = Math.Min(Content.Width / 2 * (currentScale - 1), Math.Max(Content.TranslationX, -Content.Width / 2 * (currentScale - 1)));
+                    Content.TranslationY = Math.Min(Content.Height / 2 * (currentScale - 1), Math.Max(Content.TranslationY, -Content.Height / 2 * (currentScale - 1)));
                 }
                 else
                 {
@@ -106,20 +130,52 @@ namespace Zal.Elements
 
             if (e.Status == GestureStatus.Completed)
             {
-                xOffset = Content.TranslationX;
-                yOffset = Content.TranslationY;
+                //xOffset = Content.TranslationX;
+                //yOffset = Content.TranslationY;
                 if (Content.Scale > MAX_SCALE)
                 {
-                    Content.ScaleTo(MAX_SCALE, 250, Easing.SpringOut);
-                    Animation = Content.TranslateTo(0, 0, 250, Easing.SpringOut);
+                    Content.TranslateTo(GetTranslationX(CurrentMiddleX(), MAX_SCALE), GetTranslationY(CurrentMiddleY(), MAX_SCALE), 250, Easing.SpringOut);
+                    Animation = Content.ScaleTo(MAX_SCALE, 250, Easing.SpringOut);
                 }
                 else if (Content.Scale < MIN_SCALE)
-                    Content.ScaleTo(MIN_SCALE, 250, Easing.SpringOut);
+                {
+                    Content.TranslateTo(0, 0, 250, Easing.SpringOut);
+                    Animation = Content.ScaleTo(MIN_SCALE, 250, Easing.SpringOut);
+                }
             }
+        }
+
+        private double CurrentMiddleX()
+        {
+            double renderedX = Content.X + xOffset;
+            double deltaX = renderedX / Width;
+            double deltaWidth = Width / (Content.Width * startScale);
+            double midX = -deltaX * deltaWidth;
+            return midX;
+        }
+
+        private double CurrentMiddleY()
+        {
+            double renderedY = yOffset;
+            double deltaY = renderedY / Height;
+            double deltaHeight = Content.Height / (Content.Height * startScale);
+            double midY = -deltaY * deltaHeight;
+            return midY;
+        }
+
+        private double GetTranslationX(double mid, double targetScale)
+        {
+            return -mid * targetScale * Width;
+        }
+
+        private double GetTranslationY(double mid, double targetScale)
+        {
+            return -mid * targetScale * Height;
         }
 
         public void OnPanUpdated(object sender, PanUpdatedEventArgs e)
         {
+            Console.WriteLine($"Pan");
             if (Animation != null && !Animation.IsCompleted) return;
             if (!panIsRunning)
             {
@@ -172,9 +228,11 @@ namespace Zal.Elements
 
             if (newX < -wBound) newX = -wBound;
             if (newX > wBound) newX = wBound;
+            if (width < Application.Current.MainPage.Width) newX = 0;
 
-            if (newY < -wBound) newY = -wBound;
+            if (newY < -hBound) newY = -hBound;
             if (newY > hBound) newY = hBound;
+            if (height < Application.Current.MainPage.Height) newY = 0;
 
             Content.TranslationX = newX;
             Content.TranslationY = newY;
@@ -187,6 +245,19 @@ namespace Zal.Elements
             panIsRunning = false;
         }
 
+        double w = -1, h = -1;
+        double w2 = -1, h2 = -1;
+
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            h = Content.Height;
+            h2 = Application.Current.MainPage.Height;
+            w = Content.Width;
+            w2 = Application.Current.MainPage.Width;
+            double x = Width;
+            double y = Height;
+        }
     }
 
 }

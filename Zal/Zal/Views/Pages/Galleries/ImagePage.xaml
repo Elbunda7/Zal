@@ -11,11 +11,14 @@
                              HorizontalOptions="FillAndExpand"
                              VerticalOptions="FillAndExpand"/>-->
 
-            <local:PinchZoom BackgroundColor="Aqua"
+            <local:PinchZoom 
+                x:Name="zoomBox"
+                BackgroundColor="Aqua"
                              VerticalOptions="FillAndExpand"
+                             HorizontalOptions="FillAndExpand"
                              >
                 <local:PinchZoom.Content >
-                    <Image x:Name="imageView" />
+                    <Image x:Name="imageView" VerticalOptions="Center" HorizontalOptions="Center" Aspect="AspectFit"/>
                 </local:PinchZoom.Content>
             </local:PinchZoom>
         </StackLayout>
