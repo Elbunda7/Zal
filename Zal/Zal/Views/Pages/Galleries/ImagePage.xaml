@@ -16,9 +16,11 @@
                 BackgroundColor="Aqua"
                              VerticalOptions="FillAndExpand"
                              HorizontalOptions="FillAndExpand"
+                Padding="0"
+                Margin="0"
                              >
                 <local:PinchZoom.Content >
-                    <Image x:Name="imageView" VerticalOptions="Center" HorizontalOptions="Center" Aspect="AspectFit"/>
+                    <Image x:Name="imageView" VerticalOptions="Fill" HorizontalOptions="Fill" Aspect="AspectFit" Margin="0"/>
                 </local:PinchZoom.Content>
             </local:PinchZoom>
         </StackLayout>

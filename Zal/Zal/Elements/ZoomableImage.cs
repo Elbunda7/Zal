@@ -245,18 +245,59 @@ namespace Zal.Elements
             panIsRunning = false;
         }
 
-        double w = -1, h = -1;
-        double w2 = -1, h2 = -1;
-
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            h = Content.Height;
-            h2 = Application.Current.MainPage.Height;
-            w = Content.Width;
-            w2 = Application.Current.MainPage.Width;
-            double x = Width;
-            double y = Height;
+            height = Content.Height;
+            double h2 = Application.Current.MainPage.Height;
+            width = Content.Width;
+            double w2 = Application.Current.MainPage.Width;
+            double h3 = (Content as Image).Height;
+            double w3 = (Content as Image).Width;
+            double h4 = Width;
+            double w4 = Height;
+
+            if (h2 < height)
+            {
+                //Content.HeightRequest = h2;
+                double coef = h2 / height;
+                Content.HeightRequest = h2;
+                Content.HorizontalOptions = LayoutOptions.Center;
+                Content.VerticalOptions = LayoutOptions.Center;
+                //Content.WidthRequest = width * coef;
+                //HeightRequest = h2;
+                //WidthRequest = w * coef;
+                //height = h2;
+                //width = width * coef;
+                VerticalOptions = LayoutOptions.Fill;
+            }
+            else
+            {
+                VerticalOptions = LayoutOptions.FillAndExpand;
+            }
+            //else
+            //{
+            //    Content.VerticalOptions = LayoutOptions.Center;
+            //}
+            if (w2 <= width)
+            {
+                double coef = w2 / width;
+                Content.HeightRequest = coef * height;
+                //Content.WidthRequest = w2;
+                //HeightRequest = w * coef;
+                //WidthRequest = w2;
+                //height = height * coef;
+                //width = w2;
+            }
+
+            if (width < w2 && height < h2)
+            {
+                //Content.HeightRequest = h2;
+            }
+            //else
+            //{
+            //    Content.VerticalOptions = LayoutOptions.Center;
+            //}
         }
     }
 
