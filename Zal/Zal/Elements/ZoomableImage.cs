@@ -15,7 +15,10 @@ namespace Zal.Elements
         private double StartScale;
         private double StartX, StartY;
         bool panIsRunning = false;
+        bool isActivatedFirstTime = true;
         Task<bool> Animation;
+        double origHeight;
+        double origWidth;
 
         double currentScale = 1;
         double startScale = 1;
@@ -68,7 +71,7 @@ namespace Zal.Elements
                 StartX = e.ScaleOrigin.X * Content.Width;
                 StartY = e.ScaleOrigin.Y * Content.Height;
 
-                double renderedX = Content.X + xOffset;
+                double renderedX = /*Content.X +*/ xOffset;
                 double deltaX = renderedX / Width;
                 double deltaWidth = Width / (Content.Width * startScale);
                 startMidX = - deltaX * deltaWidth;
@@ -147,7 +150,7 @@ namespace Zal.Elements
 
         private double CurrentMiddleX()
         {
-            double renderedX = Content.X + xOffset;
+            double renderedX = xOffset;
             double deltaX = renderedX / Width;
             double deltaWidth = Width / (Content.Width * startScale);
             double midX = -deltaX * deltaWidth;
@@ -248,56 +251,64 @@ namespace Zal.Elements
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            height = Content.Height;
-            double h2 = Application.Current.MainPage.Height;
-            width = Content.Width;
-            double w2 = Application.Current.MainPage.Width;
-            double h3 = (Content as Image).Height;
-            double w3 = (Content as Image).Width;
-            double h4 = Width;
-            double w4 = Height;
+            double pageHeight = Application.Current.MainPage.Height;
+            double pageWidth = Application.Current.MainPage.Width;
 
-            if (h2 < height)
+            Content.HorizontalOptions = LayoutOptions.Center;
+            Content.VerticalOptions = LayoutOptions.Center;
+            (Content as Image).Aspect = Aspect.AspectFit;
+
+            if (Content.Width < 1 || Content.Height < 1) return;
+            if (isActivatedFirstTime)
             {
-                //Content.HeightRequest = h2;
-                double coef = h2 / height;
-                Content.HeightRequest = h2;
-                Content.HorizontalOptions = LayoutOptions.Center;
-                Content.VerticalOptions = LayoutOptions.Center;
-                //Content.WidthRequest = width * coef;
-                //HeightRequest = h2;
-                //WidthRequest = w * coef;
-                //height = h2;
-                //width = width * coef;
-                VerticalOptions = LayoutOptions.Fill;
-            }
-            else
-            {
-                VerticalOptions = LayoutOptions.FillAndExpand;
-            }
-            //else
-            //{
-            //    Content.VerticalOptions = LayoutOptions.Center;
-            //}
-            if (w2 <= width)
-            {
-                double coef = w2 / width;
-                Content.HeightRequest = coef * height;
-                //Content.WidthRequest = w2;
-                //HeightRequest = w * coef;
-                //WidthRequest = w2;
-                //height = height * coef;
-                //width = w2;
+                origHeight = Content.Height;
+                origWidth = Content.Width;
+                isActivatedFirstTime = false;
             }
 
-            if (width < w2 && height < h2)
-            {
-                //Content.HeightRequest = h2;
-            }
+            //if (pageHeight < Content.Height)
+            //{
+            //    FitContentByHeight();
+            //    VerticalOptions = LayoutOptions.Fill;
+            //}
             //else
             //{
-            //    Content.VerticalOptions = LayoutOptions.Center;
+            //    VerticalOptions = LayoutOptions.FillAndExpand;
             //}
+            //if (pageWidth < Content.Width)
+            //{
+            //    FitContentByWidth();
+            //}
+
+            //if ((Content.Width < pageWidth && Content.Height < pageHeight) || pageHeight < Content.Height || pageWidth < Content.Width)
+            //{
+                if (pageHeight / pageWidth < origHeight / origWidth)
+                {
+                    FitContentByHeight();
+                }
+                else
+                {
+                    FitContentByWidth();
+                }
+            //}
+        }
+
+        private void FitContentByHeight()
+        {
+            double coef = Application.Current.MainPage.Height / origHeight;
+            Content.HeightRequest = Application.Current.MainPage.Height;
+            Content.WidthRequest = origWidth * coef;
+            VerticalOptions = LayoutOptions.Fill;
+            Translate(0, 0);
+        }
+
+        private void FitContentByWidth()
+        {
+            double coef = Application.Current.MainPage.Width / origWidth;
+            Content.HeightRequest = coef * origHeight;
+            Content.WidthRequest = Application.Current.MainPage.Width;
+            VerticalOptions = LayoutOptions.FillAndExpand;
+            Translate(0, 0);
         }
     }
 

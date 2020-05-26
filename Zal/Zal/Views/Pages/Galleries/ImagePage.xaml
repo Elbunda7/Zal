@@ -20,7 +20,7 @@
                 Margin="0"
                              >
                 <local:PinchZoom.Content >
-                    <Image x:Name="imageView" VerticalOptions="Fill" HorizontalOptions="Fill" Aspect="AspectFit" Margin="0"/>
+                    <Image x:Name="imageView" Margin="0" BackgroundColor="DarkKhaki"/>
                 </local:PinchZoom.Content>
             </local:PinchZoom>
         </StackLayout>

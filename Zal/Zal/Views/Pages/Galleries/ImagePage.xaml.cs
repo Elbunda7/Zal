@@ -17,6 +17,7 @@ namespace Zal.Views.Pages.Galleries
         public ImagePage(string imgName)
         {
             this.imgName = imgName;
+            NavigationPage.SetHasNavigationBar(this, false);
             InitializeComponent();
         }
 

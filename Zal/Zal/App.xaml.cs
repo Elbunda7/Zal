@@ -52,10 +52,11 @@ namespace Zal
 
         private void OnAppReady()
         {
-            // MainPage = new MainPage();
+             MainPage = new MainPage();
+            //MainPage = new ImagePage("http://zalesak.hlucin.com/galerie/albums/2020/MezinarodnisrazKCTRymarov/IMG_20200201_101326.jpg");
             //MainPage = new ImagePage("http://zalesak.hlucin.com/galerie/albums/2019/vanocka/DSC_1060.jpg");
-            //MainPage = new ImagePage("http://zalesak.hlucin.com/galerie/albums/2020/Horcovavyzva/landscapeTest.jpg");
-            MainPage = new ImagePage("http://zalesak.hlucin.com/galerie/albums/2020/Horcovavyzva/portraitTest.jpg");
+           // MainPage = new ImagePage("http://zalesak.hlucin.com/galerie/albums/2020/Horcovavyzva/landscapeTest.jpg");
+            //MainPage = new ImagePage("http://zalesak.hlucin.com/galerie/albums/2020/Horcovavyzva/portraitTest.jpg");
         }
 
 
