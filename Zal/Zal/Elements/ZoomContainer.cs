@@ -6,13 +6,12 @@ using Xamarin.Forms;
 
 namespace Zal.Elements
 {
-    public class PinchZoom : ContentView
+    public class ZoomContainer : ContentView
     {
-
         private const double MIN_SCALE = 1;
         private const double MAX_SCALE = 3;
         private const double OVERSHOOT = 0.15;
-        private double StartScale;
+        private double startScale = 1;
         private double StartX, StartY;
         bool panIsRunning = false;
         bool isActivatedFirstTime = true;
@@ -20,16 +19,12 @@ namespace Zal.Elements
         double origHeight;
         double origWidth;
 
-        double currentScale = 1;
-        double startScale = 1;
         double xOffset = 0;
+        double yOffset = 0;
         private double startMidY;
-        private double originY;
-        double yOffset = 0, startTargetX, startTargetY;
         private double startMidX;
-        private double originX;
 
-        public PinchZoom()
+        public ZoomContainer()
         {
             PinchGestureRecognizer pinchGesture = new PinchGestureRecognizer();
             pinchGesture.PinchUpdated += PinchUpdated;
@@ -38,16 +33,6 @@ namespace Zal.Elements
             var panGesture = new PanGestureRecognizer();
             panGesture.PanUpdated += OnPanUpdated;
             GestureRecognizers.Add(panGesture);
-
-            var doublePan = new PanGestureRecognizer();
-            doublePan.PanUpdated += DoublePan_PanUpdated;
-            doublePan.TouchPoints = 2;
-            GestureRecognizers.Add(doublePan);
-        }
-
-        private void DoublePan_PanUpdated(object sender, PanUpdatedEventArgs e)
-        {
-            Console.Write("Double Pan");
         }
 
         protected override void OnChildAdded(Element child)
@@ -55,11 +40,13 @@ namespace Zal.Elements
             base.OnChildAdded(child);
             Content.AnchorX = 0.5;
             Content.AnchorY = 0.5;
+            Content.HorizontalOptions = LayoutOptions.Center;
+            Content.VerticalOptions = LayoutOptions.Center;
+            (Content as Image).Aspect = Aspect.AspectFit;
         }
 
         private void PinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
         {
-            Console.Write("Pinch");
             if (Animation != null && !Animation.IsCompleted) return;
             if (panIsRunning) CompletePan();
 
@@ -68,23 +55,8 @@ namespace Zal.Elements
                 startScale = Content.Scale;
                 xOffset = Content.TranslationX;
                 yOffset = Content.TranslationY;
-                StartX = e.ScaleOrigin.X * Content.Width;
-                StartY = e.ScaleOrigin.Y * Content.Height;
-
-                double renderedX = /*Content.X +*/ xOffset;
-                double deltaX = renderedX / Width;
-                double deltaWidth = Width / (Content.Width * startScale);
-                startMidX = - deltaX * deltaWidth;
-                originX = (e.ScaleOrigin.X - Content.AnchorX - deltaX) * deltaWidth;
-
-                double renderedY = /*Content.Y +*/ yOffset;
-                double deltaY = renderedY / Height;
-                double deltaHeight = Content.Height / (Content.Height * startScale);
-                startMidY = - deltaY * deltaHeight;
-                originY = (e.ScaleOrigin.Y - Content.AnchorY - deltaY) * deltaHeight;
-
-                startTargetX = xOffset - (originX * Content.Width) * (currentScale - startScale);
-                startTargetY = yOffset - (originY * Content.Height) * (currentScale - startScale);
+                startMidX = CurrentMiddleX();
+                startMidY = CurrentMiddleY();
             }
 
             if (e.Status == GestureStatus.Running)
@@ -92,30 +64,8 @@ namespace Zal.Elements
                 double currentScale = Content.Scale + (e.Scale - 1) * startScale;
                 currentScale = Math.Max(1-OVERSHOOT, currentScale);
 
-                double renderedX = Content.X + xOffset;
-                double deltaX = renderedX / Width;
-                double deltaWidth = Width / (Content.Width * startScale);
-                //double originX = (e.ScaleOrigin.X - Content.AnchorX - deltaX) * deltaWidth;
-
-                double renderedY = Content.Y + yOffset;
-                double deltaY = renderedY / Height;
-                double deltaHeight = Height / (Content.Height * startScale);
-                //double originY = (e.ScaleOrigin.Y - Content.AnchorY - deltaY) * deltaHeight;
-
-                double targetX = xOffset - (originX * Content.Width) * (currentScale - startScale);
-                double targetY = yOffset - (originY * Content.Height) * (currentScale - startScale);
-
-                double totalX = e.ScaleOrigin.X * Content.Width;
-                double totalY = e.ScaleOrigin.Y * Content.Height;
-
-                //Console.WriteLine($"Pinch {totalX - StartX}, {totalY - StartY}");
-                //Translate(originX * currentScale * Width, originY * currentScale * Height);
-
-                double changeCoef = currentScale / startScale;
-                //double changeCoef
-                double dir = changeCoef > 0 ? 1 - changeCoef : -1 - changeCoef;
-                Content.TranslationX = GetTranslationX(startMidX, currentScale);// -startMidX * currentScale * Width;
-                Content.TranslationY = GetTranslationY(startMidY, currentScale); //-startMidY * currentScale * Height;
+                Content.TranslationX = GetTranslationX(startMidX, currentScale);
+                Content.TranslationY = GetTranslationY(startMidY, currentScale);
 
                 if (currentScale > 1)
                 {
@@ -133,8 +83,6 @@ namespace Zal.Elements
 
             if (e.Status == GestureStatus.Completed)
             {
-                //xOffset = Content.TranslationX;
-                //yOffset = Content.TranslationY;
                 if (Content.Scale > MAX_SCALE)
                 {
                     Content.TranslateTo(GetTranslationX(CurrentMiddleX(), MAX_SCALE), GetTranslationY(CurrentMiddleY(), MAX_SCALE), 250, Easing.SpringOut);
@@ -150,8 +98,7 @@ namespace Zal.Elements
 
         private double CurrentMiddleX()
         {
-            double renderedX = xOffset;
-            double deltaX = renderedX / Width;
+            double deltaX = xOffset / Width;
             double deltaWidth = Width / (Content.Width * startScale);
             double midX = -deltaX * deltaWidth;
             return midX;
@@ -159,8 +106,7 @@ namespace Zal.Elements
 
         private double CurrentMiddleY()
         {
-            double renderedY = yOffset;
-            double deltaY = renderedY / Height;
+            double deltaY = yOffset / Height;
             double deltaHeight = Content.Height / (Content.Height * startScale);
             double midY = -deltaY * deltaHeight;
             return midY;
@@ -192,24 +138,7 @@ namespace Zal.Elements
             switch (e.StatusType)
             {
                 case GestureStatus.Running:
-
                     Translate(e.TotalX - StartX, e.TotalY - StartY);
-                    //double newY = ((Y) * Scale) + yOffset;
-
-                    //double width = (Content.Width * Content.Scale);
-                    //double height = (Content.Height * Content.Scale);
-                    
-                    //double wBound = (width - Application.Current.MainPage.Width) / 2;
-                    //double hBound = (height - Application.Current.MainPage.Height) / 2;
-
-                    //if (newX < -wBound) newX = -wBound;
-                    //if (newX > wBound) newX = wBound;
-                    
-                    //if (newY < -wBound) newY = -wBound;
-                    //if (newY > hBound) newY = hBound;
-
-                    //Content.TranslationX = newX;
-                    //Content.TranslationY = newY;
                     break;
                 case GestureStatus.Completed:
                     CompletePan();
@@ -254,10 +183,6 @@ namespace Zal.Elements
             double pageHeight = Application.Current.MainPage.Height;
             double pageWidth = Application.Current.MainPage.Width;
 
-            Content.HorizontalOptions = LayoutOptions.Center;
-            Content.VerticalOptions = LayoutOptions.Center;
-            (Content as Image).Aspect = Aspect.AspectFit;
-
             if (Content.Width < 1 || Content.Height < 1) return;
             if (isActivatedFirstTime)
             {
@@ -266,31 +191,14 @@ namespace Zal.Elements
                 isActivatedFirstTime = false;
             }
 
-            //if (pageHeight < Content.Height)
-            //{
-            //    FitContentByHeight();
-            //    VerticalOptions = LayoutOptions.Fill;
-            //}
-            //else
-            //{
-            //    VerticalOptions = LayoutOptions.FillAndExpand;
-            //}
-            //if (pageWidth < Content.Width)
-            //{
-            //    FitContentByWidth();
-            //}
-
-            //if ((Content.Width < pageWidth && Content.Height < pageHeight) || pageHeight < Content.Height || pageWidth < Content.Width)
-            //{
-                if (pageHeight / pageWidth < origHeight / origWidth)
-                {
-                    FitContentByHeight();
-                }
-                else
-                {
-                    FitContentByWidth();
-                }
-            //}
+            if (pageHeight / pageWidth < origHeight / origWidth)
+            {
+                FitContentByHeight();
+            }
+            else
+            {
+                FitContentByWidth();
+            }
         }
 
         private void FitContentByHeight()
