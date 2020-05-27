@@ -1,5 +1,6 @@
 ﻿using Microsoft.AppCenter.Analytics;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -12,6 +13,7 @@ namespace Zal.Views.Pages.Galleries
 	public partial class GalleryPage : ContentPage
 	{
         public bool IsDeviceVertically { get; private set; } = true;
+        ToolbarItem yearToolbarItem;
 
         const int thumbnailSize = 200;
         private double maxImgSize = 0;
@@ -23,6 +25,7 @@ namespace Zal.Views.Pages.Galleries
         private bool isHorizontalGridReady = false;
         private bool isLoaded = false;
         private int selectedYear = -1;
+        private const string ALBUM_URI = "http://zalesak.hlucin.com/galerie/albums/";
 
         public GalleryPage ()
 		{
@@ -40,7 +43,7 @@ namespace Zal.Views.Pages.Galleries
 
         private void YearToolbarItem_Clicked(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            picker.Focus();
         }
 
         public GalleryPage(Gallery gallery)
@@ -75,16 +78,16 @@ namespace Zal.Views.Pages.Galleries
             else
             {
                 await Zalesak.Galleries.ReSynchronize();
-                int lastYear = Zalesak.Galleries.Data.Max(x => x.Year);
-                selectedYear = lastYear;
-                var yearToolbarItem = new ToolbarItem()
+                var years = Zalesak.Galleries.Data.GroupBy(x => x.Year).Select(x => x.Key).OrderByDescending(x => x);
+                selectedYear = years.FirstOrDefault();
+                picker.ItemsSource = years.ToList();
+                yearToolbarItem = new ToolbarItem()
                 {
-                    Text = lastYear.ToString(),
+                    Text = selectedYear.ToString(),
                     Order = ToolbarItemOrder.Primary
                 };
                 yearToolbarItem.Clicked += YearToolbarItem_Clicked;
                 ToolbarItems.Add(yearToolbarItem);
-
             }
             isLoaded = true;
             OnSizeAllocated(Width, Height);
@@ -147,42 +150,55 @@ namespace Zal.Views.Pages.Galleries
                 grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
             }
             int index = 0;
-            var images = IsConcreteGallery ? await gallery.ImagesLazyLoad() : Zalesak.Galleries.Data.Where(x=>x.Year == selectedYear).Select(x=>x.MainImg);
-            double height = IsConcreteGallery ? itemSize : itemSize + 50;
-            int imagesCount = images.Count();
-            int numOfRows = (imagesCount + numOfColumns - 1) / numOfColumns;
+            IEnumerable<object> items;
+            double rowHeight = itemSize;
+            if (IsConcreteGallery)
+            {
+                items = await gallery.ImagesLazyLoad();
+            }
+            else
+            {
+                items = Zalesak.Galleries.Data.Where(x => x.Year == selectedYear);
+                rowHeight += 50;
+            }
+            int itemsCount = items.Count();
+            int numOfRows = (itemsCount + numOfColumns - 1) / numOfColumns;
             for (int j = 0; j < numOfRows; j++)
             {
-                grid.RowDefinitions.Add(new RowDefinition() { Height = height });
+                grid.RowDefinitions.Add(new RowDefinition() { Height = rowHeight });
                 for (int i = 0; i < numOfColumns; i++)
                 {
-                    if (index >= imagesCount) break;
-                    Gallery gal = IsConcreteGallery ? gallery : Zalesak.Galleries.Data.ElementAt(index);
-                    string imgName = images.ElementAt(index);
-                    string imgLink = "http://zalesak.hlucin.com/galerie/albums/" + gal.File;
-
-                    View cell = IsConcreteGallery ? MakeCell_ConcreteGallery(imgLink, imgName) : MakeCell_Galleries(imgLink, imgName, gal);//todo save localy
+                    if (index >= itemsCount) break;
+                    View cell;
+                    if (IsConcreteGallery)
+                    {
+                        cell = MakeCellForPhoto(gallery.File, items.ElementAt(index) as string);
+                    }
+                    else
+                    {
+                        cell = MakeCellForGallery(items.ElementAt(index) as Gallery);
+                    }
                     grid.Children.Add(cell, i, j);
                     index++;
                 }
             }
         }
 
-        private View MakeCell_ConcreteGallery(string imgLink, string imgName)
+        private View MakeCellForPhoto(string imgFile, string imgName)
         {
             Image img = new Image()
             {
-                Source = imgLink + "small/" + imgName,
+                Source = ALBUM_URI + imgFile + "small/" + imgName,
                 ClassId = imgName,
             };
             var onClick = new TapGestureRecognizer();
             onClick.Tapped += OpenImage_Tapped;
-            onClick.CommandParameter = imgLink + imgName;
+            onClick.CommandParameter = ALBUM_URI + imgFile + imgName;
             img.GestureRecognizers.Add(onClick);
             return img;
         }
 
-        private View MakeCell_Galleries(string imgLink, string imgName, Gallery gal)
+        private View MakeCellForGallery(Gallery gal)
         {
             StackLayout cell = new StackLayout
             {
@@ -191,8 +207,8 @@ namespace Zal.Views.Pages.Galleries
             };
             Image img = new Image()
             {
-                Source = imgLink + "small/" + imgName,
-                ClassId = imgName,
+                Source = ALBUM_URI + gal.File + "small/" + gal.MainImg,
+                ClassId = gal.MainImg,
                 HeightRequest = itemSize,
             };
             Label label = new Label()
@@ -227,6 +243,17 @@ namespace Zal.Views.Pages.Galleries
         {            
             Gallery gal = (e as TappedEventArgs).Parameter as Gallery;
             await Navigation.PushAsync(new GalleryPage(gal));
+        }
+
+        private void Picker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var pickedYear = (int)picker.SelectedItem;
+            if (pickedYear == selectedYear) return;
+            selectedYear = pickedYear;
+            yearToolbarItem.Text = pickedYear.ToString();
+            isHorizontalGridReady = false;
+            isVerticalGridReady = false;
+            OnOrientationChanged(Width, Height);
         }
     }
 }

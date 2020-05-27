@@ -4,29 +4,32 @@
              x:Class="Zal.Views.Pages.Galleries.GalleryPage">
     <ContentPage.Content>
 
-        <ScrollView 
-                Padding="0"                    
-                BackgroundColor="WhiteSmoke"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="FillAndExpand">
+        <StackLayout Orientation="Vertical">
 
-            <StackLayout>
-                <!--<Button Text="Vytvořit galerii" Clicked="Button_Clicked"></Button>-->
-                <Grid x:Name="HorizontalGrid"                       
-                      ColumnSpacing="1.5"
-                      RowSpacing="1.5"
-                      HorizontalOptions="FillAndExpand"
-                      VerticalOptions="FillAndExpand">
-                </Grid>
+            <Picker x:Name="picker" SelectedIndex="0" IsVisible="False" SelectedIndexChanged="Picker_SelectedIndexChanged"/>
 
-                <Grid x:Name="VerticalGrid"  
-                      ColumnSpacing="1.5"
-                      RowSpacing="1.5"
-                      HorizontalOptions="FillAndExpand"
-                      VerticalOptions="FillAndExpand">
-                </Grid>
-            </StackLayout>
-        </ScrollView>
-        
+            <ScrollView 
+                    Padding="1.5 0"                    
+                    BackgroundColor="WhiteSmoke"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand">
+
+                <StackLayout>
+                    <Grid x:Name="HorizontalGrid"                       
+                          ColumnSpacing="1.5"
+                          RowSpacing="1.5"
+                          HorizontalOptions="FillAndExpand"
+                          VerticalOptions="FillAndExpand">
+                    </Grid>
+
+                    <Grid x:Name="VerticalGrid"  
+                          ColumnSpacing="1.5"
+                          RowSpacing="1.5"
+                          HorizontalOptions="FillAndExpand"
+                          VerticalOptions="FillAndExpand">
+                    </Grid>
+                </StackLayout>
+            </ScrollView>
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>
