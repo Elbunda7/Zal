@@ -11,28 +11,37 @@ namespace Zal.Views.Pages.Galleries
     [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class GalleryPage : ContentPage
 	{
+        public bool IsDeviceVertically { get; private set; } = true;
+
         const int thumbnailSize = 200;
         private double maxImgSize = 0;
         private int numOfColumns = 3;
         private double itemSize = 0;
         private Gallery gallery;
         private bool IsConcreteGallery => gallery != null;
-        private bool wasDeviceVertically = true;
+        private bool isVerticalGridReady = false;
+        private bool isHorizontalGridReady = false;
         private bool isLoaded = false;
+        private int selectedYear = -1;
 
         public GalleryPage ()
 		{
 			InitializeComponent ();
             Title = "Galerie";
-            var toolbarItem = new ToolbarItem()
+            var newGalleryToolbarItem = new ToolbarItem()
             {
                 Text = "vytvořit novou galerii",
                 Order = ToolbarItemOrder.Secondary
             };
-            toolbarItem.Clicked += AddGallery_ToolbarItemClicked;
-            ToolbarItems.Add(toolbarItem);
+            newGalleryToolbarItem.Clicked += AddGallery_ToolbarItemClicked;
+            ToolbarItems.Add(newGalleryToolbarItem);
             Analytics.TrackEvent("GaleryPage-main");
 		}
+
+        private void YearToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
         public GalleryPage(Gallery gallery)
         {
@@ -66,6 +75,16 @@ namespace Zal.Views.Pages.Galleries
             else
             {
                 await Zalesak.Galleries.ReSynchronize();
+                int lastYear = Zalesak.Galleries.Data.Max(x => x.Year);
+                selectedYear = lastYear;
+                var yearToolbarItem = new ToolbarItem()
+                {
+                    Text = lastYear.ToString(),
+                    Order = ToolbarItemOrder.Primary
+                };
+                yearToolbarItem.Clicked += YearToolbarItem_Clicked;
+                ToolbarItems.Add(yearToolbarItem);
+
             }
             isLoaded = true;
             OnSizeAllocated(Width, Height);
@@ -75,16 +94,16 @@ namespace Zal.Views.Pages.Galleries
         {
             base.OnSizeAllocated(width, height);
             if (!isLoaded) return;
-            bool isDeviceVertically = width < height;
+            bool isVertically = width < height;
             if (maxImgSize == 0)
             {
-                wasDeviceVertically = !isDeviceVertically;
-                maxImgSize = isDeviceVertically ? width / 3 : height / 3;
+                IsDeviceVertically = !isVertically;
+                maxImgSize = isVertically ? width / 3 : height / 3;
                 if (maxImgSize > thumbnailSize) maxImgSize = thumbnailSize;
             }
-            if (isDeviceVertically != wasDeviceVertically)
+            if (isVertically != IsDeviceVertically)
             {
-                wasDeviceVertically = isDeviceVertically;
+                IsDeviceVertically = isVertically;
                 OnOrientationChanged(width, height);
             }
         }
@@ -92,28 +111,49 @@ namespace Zal.Views.Pages.Galleries
         private void OnOrientationChanged(double width, double height)
         {
             numOfColumns = (int)((width - 50) / maxImgSize + 1);
-            double spacingSize = ContentGrid.ColumnSpacing * (numOfColumns - 1);
+            double spacingSize = VerticalGrid.ColumnSpacing * (numOfColumns - 1);
             itemSize = (width - spacingSize) / numOfColumns;
-            InitGrid();
+
+            if (IsDeviceVertically)
+            {
+                if (!isVerticalGridReady)
+                {
+                    InitGrid();
+                    isVerticalGridReady = true;
+                }
+                VerticalGrid.IsVisible = true;
+                HorizontalGrid.IsVisible = false;
+            }
+            else
+            {
+                if (!isHorizontalGridReady)
+                {
+                    InitGrid();
+                    isHorizontalGridReady = true;
+                }
+                VerticalGrid.IsVisible = false;
+                HorizontalGrid.IsVisible = true;
+            }
         }
 
         private async void InitGrid()//todo when uploadin deleting images -> redraw
         {
-            ContentGrid.RowDefinitions = new RowDefinitionCollection();
-            ContentGrid.ColumnDefinitions = new ColumnDefinitionCollection();
-            ContentGrid.Children.Clear();
+            Grid grid = IsDeviceVertically ? VerticalGrid : HorizontalGrid;
+            grid.RowDefinitions = new RowDefinitionCollection();
+            grid.ColumnDefinitions = new ColumnDefinitionCollection();
+            grid.Children.Clear();
             for (int i = 0; i < numOfColumns; i++)
             {
-                ContentGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+                grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
             }
             int index = 0;
-            var images = IsConcreteGallery ? await gallery.ImagesLazyLoad() : Zalesak.Galleries.Data.Select(x=>x.MainImg);
+            var images = IsConcreteGallery ? await gallery.ImagesLazyLoad() : Zalesak.Galleries.Data.Where(x=>x.Year == selectedYear).Select(x=>x.MainImg);
             double height = IsConcreteGallery ? itemSize : itemSize + 50;
             int imagesCount = images.Count();
             int numOfRows = (imagesCount + numOfColumns - 1) / numOfColumns;
             for (int j = 0; j < numOfRows; j++)
             {
-                ContentGrid.RowDefinitions.Add(new RowDefinition() { Height = height });
+                grid.RowDefinitions.Add(new RowDefinition() { Height = height });
                 for (int i = 0; i < numOfColumns; i++)
                 {
                     if (index >= imagesCount) break;
@@ -122,7 +162,7 @@ namespace Zal.Views.Pages.Galleries
                     string imgLink = "http://zalesak.hlucin.com/galerie/albums/" + gal.File;
 
                     View cell = IsConcreteGallery ? MakeCell_ConcreteGallery(imgLink, imgName) : MakeCell_Galleries(imgLink, imgName, gal);//todo save localy
-                    ContentGrid.Children.Add(cell, i, j);
+                    grid.Children.Add(cell, i, j);
                     index++;
                 }
             }
