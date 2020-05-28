@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Domain;
@@ -13,81 +14,86 @@ namespace Zal.Views.Pages.Galleries
 	public partial class GalleryPage : ContentPage
 	{
         public bool IsDeviceVertically { get; private set; } = true;
-        ToolbarItem yearToolbarItem;
+        private ToolbarItem yearToolbarItem;
+        private ToolbarItem creatorToolbarItem;
 
-        const int thumbnailSize = 200;
+        private const int THUMB_SIZE = 200;
+        private const string ALBUM_URI = "http://zalesak.hlucin.com/galerie/albums/";
+        private const int ITEMS_PER_PAGE = 30;
+
         private double maxImgSize = 0;
-        private int numOfColumns = 3;
-        private double itemSize = 0;
         private Gallery gallery;
         private bool IsConcreteGallery => gallery != null;
         private bool isVerticalGridReady = false;
         private bool isHorizontalGridReady = false;
         private bool isLoaded = false;
-        private int selectedYear = -1;
-        private const string ALBUM_URI = "http://zalesak.hlucin.com/galerie/albums/";
+        private int selectedPart = -1;
+        private int numOfParts = -1;
 
         public GalleryPage ()
 		{
 			InitializeComponent ();
             Title = "Galerie";
-            var newGalleryToolbarItem = new ToolbarItem()
-            {
-                Text = "vytvořit novou galerii",
-                Order = ToolbarItemOrder.Secondary
-            };
-            newGalleryToolbarItem.Clicked += AddGallery_ToolbarItemClicked;
-            ToolbarItems.Add(newGalleryToolbarItem);
+            AddToolbarItem_Creator("vytvořit novou galerii");
+            AddToolbarItem_Year();
             Analytics.TrackEvent("GaleryPage-main");
 		}
-
-        private void YearToolbarItem_Clicked(object sender, EventArgs e)
-        {
-            picker.Focus();
-        }
 
         public GalleryPage(Gallery gallery)
         {
             InitializeComponent();
             Title = gallery.Name;
             this.gallery = gallery;
-            var toolbarItem = new ToolbarItem()
+            AddToolbarItem_Creator("přidat fotky");
+        }
+
+        private void AddToolbarItem_Creator(string text)
+        {
+            creatorToolbarItem = new ToolbarItem
             {
-                Text = "přidat fotky",
+                Text = text,
                 Order = ToolbarItemOrder.Secondary
             };
-            toolbarItem.Clicked += AddGallery_ToolbarItemClicked;
-            ToolbarItems.Add(toolbarItem);
+            creatorToolbarItem.Clicked += AddGallery_ToolbarItemClicked;
+            ToolbarItems.Add(creatorToolbarItem);
+        }
+
+        private void AddToolbarItem_Year()
+        {
+            yearToolbarItem = new ToolbarItem
+            {
+                Order = ToolbarItemOrder.Primary
+            };
+            yearToolbarItem.Clicked += YearToolbarItem_Clicked;
+            ToolbarItems.Add(yearToolbarItem);
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            if (!isLoaded)
-            {
-                Synchronize();
-            }
+            if (!isLoaded) Synchronize();
         }
 
         private async void Synchronize()
         {
             if (IsConcreteGallery)
             {
-                await gallery.ImagesLazyLoad();
+                var images = await gallery.ImagesLazyLoad();
+                selectedPart = 1;
+                numOfParts = (images.Count() + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE;
+                if (numOfParts > 1)
+                {
+                    PageNavigationLayout.IsVisible = true;
+                    NumOfPagesLabel.Text = "/ " + numOfParts;
+                }
             }
             else
             {
                 await Zalesak.Galleries.ReSynchronize();
                 var years = Zalesak.Galleries.Data.GroupBy(x => x.Year).Select(x => x.Key).OrderByDescending(x => x);
-                selectedYear = years.FirstOrDefault();
+                selectedPart = years.FirstOrDefault();
                 picker.ItemsSource = years.ToList();
-                yearToolbarItem = new ToolbarItem()
-                {
-                    Text = selectedYear.ToString(),
-                    Order = ToolbarItemOrder.Primary
-                };
-                yearToolbarItem.Clicked += YearToolbarItem_Clicked;
-                ToolbarItems.Add(yearToolbarItem);
+                yearToolbarItem.Text = selectedPart.ToString();
             }
             isLoaded = true;
             OnSizeAllocated(Width, Height);
@@ -102,45 +108,45 @@ namespace Zal.Views.Pages.Galleries
             {
                 IsDeviceVertically = !isVertically;
                 maxImgSize = isVertically ? width / 3 : height / 3;
-                if (maxImgSize > thumbnailSize) maxImgSize = thumbnailSize;
+                if (maxImgSize > THUMB_SIZE) maxImgSize = THUMB_SIZE;
             }
             if (isVertically != IsDeviceVertically)
             {
                 IsDeviceVertically = isVertically;
-                OnOrientationChanged(width, height);
+                UpdateGrid();
             }
         }
 
-        private void OnOrientationChanged(double width, double height)
-        {
-            numOfColumns = (int)((width - 50) / maxImgSize + 1);
-            double spacingSize = VerticalGrid.ColumnSpacing * (numOfColumns - 1);
-            itemSize = (width - spacingSize) / numOfColumns;
-
+        private void UpdateGrid()
+        {            
             if (IsDeviceVertically)
             {
+                VerticalGrid.IsVisible = true;
+                HorizontalGrid.IsVisible = false;
                 if (!isVerticalGridReady)
                 {
                     InitGrid();
                     isVerticalGridReady = true;
                 }
-                VerticalGrid.IsVisible = true;
-                HorizontalGrid.IsVisible = false;
             }
             else
             {
+                VerticalGrid.IsVisible = false;
+                HorizontalGrid.IsVisible = true;
                 if (!isHorizontalGridReady)
                 {
                     InitGrid();
                     isHorizontalGridReady = true;
                 }
-                VerticalGrid.IsVisible = false;
-                HorizontalGrid.IsVisible = true;
             }
         }
 
         private async void InitGrid()//todo when uploadin deleting images -> redraw
         {
+            int numOfColumns = (int)((Width - 50) / maxImgSize + 1);
+            double spacingSize = VerticalGrid.ColumnSpacing * (numOfColumns - 1);
+            double itemSize = (Width - spacingSize) / numOfColumns;
+
             Grid grid = IsDeviceVertically ? VerticalGrid : HorizontalGrid;
             grid.RowDefinitions = new RowDefinitionCollection();
             grid.ColumnDefinitions = new ColumnDefinitionCollection();
@@ -155,10 +161,11 @@ namespace Zal.Views.Pages.Galleries
             if (IsConcreteGallery)
             {
                 items = await gallery.ImagesLazyLoad();
+                items = items.Skip((selectedPart - 1) * ITEMS_PER_PAGE).Take(ITEMS_PER_PAGE);
             }
             else
             {
-                items = Zalesak.Galleries.Data.Where(x => x.Year == selectedYear);
+                items = Zalesak.Galleries.Data.Where(x => x.Year == selectedPart);
                 rowHeight += 50;
             }
             int itemsCount = items.Count();
@@ -176,7 +183,7 @@ namespace Zal.Views.Pages.Galleries
                     }
                     else
                     {
-                        cell = MakeCellForGallery(items.ElementAt(index) as Gallery);
+                        cell = MakeCellForGallery(items.ElementAt(index) as Gallery, itemSize);
                     }
                     grid.Children.Add(cell, i, j);
                     index++;
@@ -198,7 +205,7 @@ namespace Zal.Views.Pages.Galleries
             return img;
         }
 
-        private View MakeCellForGallery(Gallery gal)
+        private View MakeCellForGallery(Gallery gal, double itemHeight)
         {
             StackLayout cell = new StackLayout
             {
@@ -209,7 +216,7 @@ namespace Zal.Views.Pages.Galleries
             {
                 Source = ALBUM_URI + gal.File + "small/" + gal.MainImg,
                 ClassId = gal.MainImg,
-                HeightRequest = itemSize,
+                HeightRequest = itemHeight,
             };
             Label label = new Label()
             {
@@ -226,6 +233,11 @@ namespace Zal.Views.Pages.Galleries
             onClick.CommandParameter = gal;
             cell.GestureRecognizers.Add(onClick);
             return cell;
+        }
+
+        private void YearToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            picker.Focus();
         }
 
         private async void AddGallery_ToolbarItemClicked(object sender, EventArgs e)
@@ -248,12 +260,60 @@ namespace Zal.Views.Pages.Galleries
         private void Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
             var pickedYear = (int)picker.SelectedItem;
-            if (pickedYear == selectedYear) return;
-            selectedYear = pickedYear;
+            if (pickedYear == selectedPart) return;
             yearToolbarItem.Text = pickedYear.ToString();
+            ChangePage(pickedYear);
+        }
+
+        private void PageLabel_Tapped(object sender, EventArgs e)
+        {
+            PageEntry.Focus();
+        }
+
+        private async void PageEntry_Focused(object sender, FocusEventArgs e)
+        {
+            await Task.Delay(50);
+            PageEntry.CursorPosition = 0;
+            PageEntry.SelectionLength = PageEntry.Text.Length;
+        }
+
+        private void PageEntry_Unfocused(object sender, FocusEventArgs e)
+        {
+            int page;
+            if (int.TryParse(PageEntry.Text, out page) && page > 0)
+            {
+                if (page > numOfParts) page = numOfParts;
+            }
+            else
+            {
+                page = 1;
+            }
+            if (page == selectedPart) return;
+            ChangePage(page);
+            PageEntry.Text = selectedPart.ToString();
+        }
+
+        private void RigthArrow_Tapped(object sender, EventArgs e)
+        {
+            if (selectedPart >= numOfParts) return;
+            ChangePage(selectedPart + 1);
+            PageEntry.Text = selectedPart.ToString();
+        }
+
+        private void LeftArrow_Tapped(object sender, EventArgs e)
+        {
+            if (selectedPart <= 1) return;
+            ChangePage(selectedPart - 1);
+            PageEntry.Text = selectedPart.ToString();
+        }
+
+        private void ChangePage(int page)
+        {
+            scrollView.ScrollToAsync(0, 0, false);
+            selectedPart = page;
             isHorizontalGridReady = false;
             isVerticalGridReady = false;
-            OnOrientationChanged(Width, Height);
+            UpdateGrid();
         }
     }
 }

@@ -1,20 +1,80 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:elements="clr-namespace:Zal.Elements"
              x:Class="Zal.Views.Pages.Galleries.GalleryPage">
     <ContentPage.Content>
 
-        <StackLayout Orientation="Vertical">
+        <StackLayout Orientation="Vertical" Spacing="0">
 
             <Picker x:Name="picker" SelectedIndex="0" IsVisible="False" SelectedIndexChanged="Picker_SelectedIndexChanged"/>
 
-            <ScrollView 
-                    Padding="1.5 0"                    
+            <StackLayout Orientation="Horizontal"
+                         BackgroundColor="{StaticResource Primary}"
+                         HorizontalOptions="FillAndExpand"
+                         Margin="0"
+                         x:Name="PageNavigationLayout"
+                         IsVisible="False"
+                         VerticalOptions="End">
+                <elements:TintImage 
+                    Source="baseline_backward_black_48.png" 
+                    TintColor="Accent" 
+                    Margin="10,0,0,0"
+                    x:Name="LeftArrowImage">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Tapped="LeftArrow_Tapped"
+                            NumberOfTapsRequired="1" />
+                    </Image.GestureRecognizers>
+                </elements:TintImage>
+                
+                <StackLayout Orientation="Horizontal"
+                             HorizontalOptions="CenterAndExpand">
+                    <Entry TextColor="{StaticResource Accent}" 
+                           x:Name="PageEntry"
+                           FontSize="Large" 
+                           Keyboard="Numeric" 
+                           MaxLength="3"
+                           Text="1"
+                           WidthRequest="48"
+                           HorizontalTextAlignment="End"
+                           Focused="PageEntry_Focused"
+                           Unfocused="PageEntry_Unfocused"/>
+                    <Label Text="/ 20" 
+                           x:Name="NumOfPagesLabel"
+                            FontSize="Large" 
+                            VerticalOptions="Center" 
+                            TextColor="{StaticResource LightTextColor}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Tapped="PageLabel_Tapped"
+                                NumberOfTapsRequired="1"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </StackLayout>
+                
+                <elements:TintImage 
+                    Source="baseline_forward_black_48.png" 
+                    TintColor="Accent"  
+                    Margin="0,0,10,0"
+                    x:Name="RightArrowImage">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Tapped="RigthArrow_Tapped"
+                            NumberOfTapsRequired="1" />
+                    </Image.GestureRecognizers>
+                </elements:TintImage>
+            </StackLayout>
+
+            <ScrollView               
+                x:Name="scrollView"
                     BackgroundColor="WhiteSmoke"
                     HorizontalOptions="FillAndExpand"
-                    VerticalOptions="FillAndExpand">
+                    VerticalOptions="FillAndExpand"                
+                    Padding="0">
 
-                <StackLayout>
+                <StackLayout Orientation="Vertical">
+
                     <Grid x:Name="HorizontalGrid"                       
                           ColumnSpacing="1.5"
                           RowSpacing="1.5"
@@ -30,6 +90,7 @@
                     </Grid>
                 </StackLayout>
             </ScrollView>
+
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
