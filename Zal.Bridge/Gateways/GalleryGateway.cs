@@ -8,6 +8,7 @@ using Zal.Bridge.Tools;
 
 namespace Zal.Bridge.Gateways
 {
+    [Obsolete]
     public class GalleryGateway : Gateway
     {
         public GalleryGateway() : base(API.ENDPOINT.GALLERY) { }

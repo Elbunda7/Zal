@@ -38,7 +38,7 @@ namespace Zal.Domain.Consts
             Parent = 4,
             Admin = 8,
             RegCompleted = 16,
-            RegCompWaiting = 32,
+            Approved = 32,
 
             All = 63,
         }

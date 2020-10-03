@@ -39,12 +39,20 @@ namespace Zal.Views.Pages.Users
 
         private void InitProfileProperties()
         {
-            if (!currentUser.Attribs.HasFlag(ZAL.UserAttribs.ConfirmedEmail)) profileElements.Children.Add(new ConfirmEmail());
-            else if (currentUser.Attribs.HasFlag(ZAL.UserAttribs.RegCompWaiting))
-            {
-                profileElements.Children.Add(new LabelElement("Dokončení registrace čeká na vyřízení"));
+            if (currentUser.Attribs.HasFlag(ZAL.UserAttribs.Registered)) {
+                if (!currentUser.Attribs.HasFlag(ZAL.UserAttribs.ConfirmedEmail))
+                {
+                    profileElements.Children.Add(new ConfirmEmail());
+                }
+                else if (!currentUser.Attribs.HasFlag(ZAL.UserAttribs.RegCompleted))
+                {
+                    profileElements.Children.Add(new CompleteRegistration());
+                }
+                else if (!currentUser.Attribs.HasFlag(ZAL.UserAttribs.Approved))
+                {
+                    profileElements.Children.Add(new LabelElement("Dokončení registrace čeká na vyřízení"));
+                }
             }
-            else if (!currentUser.Attribs.HasFlag(ZAL.UserAttribs.RegCompleted)) profileElements.Children.Add(new CompleteRegistration());
             //PropLayout.Children.Add(new PropertyBadges());
             //PropLayout.Children.Add(new PropertyPoints());
             SetOnClickEvents();

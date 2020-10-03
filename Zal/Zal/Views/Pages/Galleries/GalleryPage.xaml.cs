@@ -22,12 +22,12 @@ namespace Zal.Views.Pages.Galleries
         private const int ITEMS_PER_PAGE = 30;
 
         private double maxImgSize = 0;
-        private Gallery gallery;
+        private GraphGallery gallery;
         private bool IsConcreteGallery => gallery != null;
         private bool isVerticalGridReady = false;
         private bool isHorizontalGridReady = false;
         private bool isLoaded = false;
-        private int selectedPart = -1;
+        private int selectedYear = -1;
         private int numOfParts = -1;
 
         public GalleryPage ()
@@ -39,7 +39,7 @@ namespace Zal.Views.Pages.Galleries
             Analytics.TrackEvent("GaleryPage-main");
 		}
 
-        public GalleryPage(Gallery gallery)
+        public GalleryPage(GraphGallery gallery)
         {
             InitializeComponent();
             Title = gallery.Name;
@@ -79,7 +79,7 @@ namespace Zal.Views.Pages.Galleries
             if (IsConcreteGallery)
             {
                 var images = await gallery.ImagesLazyLoad();
-                selectedPart = 1;
+                selectedYear = 1;
                 numOfParts = (images.Count() + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE;
                 if (numOfParts > 1)
                 {
@@ -89,11 +89,10 @@ namespace Zal.Views.Pages.Galleries
             }
             else
             {
-                await Zalesak.Galleries.ReSynchronize();
-                var years = Zalesak.Galleries.Data.GroupBy(x => x.Year).Select(x => x.Key).OrderByDescending(x => x);
-                selectedPart = years.FirstOrDefault();
-                picker.ItemsSource = years.ToList();
-                yearToolbarItem.Text = selectedPart.ToString();
+                await Zalesak.GraphGalleries.Synchronize();
+                picker.ItemsSource = Zalesak.GraphGalleries.Years;
+                selectedYear = Zalesak.GraphGalleries.Years.FirstOrDefault();
+                yearToolbarItem.Text = selectedYear.ToString();
             }
             isLoaded = true;
             OnSizeAllocated(Width, Height);
@@ -161,11 +160,11 @@ namespace Zal.Views.Pages.Galleries
             if (IsConcreteGallery)
             {
                 items = await gallery.ImagesLazyLoad();
-                items = items.Skip((selectedPart - 1) * ITEMS_PER_PAGE).Take(ITEMS_PER_PAGE);
+                items = items.Skip((selectedYear - 1) * ITEMS_PER_PAGE).Take(ITEMS_PER_PAGE);
             }
             else
             {
-                items = Zalesak.Galleries.Data.Where(x => x.Year == selectedPart);
+                items = await Zalesak.GraphGalleries.GetGalleries(selectedYear);
                 rowHeight += 50;
             }
             int itemsCount = items.Count();
@@ -179,11 +178,11 @@ namespace Zal.Views.Pages.Galleries
                     View cell;
                     if (IsConcreteGallery)
                     {
-                        cell = MakeCellForPhoto(gallery.File, items.ElementAt(index) as string);
+                        cell = MakeCellForPhoto(items.ElementAt(index) as GraphPhoto);
                     }
                     else
                     {
-                        cell = MakeCellForGallery(items.ElementAt(index) as Gallery, itemSize);
+                        cell = MakeCellForGallery(items.ElementAt(index) as GraphGallery, itemSize);
                     }
                     grid.Children.Add(cell, i, j);
                     index++;
@@ -191,21 +190,21 @@ namespace Zal.Views.Pages.Galleries
             }
         }
 
-        private View MakeCellForPhoto(string imgFile, string imgName)
+        private View MakeCellForPhoto(GraphPhoto photo)
         {
             Image img = new Image()
             {
-                Source = ALBUM_URI + imgFile + "small/" + imgName,
-                ClassId = imgName,
+                Source = photo.ThumbUrl,
+                ClassId = photo.Id,
             };
             var onClick = new TapGestureRecognizer();
             onClick.Tapped += OpenImage_Tapped;
-            onClick.CommandParameter = ALBUM_URI + imgFile + imgName;
+            onClick.CommandParameter = photo;
             img.GestureRecognizers.Add(onClick);
             return img;
         }
 
-        private View MakeCellForGallery(Gallery gal, double itemHeight)
+        private View MakeCellForGallery(GraphGallery gal, double itemHeight)
         {
             StackLayout cell = new StackLayout
             {
@@ -214,8 +213,8 @@ namespace Zal.Views.Pages.Galleries
             };
             Image img = new Image()
             {
-                Source = ALBUM_URI + gal.File + "small/" + gal.MainImg,
-                ClassId = gal.MainImg,
+                Source = gal.ThumbUrl,
+                ClassId = gal.IdStr,
                 HeightRequest = itemHeight,
             };
             Label label = new Label()
@@ -247,20 +246,20 @@ namespace Zal.Views.Pages.Galleries
 
         private async void OpenImage_Tapped(object sender, EventArgs e)
         {
-            string image = (e as TappedEventArgs).Parameter as string;
+            GraphPhoto image = (e as TappedEventArgs).Parameter as GraphPhoto;
             await Navigation.PushAsync(new ImagePage(image));
         }
 
         private async void OpenGallery_Tapped(object sender, EventArgs e)
         {            
-            Gallery gal = (e as TappedEventArgs).Parameter as Gallery;
+            GraphGallery gal = (e as TappedEventArgs).Parameter as GraphGallery;
             await Navigation.PushAsync(new GalleryPage(gal));
         }
 
         private void Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
             var pickedYear = (int)picker.SelectedItem;
-            if (pickedYear == selectedPart) return;
+            if (pickedYear == selectedYear) return;
             yearToolbarItem.Text = pickedYear.ToString();
             ChangePage(pickedYear);
         }
@@ -288,29 +287,29 @@ namespace Zal.Views.Pages.Galleries
             {
                 page = 1;
             }
-            if (page == selectedPart) return;
+            if (page == selectedYear) return;
             ChangePage(page);
-            PageEntry.Text = selectedPart.ToString();
+            PageEntry.Text = selectedYear.ToString();
         }
 
         private void RigthArrow_Tapped(object sender, EventArgs e)
         {
-            if (selectedPart >= numOfParts) return;
-            ChangePage(selectedPart + 1);
-            PageEntry.Text = selectedPart.ToString();
+            if (selectedYear >= numOfParts) return;
+            ChangePage(selectedYear + 1);
+            PageEntry.Text = selectedYear.ToString();
         }
 
         private void LeftArrow_Tapped(object sender, EventArgs e)
         {
-            if (selectedPart <= 1) return;
-            ChangePage(selectedPart - 1);
-            PageEntry.Text = selectedPart.ToString();
+            if (selectedYear <= 1) return;
+            ChangePage(selectedYear - 1);
+            PageEntry.Text = selectedYear.ToString();
         }
 
         private void ChangePage(int page)
         {
             scrollView.ScrollToAsync(0, 0, false);
-            selectedPart = page;
+            selectedYear = page;
             isHorizontalGridReady = false;
             isVerticalGridReady = false;
             UpdateGrid();

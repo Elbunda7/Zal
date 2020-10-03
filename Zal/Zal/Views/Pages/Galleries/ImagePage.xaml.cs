@@ -6,24 +6,25 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Zal.Domain.ActiveRecords;
 
 namespace Zal.Views.Pages.Galleries
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ImagePage : ContentPage
     {
-        private string imgName;
+        private GraphPhoto photo;
 
-        public ImagePage(string imgName)
+        public ImagePage(GraphPhoto photo)
         {
-            this.imgName = imgName;
+            this.photo = photo;
             NavigationPage.SetHasNavigationBar(this, false);
             InitializeComponent();
         }
 
         protected override void OnAppearing()
         {
-            imageView.Source = imgName;
+            imageView.Source = photo.ThumbUrl;//todo call bigger photo
         }
     }
 }

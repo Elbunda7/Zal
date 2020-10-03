@@ -8,6 +8,7 @@ using Zal.Domain.Tools.ARSets;
 
 namespace Zal.Domain.ItemSets
 {
+    [Obsolete]
     public class GallerySet : BaseSet
     {
         public GalleryObservableSortedSet Data { get; set; }

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Zal.Bridge.Models
 {
+    [Obsolete]
     public class GalleryModel : IModel
     {
         public int Id { get; set; }

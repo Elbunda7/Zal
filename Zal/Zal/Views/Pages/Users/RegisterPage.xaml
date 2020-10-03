@@ -14,41 +14,58 @@
                 Padding="10" 
                 CornerRadius="10" 
                 BackgroundColor="WhiteSmoke">
-                <StackLayout Padding="10,5">
+                <StackLayout Padding="10,5" Spacing="0">
 
                     <ie:IconEntry 
                         x:Name="EmailEntry"
                         Keyboard="Email"
                         Placeholder="Email"
-                        Icon="ic_email_black_24dp.png"/>
+                        Icon="ic_email_black_24dp.png"
+                        ReturnType="Next"/>
+
+                    <Label x:Name="EmailErrorLabel" Margin="5,0" Text="EmailError" TextColor="Red" HorizontalOptions="End" FontSize="Micro"/>
 
                     <ie:IconEntry                             
                         x:Name="NameEntry"
                         Placeholder="Jméno"
-                        Icon="ic_person_black_24dp.png"/>
+                        Icon="ic_person_black_24dp.png"
+                        ReturnType="Next"/>
+
+                    <Label x:Name="NameErrorLabel" Margin="5,0" Text="EmailError" TextColor="Red" HorizontalOptions="End" FontSize="Micro"/>
 
                     <ie:IconEntry 
                         x:Name="SurnameEntry"
                         Placeholder="Příjmení"
-                        Icon="ic_person_black_24dp.png"/>
+                        Icon="ic_person_black_24dp.png"
+                        ReturnType="Next"/>
+
+                    <Label x:Name="SurnameErrorLabel" Margin="5,0" Text="EmailError" TextColor="Red" HorizontalOptions="End" FontSize="Micro"/>
 
                     <ie:IconEntry                             
                         x:Name="PhoneEntry"
                         Placeholder="Telefonní číslo"
                         Keyboard="Numeric"
-                        Icon="ic_phone_black_24dp.png"/>
+                        Icon="ic_phone_black_24dp.png"
+                        ReturnType="Next"/>
+
+                    <Label x:Name="PhoneErrorLabel" Margin="5,0" Text="EmailError" TextColor="Red" HorizontalOptions="End" FontSize="Micro"/>
 
                     <ie:IconEntry 
                         x:Name="PassEntry"
                         Placeholder="Heslo"
                         IsPassword="true"
-                        Icon="ic_lock_black_24dp.png"/>
+                        Icon="ic_lock_black_24dp.png"
+                        ReturnType="Next"/>
+
+                    <Label x:Name="PassErrorLabel" Margin="5,0" Text="EmailError" TextColor="Red" HorizontalOptions="End" FontSize="Micro"/>
 
                     <ie:IconEntry                             
                         x:Name="PassConfirmEntry"
-                        Placeholder="Heslo znova"
+                        Placeholder="Potvrdit heslo"
                         IsPassword="true"
                         Icon="ic_lock_black_24dp.png"/>
+
+                    <Label x:Name="Pass2ErrorLabel" Margin="5,0" Text="EmailError" TextColor="Red" HorizontalOptions="End" FontSize="Micro"/>
 
                     <Button x:Name="RegistrationButton"
                       BackgroundColor="{StaticResource Accent}"

@@ -20,7 +20,7 @@ namespace Zal.Views.Pages.Galleries
     {
         private List<MediaFile> mediaFiles;
         private IEnumerable<byte[]> byteImages;
-        private Gallery gallery = null;
+        private GraphGallery gallery = null;
         private bool CreateNewGallery => gallery == null;
 
         public GalleryCreatorPage()
@@ -29,7 +29,7 @@ namespace Zal.Views.Pages.Galleries
             ShowRelevantLayouts();
         }
 
-        public GalleryCreatorPage(Gallery gal)
+        public GalleryCreatorPage(GraphGallery gal)
         {
             InitializeComponent();
             gallery = gal;
@@ -83,16 +83,17 @@ namespace Zal.Views.Pages.Galleries
 
         private async void SaveGallery_Click(object sender, EventArgs e)
         {
-            if (CreateNewGallery)
-            {
-                gallery = await Zalesak.Galleries.Add(nameEntry.Text, int.Parse(yearEntry.Text), DateTime.Now);
-            }
-            for (int i = 0; i < mediaFiles.Count; i++)
-            {
-                string imgName = mediaFiles[i].Path.Split('/').Last();
-                await gallery.Upload(imgName, byteImages.ElementAt(i));
-                mediaFiles[i].Dispose();
-            }
+            //if (CreateNewGallery)
+            //{
+            //    gallery = await Zalesak.GraphGalleries.Add(nameEntry.Text, int.Parse(yearEntry.Text), DateTime.Now);
+            //}
+            //for (int i = 0; i < mediaFiles.Count; i++)
+            //{
+            //    string imgName = mediaFiles[i].Path.Split('/').Last();
+            //    await gallery.Upload(imgName, byteImages.ElementAt(i));
+            //    mediaFiles[i].Dispose();
+            //}
+            //todo nebudu ukládat z aplikace všechny fotky
             await Navigation.PopAsync();
         }
     }

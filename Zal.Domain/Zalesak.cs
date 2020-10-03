@@ -32,7 +32,9 @@ namespace Zal.Domain
         public static UserSet Users { get; private set; } = new UserSet();
         public static ActualitySet Actualities { get; private set; } = new ActualitySet();
         public static ActionSet Actions { get; private set; } = new ActionSet();
+        [Obsolete]
         public static GallerySet Galleries { get; private set; } = new GallerySet();
+        public static GraphGallerySet GraphGalleries { get; private set; } = new GraphGallerySet();
         public static GameSet Games { get; private set; } = new GameSet();
 
         [Obsolete]

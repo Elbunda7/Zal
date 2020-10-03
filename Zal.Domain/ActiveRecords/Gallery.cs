@@ -11,6 +11,7 @@ using Zal.Bridge.Models.ApiModels;
 
 namespace Zal.Domain.ActiveRecords
 {
+    [Obsolete]
     public class Gallery : IActiveRecord
     {
         private GalleryModel Model;
