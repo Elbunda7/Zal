@@ -19,7 +19,7 @@ namespace Zal.Views.Pages.Galleries
 
         private const int THUMB_SIZE = 200;
         private const string ALBUM_URI = "http://zalesak.hlucin.com/galerie/albums/";
-        private const int ITEMS_PER_PAGE = 30;
+        private const int ITEMS_PER_PAGE = 60;
 
         private double maxImgSize = 0;
         private GraphGallery gallery;
@@ -83,8 +83,12 @@ namespace Zal.Views.Pages.Galleries
                 numOfParts = (images.Count() + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE;
                 if (numOfParts > 1)
                 {
-                    PageNavigationLayout.IsVisible = true;
-                    NumOfPagesLabel.Text = "/ " + numOfParts;
+                    Lyt_UpperPageBar.IsVisible = true;
+                    Lyt_BottomPageBar.IsVisible = true;
+                    Lbl_UpperNumOfPages.Text = $"/ {numOfParts}  ";
+                    Lbl_BottomNumOfPages.Text = $"/ {numOfParts}  ";
+                    Img_UpperLeftArrow.Opacity = 0;
+                    Img_BottomLeftArrow.Opacity = 0;
                 }
             }
             else
@@ -101,7 +105,7 @@ namespace Zal.Views.Pages.Galleries
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            if (!isLoaded) return;
+            if (!isLoaded || width == -1 || height == -1) return;
             bool isVertically = width < height;
             if (maxImgSize == 0)
             {
@@ -213,7 +217,7 @@ namespace Zal.Views.Pages.Galleries
             };
             Image img = new Image()
             {
-                Source = gal.ThumbUrl,
+                Source = gal.ThumbUrl ?? ImageSource.FromFile("gallery_placeholder.png"),
                 ClassId = gal.IdStr,
                 HeightRequest = itemHeight,
             };
@@ -264,55 +268,66 @@ namespace Zal.Views.Pages.Galleries
             ChangePage(pickedYear);
         }
 
-        private void PageLabel_Tapped(object sender, EventArgs e)
+        private void UpperPageLabel_Tapped(object sender, EventArgs e)
         {
-            PageEntry.Focus();
+            Ent_UpperPage.Focus();
         }
 
-        private async void PageEntry_Focused(object sender, FocusEventArgs e)
+        private void BottomPageLabel_Tapped(object sender, EventArgs e)
+        {
+            Ent_BottomPage.Focus();
+        }
+
+        private async void UpperPageEntry_Focused(object sender, FocusEventArgs e)
         {
             await Task.Delay(50);
-            PageEntry.CursorPosition = 0;
-            PageEntry.SelectionLength = PageEntry.Text.Length;
+            Ent_UpperPage.CursorPosition = 0;
+            Ent_UpperPage.SelectionLength = Ent_UpperPage.Text.Length;
+        }
+
+        private async void BottomPageEntry_Focused(object sender, FocusEventArgs e)
+        {
+            await Task.Delay(50);
+            Ent_BottomPage.CursorPosition = 0;
+            Ent_BottomPage.SelectionLength = Ent_BottomPage.Text.Length;
         }
 
         private void PageEntry_Unfocused(object sender, FocusEventArgs e)
         {
-            int page;
-            if (int.TryParse(PageEntry.Text, out page) && page > 0)
+            if (int.TryParse((sender as Entry).Text, out int page) && page > 0)
             {
                 if (page > numOfParts) page = numOfParts;
-            }
-            else
-            {
-                page = 1;
+                if (page < 1) page = 1;
             }
             if (page == selectedYear) return;
             ChangePage(page);
-            PageEntry.Text = selectedYear.ToString();
         }
 
         private void RigthArrow_Tapped(object sender, EventArgs e)
         {
             if (selectedYear >= numOfParts) return;
             ChangePage(selectedYear + 1);
-            PageEntry.Text = selectedYear.ToString();
         }
 
         private void LeftArrow_Tapped(object sender, EventArgs e)
         {
             if (selectedYear <= 1) return;
             ChangePage(selectedYear - 1);
-            PageEntry.Text = selectedYear.ToString();
         }
 
         private void ChangePage(int page)
         {
             scrollView.ScrollToAsync(0, 0, false);
             selectedYear = page;
+            Ent_UpperPage.Text = selectedYear.ToString();
+            Ent_BottomPage.Text = selectedYear.ToString();
             isHorizontalGridReady = false;
             isVerticalGridReady = false;
             UpdateGrid();
+            Img_UpperLeftArrow.Opacity = page == 1 ? 0 : 1;
+            Img_BottomLeftArrow.Opacity = page == 1 ? 0 : 1;
+            Img_UpperRightArrow.Opacity = page == numOfParts ? 0 : 1;
+            Img_BottomRightArrow.Opacity = page == numOfParts ? 0 : 1;
         }
     }
 }

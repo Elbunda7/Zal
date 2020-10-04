@@ -9,63 +9,6 @@
 
             <Picker x:Name="picker" SelectedIndex="0" IsVisible="False" SelectedIndexChanged="Picker_SelectedIndexChanged"/>
 
-            <StackLayout Orientation="Horizontal"
-                         BackgroundColor="{StaticResource Primary}"
-                         HorizontalOptions="FillAndExpand"
-                         Margin="0"
-                         x:Name="PageNavigationLayout"
-                         IsVisible="False"
-                         VerticalOptions="End">
-                <elements:TintImage 
-                    Source="baseline_backward_black_48.png" 
-                    TintColor="Accent" 
-                    Margin="10,0,0,0"
-                    x:Name="LeftArrowImage">
-                    <Image.GestureRecognizers>
-                        <TapGestureRecognizer
-                            Tapped="LeftArrow_Tapped"
-                            NumberOfTapsRequired="1" />
-                    </Image.GestureRecognizers>
-                </elements:TintImage>
-                
-                <StackLayout Orientation="Horizontal"
-                             HorizontalOptions="CenterAndExpand">
-                    <Entry TextColor="{StaticResource Accent}" 
-                           x:Name="PageEntry"
-                           FontSize="Large" 
-                           Keyboard="Numeric" 
-                           MaxLength="3"
-                           Text="1"
-                           WidthRequest="48"
-                           HorizontalTextAlignment="End"
-                           Focused="PageEntry_Focused"
-                           Unfocused="PageEntry_Unfocused"/>
-                    <Label Text="/ 20" 
-                           x:Name="NumOfPagesLabel"
-                            FontSize="Large" 
-                            VerticalOptions="Center" 
-                            TextColor="{StaticResource LightTextColor}">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer
-                                Tapped="PageLabel_Tapped"
-                                NumberOfTapsRequired="1"/>
-                        </Label.GestureRecognizers>
-                    </Label>
-                </StackLayout>
-                
-                <elements:TintImage 
-                    Source="baseline_forward_black_48.png" 
-                    TintColor="Accent"  
-                    Margin="0,0,10,0"
-                    x:Name="RightArrowImage">
-                    <Image.GestureRecognizers>
-                        <TapGestureRecognizer
-                            Tapped="RigthArrow_Tapped"
-                            NumberOfTapsRequired="1" />
-                    </Image.GestureRecognizers>
-                </elements:TintImage>
-            </StackLayout>
-
             <ScrollView               
                 x:Name="scrollView"
                     BackgroundColor="WhiteSmoke"
@@ -73,21 +16,144 @@
                     VerticalOptions="FillAndExpand"                
                     Padding="0">
 
-                <StackLayout Orientation="Vertical">
+                <StackLayout Orientation="Vertical" Spacing="1.5">
+
+
+                    <StackLayout Orientation="Horizontal"
+                                 BackgroundColor="{StaticResource GrayBackgroundColor}"
+                                 HorizontalOptions="FillAndExpand"
+                                 Margin="0"
+                                 Padding="4"
+                                 x:Name="Lyt_UpperPageBar"
+                                 IsVisible="False"
+                                 VerticalOptions="Start">
+                        <elements:TintImage 
+                            Source="baseline_backward_black_48.png" 
+                            TintColor="{StaticResource PrimaryDark}"
+                            x:Name="Img_UpperLeftArrow"
+                            Margin="35,0,0,0">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Tapped="LeftArrow_Tapped"
+                                    NumberOfTapsRequired="1" />
+                            </Image.GestureRecognizers>
+                        </elements:TintImage>
+
+                        <StackLayout Orientation="Horizontal"
+                                     HorizontalOptions="CenterAndExpand">
+                            <Entry TextColor="{StaticResource PrimaryDark}" 
+                                   x:Name="Ent_UpperPage"
+                                   FontSize="Large" 
+                                   Keyboard="Numeric" 
+                                   MaxLength="3"
+                                   Text="1"
+                                   WidthRequest="48"
+                                   HorizontalTextAlignment="End"
+                                   Focused="UpperPageEntry_Focused"
+                                   Unfocused="PageEntry_Unfocused"/>
+                            <Label Text="/ 20" 
+                                   x:Name="Lbl_UpperNumOfPages"
+                                   FontSize="Large" 
+                                   VerticalOptions="Center" 
+                                   TextColor="Black">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Tapped="UpperPageLabel_Tapped"
+                                        NumberOfTapsRequired="1"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </StackLayout>
+
+                        <elements:TintImage 
+                            Source="baseline_forward_black_48.png" 
+                            TintColor="{StaticResource PrimaryDark}"  
+                            x:Name="Img_UpperRightArrow"
+                            Margin="0,0,35,0">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Tapped="RigthArrow_Tapped"
+                                    NumberOfTapsRequired="1" />
+                            </Image.GestureRecognizers>
+                        </elements:TintImage>
+                    </StackLayout>
+
 
                     <Grid x:Name="HorizontalGrid"                       
                           ColumnSpacing="1.5"
                           RowSpacing="1.5"
-                          HorizontalOptions="FillAndExpand"
-                          VerticalOptions="FillAndExpand">
+                          Margin="0"
+                          HorizontalOptions="StartAndExpand"
+                          VerticalOptions="StartAndExpand">
                     </Grid>
 
                     <Grid x:Name="VerticalGrid"  
                           ColumnSpacing="1.5"
                           RowSpacing="1.5"
-                          HorizontalOptions="FillAndExpand"
-                          VerticalOptions="FillAndExpand">
+                          Margin="0"
+                          HorizontalOptions="StartAndExpand"
+                          VerticalOptions="StartAndExpand">
                     </Grid>
+                    
+
+                    <StackLayout Orientation="Horizontal"
+                                 HorizontalOptions="FillAndExpand"
+                                 BackgroundColor="{StaticResource GrayBackgroundColor}"
+                                 Margin="0"
+                                 Padding="4"
+                                 x:Name="Lyt_BottomPageBar"
+                                 IsVisible="False"
+                                 VerticalOptions="End">
+                        <elements:TintImage 
+                            Source="baseline_backward_black_48.png" 
+                            TintColor="{StaticResource PrimaryDark}" 
+                            x:Name="Img_BottomLeftArrow"
+                            Margin="4,0,0,0">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Tapped="LeftArrow_Tapped"
+                                    NumberOfTapsRequired="1" />
+                            </Image.GestureRecognizers>
+                        </elements:TintImage>
+
+                        <StackLayout Orientation="Horizontal"
+                                     HorizontalOptions="CenterAndExpand">
+                            <Entry TextColor="{StaticResource PrimaryDark}" 
+                                   x:Name="Ent_BottomPage"
+                                   FontSize="Large" 
+                                   Keyboard="Numeric" 
+                                   MaxLength="3"
+                                   Text="1"
+                                   WidthRequest="48"
+                                   HorizontalTextAlignment="End"
+                                   Focused="BottomPageEntry_Focused"
+                                   Unfocused="PageEntry_Unfocused"/>
+                            <Label Text="/ 20" 
+                                   x:Name="Lbl_BottomNumOfPages"
+                                    FontSize="Large" 
+                                    VerticalOptions="Center" 
+                                    TextColor="Black">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Tapped="BottomPageLabel_Tapped"
+                                        NumberOfTapsRequired="1"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </StackLayout>
+
+                        <elements:TintImage 
+                            Source="baseline_forward_black_48.png" 
+                            TintColor="{StaticResource PrimaryDark}"  
+                            x:Name="Img_BottomRightArrow"
+                            Margin="0,0,4,0">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Tapped="RigthArrow_Tapped"
+                                    NumberOfTapsRequired="1" />
+                            </Image.GestureRecognizers>
+                        </elements:TintImage>
+                    </StackLayout>
+
+
                 </StackLayout>
             </ScrollView>
 

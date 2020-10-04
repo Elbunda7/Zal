@@ -66,7 +66,7 @@ namespace Zal.Views
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            SetItemAsSelected(menuItems[0]);
+            SetItemAsSelected(menuItems[3]);
         }
 
         private async void SetItemAsSelected(HomeMenuItem item)
