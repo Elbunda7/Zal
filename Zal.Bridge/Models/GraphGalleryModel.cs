@@ -23,7 +23,7 @@ namespace Zal.Bridge.Models
                 Name = y.name,
                 Year = year,
                 ItemsCount = y.folder.childCount,
-                ThumbUrl = thumbItems.SingleOrDefault(x => x.name.Contains(y.name))?.thumbnails.First().thumb.url,
+                ThumbUrl = thumbItems.FirstOrDefault(x => x.name.Substring(0, x.name.LastIndexOf('.')).Equals(y.name))?.thumbnails.First().thumb.url,
             });
             return galleryModels;
         }
