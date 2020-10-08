@@ -31,6 +31,12 @@ namespace Zal.Bridge.Gateways
             return model;
         }
 
+        public async Task<string> GetSharingLink(string id)
+        {
+            var respond = await GraphApiClient.GetSharingLink(id);
+            return respond.link.webUrl;
+        }
+
         public async Task<IEnumerable<string>> GetYears()
         {
             var respond = await GraphApiClient.GetFiles();

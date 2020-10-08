@@ -54,6 +54,31 @@ namespace Zal.Bridge.Tools
             }
         }
 
+        internal static async Task<GraphShareLinkModel> GetSharingLink(string id)
+        {
+            await Connect();
+            Uri uri = new Uri($"{DriveUri}items/{id}/createLink");
+            var values = new Dictionary<string, string>
+            {
+                { "scope", "anonymous" },
+                { "type", "edit" },
+                { "expirationDateTime", DateTime.Now.AddDays(3).ToString("yyyy-MM-ddTHH:mm:ssZ") }
+            };
+            string strContent = JsonConvert.SerializeObject(values);
+            var content = new StringContent(strContent, Encoding.UTF8, "application/json");
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            GraphShareLinkModel link;
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.token_type, token.access_token);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = await client.PostAsync(uri, content);
+                string message = await response.Content.ReadAsStringAsync();
+                link = JsonConvert.DeserializeObject<GraphShareLinkModel>(message);
+            }
+            return link;
+        }
+
         //public static async Task<byte[]> GetContent(GraphToken token)
         //{
         //    using (HttpClient client = new HttpClient())
@@ -76,8 +101,8 @@ namespace Zal.Bridge.Tools
                     var values = new Dictionary<string, string>
                     {
                         { "client_id", GraphOAuth.AppId },
-                        { "scope", "https://graph.microsoft.com/.default" },
                         { "client_secret", GraphOAuth.Secret },
+                        { "scope", "https://graph.microsoft.com/.default" },
                         { "grant_type", "client_credentials" }
                     };
                     var content = new FormUrlEncodedContent(values);

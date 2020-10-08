@@ -39,6 +39,11 @@ namespace Zal.Domain.ActiveRecords
             Model = model;
         }
 
+        public Task<string> GetSharingLink()
+        {
+            return Gateway.GetSharingLink(IdStr);
+        }
+
         //public async Task<bool> Upload(string imageName, byte[] rawImage, bool isMain = false)
         //{
         //    var model = new ImageUploadModel

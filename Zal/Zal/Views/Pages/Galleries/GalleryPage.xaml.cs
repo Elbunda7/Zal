@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Zal.Domain;
@@ -15,7 +16,6 @@ namespace Zal.Views.Pages.Galleries
 	{
         public bool IsDeviceVertically { get; private set; } = true;
         private ToolbarItem yearToolbarItem;
-        private ToolbarItem creatorToolbarItem;
 
         private const int THUMB_SIZE = 200;
         private const string ALBUM_URI = "http://zalesak.hlucin.com/galerie/albums/";
@@ -34,8 +34,8 @@ namespace Zal.Views.Pages.Galleries
 		{
 			InitializeComponent ();
             Title = "Galerie";
-            AddToolbarItem_Creator("vytvořit novou galerii");
-            AddToolbarItem_Year();
+            MakeToolbarItem("Vytvořit novou galerii", AddGalleryToolbarItem_Clicked, ToolbarItemOrder.Secondary);
+            yearToolbarItem = MakeToolbarItem("", YearToolbarItem_Clicked, ToolbarItemOrder.Primary);
             Analytics.TrackEvent("GaleryPage-main");
 		}
 
@@ -44,28 +44,20 @@ namespace Zal.Views.Pages.Galleries
             InitializeComponent();
             Title = gallery.Name;
             this.gallery = gallery;
-            AddToolbarItem_Creator("přidat fotky");
+            MakeToolbarItem("Upravit galerii", EditGalleryToolbarItem_Clicked, ToolbarItemOrder.Secondary);
+            MakeToolbarItem("Nahrát fotky", AddPhotosToolbarItem_Clicked, ToolbarItemOrder.Secondary);
         }
 
-        private void AddToolbarItem_Creator(string text)
+        private ToolbarItem MakeToolbarItem(string text, EventHandler handler, ToolbarItemOrder itemOrder)
         {
-            creatorToolbarItem = new ToolbarItem
+            var toolbarItem = new ToolbarItem
             {
                 Text = text,
-                Order = ToolbarItemOrder.Secondary
+                Order = itemOrder
             };
-            creatorToolbarItem.Clicked += AddGallery_ToolbarItemClicked;
-            ToolbarItems.Add(creatorToolbarItem);
-        }
-
-        private void AddToolbarItem_Year()
-        {
-            yearToolbarItem = new ToolbarItem
-            {
-                Order = ToolbarItemOrder.Primary
-            };
-            yearToolbarItem.Clicked += YearToolbarItem_Clicked;
-            ToolbarItems.Add(yearToolbarItem);
+            toolbarItem.Clicked += handler;
+            ToolbarItems.Add(toolbarItem);
+            return toolbarItem;
         }
 
         protected override void OnAppearing()
@@ -243,9 +235,20 @@ namespace Zal.Views.Pages.Galleries
             picker.Focus();
         }
 
-        private async void AddGallery_ToolbarItemClicked(object sender, EventArgs e)
+        private async void AddGalleryToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new GalleryCreatorPage());
+        }
+
+        private async void EditGalleryToolbarItem_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new GalleryCreatorPage(gallery));
+        }
+
+        private async void AddPhotosToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            string link = await gallery.GetSharingLink();
+            await Browser.OpenAsync(link, BrowserLaunchMode.SystemPreferred);
         }
 
         private async void OpenImage_Tapped(object sender, EventArgs e)

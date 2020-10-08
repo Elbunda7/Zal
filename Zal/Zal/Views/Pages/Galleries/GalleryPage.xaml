@@ -23,7 +23,7 @@
                                  BackgroundColor="{StaticResource GrayBackgroundColor}"
                                  HorizontalOptions="FillAndExpand"
                                  Margin="0"
-                                 Padding="4"
+                                 Padding="2"
                                  x:Name="Lyt_UpperPageBar"
                                  IsVisible="False"
                                  VerticalOptions="Start">
