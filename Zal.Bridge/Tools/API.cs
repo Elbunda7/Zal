@@ -15,6 +15,7 @@ namespace Zal.Bridge.Tools
             public const string USERS = "users";
             public const string SESSION = "session";
             public const string GAMES = "games";
+            public const string VERSION = "version";
         }
 
         internal abstract class METHOD
@@ -45,6 +46,7 @@ namespace Zal.Bridge.Tools
             public const string LOAD_NEXT = "LoadNext";
             public const string UPLOAD_IMAGE = "UploadImage";
             public const string COMPLETE_REGISTRATION = "CompleteRegistration";
+            public const string NON = "non";
         }
 
         public abstract class MODE

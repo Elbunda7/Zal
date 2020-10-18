@@ -44,6 +44,20 @@ namespace Zal.Bridge.Gateways
             return years;
         }
 
+        public async Task<string> CreateFolder(int year)
+        {
+            var respond = await GraphApiClient.CreateFolder(year.ToString());
+            var id = respond.id;
+            return id;
+        }
+
+        public async Task<GraphGalleryModel> CreateFolder(int year, string name)
+        {
+            var respond = await GraphApiClient.CreateFolder(year.ToString(), name);
+            var model = GraphGalleryModel.From(respond, year);
+            return model;
+        }
+
         //public async Task<IEnumerable<string>> GetAsync(int id)
         //{
         //    var respond = await SendRequestForNullable<IEnumerable<string>>(API.METHOD.GET, id);

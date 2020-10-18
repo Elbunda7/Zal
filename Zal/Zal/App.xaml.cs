@@ -22,25 +22,31 @@ namespace Zal
         {
             InitializeComponent();
             InitializeAppData();
-
             AppCenter.Start("android=555f3d1a-d1f9-485d-8a9d-983344faa20b;", typeof(Analytics), typeof(Crashes));
-
-            MainPage = new AboutPage();//todo loading page
         }
 
         private async void InitializeAppData()
         {
             Zalesak.CommandExecutedOffline += OnCommandExecutedOffline;
             await Task.Run(async () => {
-                if (Current.Properties.ContainsKey(LOCAL_DATA))//todo future akce se zobrazí jeno když dojde k synchronizaci
-                {
-                    var fileData = (string)Current.Properties[LOCAL_DATA];
-                    Zalesak.LoadDataFrom(fileData);
-                    var isLogged = await Zalesak.Session.TryLoginWithTokenAsync();
-                    await Zalesak.StartSynchronizingAsync();//todo synchronizovat vše?
-                }
+                //if (Current.Properties.ContainsKey(LOCAL_DATA))//todo future akce se zobrazí jeno když dojde k synchronizaci
+                //{
+                //    var fileData = (string)Current.Properties[LOCAL_DATA];
+                //    Zalesak.LoadDataFrom(fileData);
+                //    var isLogged = await Zalesak.Session.TryLoginWithTokenAsync();
+                //    await Zalesak.StartSynchronizingAsync();//todo synchronizovat vše?
+                //}
+                //lastVersion = await Zalesak.CurrentVersion();
+                //appVersion = new Version(VersionTracking.CurrentVersion);
                 //Zalesak.LoadOfflineCommands(LoadFromStorage(OFFLINE_COMMANDS_FILE));
             });
+            var loadingPage = new LoadingPage();
+            loadingPage.Loaded += LoadingPage_Loaded;
+            MainPage = loadingPage;
+        }
+
+        private void LoadingPage_Loaded()
+        {
             OnAppReady();
         }
 

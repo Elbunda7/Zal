@@ -56,6 +56,11 @@ namespace Zal.Domain
             Session.Stop();
         }
 
+        public static Task<Version> CurrentVersion()
+        {
+            return VersionAR.GetCurrentVersion();
+        }
+
         public static void LoadOfflineCommands(XDocument commands)
         {
             //Database.LoadOfflineCommands(commands);

@@ -16,9 +16,9 @@ namespace Zal.Bridge.Tools
         internal string CreateApiRequestString(string operation, object content = null, string userToken = null)
         {
             JObject requestObject = new JObject {
-                { "endpoint", Endpoint },
-                { "operation", operation }
+                { "endpoint", Endpoint }
             };
+            if (operation != API.METHOD.NON) requestObject.Add("operation", operation);
             if (userToken != null) requestObject.Add("token", userToken);
             if (content != null)
             {

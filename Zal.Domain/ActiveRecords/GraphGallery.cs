@@ -44,6 +44,18 @@ namespace Zal.Domain.ActiveRecords
             return Gateway.GetSharingLink(IdStr);
         }
 
+        public static async Task<GraphGallery> CreateGallery(int year, string name)
+        {
+            var model = await Gateway.CreateFolder(year, name);
+            return new GraphGallery(model);
+        }
+
+        public static async Task<bool> CreateYearFolder(int year)
+        {
+            var respond = await Gateway.CreateFolder(year);
+            return string.IsNullOrEmpty(respond);
+        }
+
         //public async Task<bool> Upload(string imageName, byte[] rawImage, bool isMain = false)
         //{
         //    var model = new ImageUploadModel

@@ -7,7 +7,7 @@ using Zal.Domain.Tools.ARSets;
 
 namespace Zal.Domain.ItemSets
 {
-    public class GraphGallerySet:BaseSet
+    public class GraphGallerySet : BaseSet
     {
         private Dictionary<int, GraphGalleryObservableSortedSet> Data { get; set; }
         private int ShownYear;
@@ -44,6 +44,21 @@ namespace Zal.Domain.ItemSets
                 Data.Add(year, new GraphGalleryObservableSortedSet(await GraphGallery.GetGalleries(year)));//todo execute task
             }
             return Data[year];
+        }
+
+        public async Task<GraphGallery> Add(int year, string name)
+        {
+            if (!Years.Contains(year))
+            {
+                if (await GraphGallery.CreateYearFolder(year))
+                {
+                    Years.Add(year);
+                    Data.Add(year, new GraphGalleryObservableSortedSet());
+                }
+            }
+            var gallery = await GraphGallery.CreateGallery(year, name);
+            Data[year].Add(gallery);
+            return gallery;
         }
 
         //public async Task<GraphGallery> Add(string name, int year, DateTime date, string mainImgName = "")

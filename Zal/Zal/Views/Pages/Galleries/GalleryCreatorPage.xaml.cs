@@ -88,10 +88,8 @@ namespace Zal.Views.Pages.Galleries
 
         private async void SaveGallery_Click(object sender, EventArgs e)
         {
-            //if (CreateNewGallery)
-            //{
-            //    gallery = await Zalesak.GraphGalleries.Add(nameEntry.Text, int.Parse(yearEntry.Text), DateTime.Now);//todo oneDrive vytvořit složku
-            //}
+            gallery = await Zalesak.GraphGalleries.Add(int.Parse(Ent_Year.Text), Ent_Name.Text);//todo oneDrive vytvořit složku
+
             //for (int i = 0; i < mediaFiles.Count; i++)
             //{
             //    string imgName = mediaFiles[i].Path.Split('/').Last();

@@ -22,14 +22,16 @@ namespace Zal.Bridge.Tools
 
         private static GraphToken token;
 
-        public static Task<GraphFilesModel> GetFiles(int year = -1, string galleryName = null)//"Galerie/2020/VIP České Švýcarsko"
+        public static Task<GraphFilesModel> GetFiles()
         {
-            string path = "root:/Galerie";
-            if (year != -1)
-            {
-                path += $"/{year}";
-                if (!string.IsNullOrEmpty(galleryName)) path += $"/{galleryName}";
-            }
+            Uri uri = new Uri($"{DriveUri}root:/Galerie:/children?$select=name");
+            return GetFiles(uri);
+        }
+
+        public static Task<GraphFilesModel> GetFiles(int year, string galleryName = null)//"Galerie/2020/VIP České Švýcarsko"
+        {
+            string path = $"root:/Galerie/{year}";
+            if (!string.IsNullOrEmpty(galleryName)) path += $"/{galleryName}";
             path += ":/children?";
             Uri uri = new Uri(DriveUri + path + selectParams + "&" + includeThumbnails);
             return GetFiles(uri);
@@ -52,6 +54,41 @@ namespace Zal.Bridge.Tools
                 var resModel = JsonConvert.DeserializeObject<GraphFilesModel>(message);
                 return resModel;
             }
+        }
+
+        internal static Task<FileItemModel> CreateFolder(string year)
+        {
+            Uri uri = new Uri($"{DriveUri}root:/Galerie:/children?$select=id,name");
+            return CreateFolder(uri, year);
+        }
+
+        internal static Task<FileItemModel> CreateFolder(string year, string name)
+        {
+            Uri uri = new Uri($"{DriveUri}root:/Galerie/{year}:/children?$select=id,name");
+            return CreateFolder(uri, name);
+        }
+
+        internal static async Task<FileItemModel> CreateFolder(Uri uri, string name)
+        {
+            await Connect();
+            var values = new Dictionary<string, object>
+            {
+                { "name", name },
+                { "folder", new object() },
+            };
+            string strContent = JsonConvert.SerializeObject(values);
+            var content = new StringContent(strContent, Encoding.UTF8, "application/json");
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            FileItemModel folder;
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token.token_type, token.access_token);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = await client.PostAsync(uri, content);
+                string message = await response.Content.ReadAsStringAsync();
+                folder = JsonConvert.DeserializeObject<FileItemModel>(message);
+            }
+            return folder;
         }
 
         internal static async Task<GraphShareLinkModel> GetSharingLink(string id)

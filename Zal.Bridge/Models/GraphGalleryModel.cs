@@ -27,5 +27,17 @@ namespace Zal.Bridge.Models
             });
             return galleryModels;
         }
+
+        public static GraphGalleryModel From(FileItemModel model, int year)
+        {
+            return new GraphGalleryModel
+            {
+                Id = model.id,
+                Name = model.name,
+                Year = year,
+                ItemsCount = model.folder.childCount,
+                ThumbUrl = null,
+            };
+        }
     }
 }
