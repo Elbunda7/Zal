@@ -41,7 +41,7 @@ namespace Zal
                 //Zalesak.LoadOfflineCommands(LoadFromStorage(OFFLINE_COMMANDS_FILE));
             });
             var loadingPage = new LoadingPage();
-            loadingPage.Loaded += LoadingPage_Loaded;
+            //loadingPage.Loaded += LoadingPage_Loaded;
             MainPage = loadingPage;
         }
 

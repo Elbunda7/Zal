@@ -21,7 +21,7 @@ namespace Zal.Droid
             Xamarin.Forms.Forms.Init(this, savedInstanceState);
             Rg.Plugins.Popup.Popup.Init(this, savedInstanceState);
             ImageCircle.Forms.Plugin.Droid.ImageCircleRenderer.Init();
-            IconEntry.FormsPlugin.Android.IconEntryRenderer.Init();            
+            IconEntry.FormsPlugin.Android.IconEntryRenderer.Init();        
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             LoadApplication(new App());
         }
