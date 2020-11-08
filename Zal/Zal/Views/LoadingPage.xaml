@@ -3,14 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              x:Class="Zal.Views.LoadingPage">
-    <AbsoluteLayout Margin="0" Padding="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+    <AbsoluteLayout x:Name="Lyt_absolute" Margin="0" Padding="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
         <Image Source="hory_bg.png"
                AbsoluteLayout.LayoutBounds="0, 1" 
                AbsoluteLayout.LayoutFlags="PositionProportional"/>
-        <Image Source="cloud.png" 
+        <Image x:Name="Img_cloud"
+               Source="cloud.png" 
                AbsoluteLayout.LayoutBounds="0.9, 0.2" 
                AbsoluteLayout.LayoutFlags="PositionProportional"/>
-        <Image Source="device_holding.png" 
+        <Image x:Name="Img_device"
+               Source="device_holding.png" 
                AbsoluteLayout.LayoutBounds="0, 1" 
                AbsoluteLayout.LayoutFlags="PositionProportional"/>
         <skia:SKCanvasView x:Name="canvasView"

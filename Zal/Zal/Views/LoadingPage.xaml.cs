@@ -19,22 +19,30 @@ namespace Zal.Views
 	{
         //SKCanvasView canvasView;
         float xRotationDegrees, yRotationDegrees, zRotationDegrees;
-        string text = "stah".ToMorse();
+        string text = "stahu".ToMorse();
         SKPaint textPaint = new SKPaint
         {
             Typeface = GetTypeface("Zal/Resources/MorseSimple-normal.otf"),
             Color = SKColors.Black,
+            TextSize = 100,
         };
+        SKSize size;
         SKRect textBounds = new SKRect();
-
+        //PointF[] points = new PointF[4];
+        SKMatrix matrix;
+        SKPoint centeredOrigin = new SKPoint();
+        SKPoint Origin = new SKPoint();
+        bool isReady = false;
 
         public LoadingPage()
         {
             InitializeComponent();
             Title = "Animated Rotation 3D";
+            Lyt_absolute.SizeChanged += Lyt_absolute_SizeChanged;
 
             //canvasView = new SKCanvasView();
             canvasView.PaintSurface += OnCanvasViewPaintSurface;
+            //canvasView.Background = Brush.White;
             //Content = canvasView;
 
             //var assembly = this.GetType().GetTypeInfo().Assembly;
@@ -42,6 +50,19 @@ namespace Zal.Views
             // Measure the text
                 float a = textPaint.MeasureText(text, ref textBounds);
         }
+
+        private void Lyt_absolute_SizeChanged(object sender, EventArgs e)
+        {
+            size = new SKSize((float)Lyt_absolute.Width, (float)Lyt_absolute.Height);
+            var cloud = Img_cloud.Bounds;
+            var device = Img_device.Bounds;
+
+            new Animation(AnimationStep).Commit(this, "MorseFlow", length: 2000, repeat: () => true);
+
+
+
+        }
+
 
         public static SKTypeface GetTypeface(string fullFontName)
         {
@@ -56,13 +77,11 @@ namespace Zal.Views
             base.OnAppearing();
             //new Timer(OnTimerElapsed, null, 200, 200);
 
-            new Animation(AnimationStep).Commit(this, "MorseFlow",length:2000, repeat: () => true);
-
-            new Animation((value) => xRotationDegrees = 360 * (float)value).
-                Commit(this, "xRotationAnimation", length: 5000, repeat: () => true);
-
             //new Animation((value) => yRotationDegrees = 360 * (float)value).
             //    Commit(this, "yRotationAnimation", length: 7000, repeat: () => true);
+
+            //        new Animation((value) => xRotationDegrees = 360 * (float)value).
+            //Commit(this, "xRotationAnimation", length: 25000, repeat: () => true);
 
             //new Animation((value) =>
             //{
@@ -116,49 +135,105 @@ namespace Zal.Views
             this.AbortAnimation("zRotationAnimation");
         }
 
-        void OnCanvasViewPaintSurface(object sender, SKPaintSurfaceEventArgs args)
+        private void ComputeMatrix(SKPoint posFrom, SKPoint posTo, SKImageInfo info, float yAngleDeg)
         {
-            SKImageInfo info = args.Info;
-            SKSurface surface = args.Surface;
-            SKCanvas canvas = surface.Canvas;
+            SKPoint center = posFrom + posTo;
+            center.X /= 2.0f;
+            center.Y /= 2.0f;
+            var dx = posTo.X - posFrom.X;
+            var dy = posTo.Y - posFrom.Y;
+            var length = Math.Sqrt(dx * dx + dy * dy);
 
-            canvas.Clear();
+            float scale = (float)length / textBounds.Width;
 
-            // Find center of canvas
-            float xCenter = info.Width / 2;
-            float yCenter = info.Height / 2;
+            //float depth = info.Width * 0.7f;
 
-            // Translate center to origin
-            SKMatrix matrix = SKMatrix.MakeTranslation(-xCenter, -yCenter);
+            //yAngleDeg = 0;
+            var zAngleRad = Math.Atan2(dy, dx);
+            var zAngleDeg = (float)(zAngleRad * 180 / Math.PI);
+            var yAngleRad = yAngleDeg * Math.PI / 180;
+            var c = textBounds.Width * scale / 2.0;
+            var a = Math.Sin(yAngleRad) * c;
+            var b = Math.Sqrt(c * c - a * a);
+            if (length <= 2 * b) length = 2 * b + 10;
+            var depth = (float)(a * Math.Sqrt(length) / Math.Sqrt(length - 2 * b));
+            if (depth == 0) depth = 1;
+            var y1 = b * depth / (depth - a);
+            var y2 = b * depth / (depth + a);
+            var off = (y1 - y2) / 2.0;
+            var length1 = y1 + y2;
 
-            // Scale so text fits
-            float scale = Math.Min(info.Width / textBounds.Width,
-                                   info.Height / textBounds.Height);
-            SKMatrix.PostConcat(ref matrix, SKMatrix.MakeScale(scale, scale));
+            //var depth2 = a * Math.Sqrt(length1) / Math.Sqrt(length1 - 2 * b);
 
-            // Calculate composite 3D transforms
-            float depth = 0.75f * scale * textBounds.Width;
+
+            //if (zAngleDeg < 0) zAngleDeg += 360;
+            //if (zAngleDeg > 90 && zAngleDeg < 270) off *= -1;
+            //off *= -1;
+
+            float offX = (float)(off * Math.Cos(zAngleRad));
+            float offY = (float)(off * Math.Sin(zAngleRad));
+
+            //yAngleDeg = 315;
 
             SKMatrix44 matrix44 = SKMatrix44.CreateIdentity();
             matrix44.PostConcat(SKMatrix44.CreateRotationDegrees(1, 0, 0, 0));
-            matrix44.PostConcat(SKMatrix44.CreateRotationDegrees(0, 1, 0, 50));
-            matrix44.PostConcat(SKMatrix44.CreateRotationDegrees(0, 0, 1, 315));
+            matrix44.PostConcat(SKMatrix44.CreateRotationDegrees(0, 1, 0, yAngleDeg));
+            matrix44.PostConcat(SKMatrix44.CreateRotationDegrees(0, 0, 1, zAngleDeg));
 
             SKMatrix44 perspectiveMatrix = SKMatrix44.CreateIdentity();
             perspectiveMatrix[3, 2] = -1 / depth;
-            matrix44.PostConcat(perspectiveMatrix);
+            matrix44.PostConcat(perspectiveMatrix);            
 
-            // Concatenate with 2D matrix
+            matrix = SKMatrix.MakeTranslation(-center.X, -center.Y);
+            SKMatrix.PostConcat(ref matrix, SKMatrix.MakeScale(scale, scale));
             SKMatrix.PostConcat(ref matrix, matrix44.Matrix);
+            SKMatrix.PostConcat(ref matrix, SKMatrix.MakeTranslation(center.X + offX, center.Y + offY));
 
-            // Translate back to center
-            SKMatrix.PostConcat(ref matrix,
-                SKMatrix.MakeTranslation(xCenter, yCenter));
-            // Set the matrix and display the text
+            centeredOrigin.X = center.X - textBounds.MidX;
+            centeredOrigin.Y = center.Y - textBounds.MidY;
+        }
+
+        void OnCanvasViewPaintSurface(object sender, SKPaintSurfaceEventArgs args)
+        {
+            SKImageInfo info = args.Info;
+            SKCanvas canvas = args.Surface.Canvas;
+
+            if (!isReady)
+            {
+                float coef = info.Width / (float)Width;
+                SKPoint posCloud = new SKPoint
+                {
+                    X = (float)(Img_cloud.Bounds.Left + 2 * Img_cloud.Bounds.Right) / 3f * coef,
+                    Y = (float)(Img_cloud.Bounds.Top + 3 * Img_cloud.Bounds.Bottom) / 4f * coef
+                };
+                SKPoint posDevice = new SKPoint
+                {
+                    X = (float)(Img_device.Bounds.Left + Img_device.Bounds.Right) / 2f * coef,
+                    Y = (float)(2 * Img_device.Bounds.Top + Img_device.Bounds.Bottom) / 3f * coef
+                };
+
+                var a = Img_device;
+                var b = Img_cloud;
+                Origin.X = info.Width / 2;
+                Origin.Y = info.Height / 2;
+                SKPoint posFrom = Origin;
+                SKPoint posTo = Origin;
+                //posFrom.X = 0;
+                //posFrom.Y = 0;
+                //posTo.X -= 200;
+                posTo.Y += 200;
+
+                ComputeMatrix(posDevice, posCloud, info, 290);
+                isReady = true;
+            }
+
+            //var cloud = Img_cloud.Bounds;
+            //var device = Img_device.Bounds;
+            //float coef = (float)(info.Width / textBounds.Width);
+
+            canvas.Clear();
             canvas.SetMatrix(matrix);
-            float xText = xCenter - textBounds.MidX;
-            float yText = yCenter - textBounds.MidY;
-            canvas.DrawText(text, xText, yText, textPaint);
+            canvas.DrawText(text, centeredOrigin, textPaint);            
         }
     }
 }
