@@ -11,13 +11,13 @@
                Source="cloud.png" 
                AbsoluteLayout.LayoutBounds="0.9, 0.2" 
                AbsoluteLayout.LayoutFlags="PositionProportional"/>
+        <skia:SKCanvasView x:Name="canvasView"
+            AbsoluteLayout.LayoutBounds="0,0,1,1"
+            AbsoluteLayout.LayoutFlags="All"/>
         <Image x:Name="Img_device"
                Source="device_holding.png" 
                AbsoluteLayout.LayoutBounds="0, 1" 
                AbsoluteLayout.LayoutFlags="PositionProportional"/>
-        <skia:SKCanvasView x:Name="canvasView"
-            AbsoluteLayout.LayoutBounds="0,0,1,1"
-            AbsoluteLayout.LayoutFlags="All"/>
     </AbsoluteLayout>
 
 </ContentPage>

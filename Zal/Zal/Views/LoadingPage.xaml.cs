@@ -2,94 +2,30 @@
 using SkiaSharp.Views.Forms;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using Zal.Domain;
 using Zal.Domain.Tools;
 
 namespace Zal.Views
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+    [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class LoadingPage : ContentPage
 	{
-        //SKCanvasView canvasView;
-        float xRotationDegrees, yRotationDegrees, zRotationDegrees;
-        string text = "stahu".ToMorse();
+        string text = "stahuju".ToMorse();        
         SKPaint textPaint = new SKPaint
         {
-            Typeface = GetTypeface("Zal/Resources/MorseSimple-normal.otf"),
+            Typeface = GetMorseTypeface(),
             Color = SKColors.Black,
-            TextSize = 100,
         };
-        SKSize size;
         SKRect textBounds = new SKRect();
-        //PointF[] points = new PointF[4];
         SKMatrix matrix;
         SKPoint centeredOrigin = new SKPoint();
-        SKPoint Origin = new SKPoint();
+        int maxTextLength = 200;
         bool isReady = false;
-
-        public LoadingPage()
-        {
-            InitializeComponent();
-            Title = "Animated Rotation 3D";
-            Lyt_absolute.SizeChanged += Lyt_absolute_SizeChanged;
-
-            //canvasView = new SKCanvasView();
-            canvasView.PaintSurface += OnCanvasViewPaintSurface;
-            //canvasView.Background = Brush.White;
-            //Content = canvasView;
-
-            //var assembly = this.GetType().GetTypeInfo().Assembly;
-            //var resources = assembly.GetManifestResourceNames();
-            // Measure the text
-                float a = textPaint.MeasureText(text, ref textBounds);
-        }
-
-        private void Lyt_absolute_SizeChanged(object sender, EventArgs e)
-        {
-            size = new SKSize((float)Lyt_absolute.Width, (float)Lyt_absolute.Height);
-            var cloud = Img_cloud.Bounds;
-            var device = Img_device.Bounds;
-
-            new Animation(AnimationStep).Commit(this, "MorseFlow", length: 2000, repeat: () => true);
-
-
-
-        }
-
-
-        public static SKTypeface GetTypeface(string fullFontName)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream("Zal.Resources.MorseSimple-normal.otf");
-            if (stream == null) return null;
-            return SKTypeface.FromStream(stream);
-        }
-
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            //new Timer(OnTimerElapsed, null, 200, 200);
-
-            //new Animation((value) => yRotationDegrees = 360 * (float)value).
-            //    Commit(this, "yRotationAnimation", length: 7000, repeat: () => true);
-
-            //        new Animation((value) => xRotationDegrees = 360 * (float)value).
-            //Commit(this, "xRotationAnimation", length: 25000, repeat: () => true);
-
-            //new Animation((value) =>
-            //{
-            //    zRotationDegrees = 360 * (float)value;
-            //    canvasView.InvalidateSurface();
-            //}).Commit(this, "zRotationAnimation", length: 11000, repeat: () => true);
-        }
-
+        private string rawText;
+        private string textToShow;
         private Dictionary<char, int> charSize = new Dictionary<char, int>
         {
             {' ', 1},
@@ -97,42 +33,63 @@ namespace Zal.Views
             {'-', 20},
             {'/', 20},
         };
+        private const string DOT = "<<<<<<>>>>>";
+        private const string DASH = "<<<<<<<<<<<<<<<<<<<>";
+        private const string SPACE = "<>>>>>>>>>>>>>>>>>>>";
 
-        private char lastChar = ' ';
-        private int spacesAtEnd = 0;
-        private void AnimationStep(double value)
+        public LoadingPage()
         {
-            char firstChar = text[0];
-            text = new string(' ', charSize[firstChar] - 1) + text.Substring(1);
-
-            if (lastChar == ' ')
-            {
-                lastChar = firstChar;
-                spacesAtEnd = 1;
-            }
-            else
-            {
-                spacesAtEnd++;
-            }
-
-            if (spacesAtEnd >= charSize[lastChar])
-            {
-                text = text.Substring(0, text.Length - (charSize[lastChar] - 1)) + lastChar;
-                lastChar = ' ';
-            }
-            else text += ' ';
-
-            canvasView.InvalidateSurface();
+            InitializeComponent();
+            InitText();
+            canvasView.PaintSurface += OnCanvasViewPaintSurface;
+            textPaint.MeasureText(textToShow, ref textBounds);
         }
 
+        public static SKTypeface GetMorseTypeface()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var stream = assembly.GetManifestResourceStream("Zal.Resources.MorseSimple-normal.otf");
+            if (stream == null) return null;
+            return SKTypeface.FromStream(stream);
+        }
 
+        private void InitText()
+        {
+            var sbText = new StringBuilder();
+            foreach (char ch in text)
+            {
+                switch (ch)
+                {
+                    case '.': sbText.Append(DOT); break;
+                    case '-': sbText.Append(DASH); break;
+                    case '/': sbText.Append(SPACE); break;
+                }
+            }
+            string emptySpace = new string(' ', maxTextLength - 10);
+            sbText.Insert(0, emptySpace).Append(emptySpace);
+            textToShow = new string('-', 10);
+            rawText = sbText.ToString();
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            new Animation(AnimationStep).Commit(this, "MorseFlow", length: 3000, repeat: () => true);
+        }
+
+        private void AnimationStep(double value)
+        {
+            int index = (int)(value * (rawText.Length - maxTextLength));
+            textToShow = rawText.Substring(index, maxTextLength);
+            textToShow = textToShow.Replace(DOT, ".").Replace(DASH, "-").Replace(SPACE, "/");
+            textToShow = textToShow.Replace('<', ' ').Replace('>', ' ');
+            canvasView.InvalidateSurface();
+        }
 
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            this.AbortAnimation("xRotationAnimation");
-            this.AbortAnimation("yRotationAnimation");
-            this.AbortAnimation("zRotationAnimation");
+            this.AbortAnimation("MorseFlow");
         }
 
         private void ComputeMatrix(SKPoint posFrom, SKPoint posTo, SKImageInfo info, float yAngleDeg)
@@ -143,12 +100,7 @@ namespace Zal.Views
             var dx = posTo.X - posFrom.X;
             var dy = posTo.Y - posFrom.Y;
             var length = Math.Sqrt(dx * dx + dy * dy);
-
             float scale = (float)length / textBounds.Width;
-
-            //float depth = info.Width * 0.7f;
-
-            //yAngleDeg = 0;
             var zAngleRad = Math.Atan2(dy, dx);
             var zAngleDeg = (float)(zAngleRad * 180 / Math.PI);
             var yAngleRad = yAngleDeg * Math.PI / 180;
@@ -161,19 +113,8 @@ namespace Zal.Views
             var y1 = b * depth / (depth - a);
             var y2 = b * depth / (depth + a);
             var off = (y1 - y2) / 2.0;
-            var length1 = y1 + y2;
-
-            //var depth2 = a * Math.Sqrt(length1) / Math.Sqrt(length1 - 2 * b);
-
-
-            //if (zAngleDeg < 0) zAngleDeg += 360;
-            //if (zAngleDeg > 90 && zAngleDeg < 270) off *= -1;
-            //off *= -1;
-
             float offX = (float)(off * Math.Cos(zAngleRad));
             float offY = (float)(off * Math.Sin(zAngleRad));
-
-            //yAngleDeg = 315;
 
             SKMatrix44 matrix44 = SKMatrix44.CreateIdentity();
             matrix44.PostConcat(SKMatrix44.CreateRotationDegrees(1, 0, 0, 0));
@@ -195,11 +136,9 @@ namespace Zal.Views
 
         void OnCanvasViewPaintSurface(object sender, SKPaintSurfaceEventArgs args)
         {
-            SKImageInfo info = args.Info;
-            SKCanvas canvas = args.Surface.Canvas;
-
             if (!isReady)
             {
+                SKImageInfo info = args.Info;
                 float coef = info.Width / (float)Width;
                 SKPoint posCloud = new SKPoint
                 {
@@ -208,32 +147,16 @@ namespace Zal.Views
                 };
                 SKPoint posDevice = new SKPoint
                 {
-                    X = (float)(Img_device.Bounds.Left + Img_device.Bounds.Right) / 2f * coef,
+                    X = (float)(2 * Img_device.Bounds.Left + Img_device.Bounds.Right) / 3f * coef,
                     Y = (float)(2 * Img_device.Bounds.Top + Img_device.Bounds.Bottom) / 3f * coef
                 };
-
-                var a = Img_device;
-                var b = Img_cloud;
-                Origin.X = info.Width / 2;
-                Origin.Y = info.Height / 2;
-                SKPoint posFrom = Origin;
-                SKPoint posTo = Origin;
-                //posFrom.X = 0;
-                //posFrom.Y = 0;
-                //posTo.X -= 200;
-                posTo.Y += 200;
-
-                ComputeMatrix(posDevice, posCloud, info, 290);
+                ComputeMatrix(posDevice, posCloud, info, 295);
                 isReady = true;
             }
-
-            //var cloud = Img_cloud.Bounds;
-            //var device = Img_device.Bounds;
-            //float coef = (float)(info.Width / textBounds.Width);
-
+            SKCanvas canvas = args.Surface.Canvas;
             canvas.Clear();
             canvas.SetMatrix(matrix);
-            canvas.DrawText(text, centeredOrigin, textPaint);            
+            canvas.DrawText(textToShow, centeredOrigin, textPaint);            
         }
     }
 }
