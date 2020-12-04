@@ -123,9 +123,9 @@ namespace Zal.Domain
         {
             JObject jObject = new JObject {
                 {"session", Session.GetJson() },
-                {"users", Users.GetJson() },
-                {"actions", Actions.GetJson() },
-                {"actualities", Actualities.GetJson() },
+                //{"users", Users.GetJson() },
+                //{"actions", Actions.GetJson() },
+                //{"actualities", Actualities.GetJson() },
             };
             return jObject.ToString();
         }

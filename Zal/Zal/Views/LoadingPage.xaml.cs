@@ -4,8 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Zal.Domain;
 using Zal.Domain.Tools;
 
 namespace Zal.Views
@@ -13,19 +16,17 @@ namespace Zal.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class LoadingPage : ContentPage
 	{
-        string text = "stahuju".ToMorse();        
-        SKPaint textPaint = new SKPaint
-        {
-            Typeface = GetMorseTypeface(),
-            Color = SKColors.Black,
-        };
-        SKRect textBounds = new SKRect();
-        SKMatrix matrix;
-        SKPoint centeredOrigin = new SKPoint();
-        int maxTextLength = 200;
-        bool isReady = false;
+        public event Action Loaded;
+
+        private int maxTextLength = 200;
+        private float yAngleDeg = 295f;
+        private string morseText = "stahuju".ToMorse();
         private string rawText;
         private string textToShow;
+        private bool isReady = false;
+        private const string DOT = "<<<<<<>>>>>";
+        private const string DASH = "<<<<<<<<<<<<<<<<<<<>";
+        private const string SPACE = "<>>>>>>>>>>>>>>>>>>>";
         private Dictionary<char, int> charSize = new Dictionary<char, int>
         {
             {' ', 1},
@@ -33,9 +34,15 @@ namespace Zal.Views
             {'-', 20},
             {'/', 20},
         };
-        private const string DOT = "<<<<<<>>>>>";
-        private const string DASH = "<<<<<<<<<<<<<<<<<<<>";
-        private const string SPACE = "<>>>>>>>>>>>>>>>>>>>";
+        private SKPaint textPaint = new SKPaint
+        {
+            Typeface = GetMorseTypeface(),
+            Color = SKColors.Black,
+            IsAntialias = true,
+        };
+        private SKRect textBounds = new SKRect();
+        private SKMatrix matrix;
+        private SKPoint centeredOrigin = new SKPoint();
 
         public LoadingPage()
         {
@@ -56,7 +63,7 @@ namespace Zal.Views
         private void InitText()
         {
             var sbText = new StringBuilder();
-            foreach (char ch in text)
+            foreach (char ch in morseText)
             {
                 switch (ch)
                 {
@@ -65,24 +72,66 @@ namespace Zal.Views
                     case '/': sbText.Append(SPACE); break;
                 }
             }
-            string emptySpace = new string(' ', maxTextLength - 10);
+            string emptySpace = new string(' ', maxTextLength);
             sbText.Insert(0, emptySpace).Append(emptySpace);
-            textToShow = new string('-', 10);
+            textToShow = new string('-', maxTextLength / charSize['-']);
             rawText = sbText.ToString();
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            new Animation(AnimationStep).Commit(this, "MorseFlow", length: 3000, repeat: () => true);
+            StartDownloading();
+        }
+
+        private async void StartDownloading()
+        {
+            await Task.Delay(200);
+            new Animation(AnimationStep).Commit(this, "MorseFlow", length: 3000, repeat: () => true, easing: EasingInOutAcos());
+            //await DownloadVersion();
+            //await LoginUser();
+            //await DownloadData();
+            await Task.Delay(3050);
+            //this.AbortAnimation("MorseFlow");
+            Loaded?.Invoke();
+        }
+
+        private Easing EasingInOutAcos() {
+            return new Easing(x => (1 - Math.Acos(2 * x - 1) / Math.PI + x)/2.0);
+        }
+
+    private async Task DownloadVersion()
+        {
+            Version appVersion_device = new Version(VersionTracking.CurrentVersion);
+            Version appVersion_last = await Zalesak.CurrentVersion();
+            if (appVersion_device == appVersion_last)
+            {
+                //await DisplayAlert("Verze aplikace", $"aktuální {appVersion_device}", "OK");
+            }
+            else
+            {
+                await DisplayAlert("Verze aplikace", $"máte {appVersion_device} a poslední je {appVersion_last}", "Aktualizovat");
+                //await Launcher.OpenAsync(new Uri("market://details?id=cz.seznam.mapy"));
+            }
+        }
+
+        private async Task LoginUser()
+        {
+            await Zalesak.Session.TryLoginWithTokenAsync();
+        }
+
+        private async Task DownloadData()
+        {
+            await Zalesak.GraphGalleries.Synchronize();
         }
 
         private void AnimationStep(double value)
         {
             int index = (int)(value * (rawText.Length - maxTextLength));
-            textToShow = rawText.Substring(index, maxTextLength);
-            textToShow = textToShow.Replace(DOT, ".").Replace(DASH, "-").Replace(SPACE, "/");
-            textToShow = textToShow.Replace('<', ' ').Replace('>', ' ');
+            var sb = new StringBuilder(rawText.Substring(index, maxTextLength));
+            sb = sb.Replace(DOT, ".").Replace(DASH, "-").Replace(SPACE, "/");
+            sb = sb.Replace('<', ' ').Replace('>', ' ');
+            textToShow = sb.ToString();
             canvasView.InvalidateSurface();
         }
 
@@ -92,7 +141,7 @@ namespace Zal.Views
             this.AbortAnimation("MorseFlow");
         }
 
-        private void ComputeMatrix(SKPoint posFrom, SKPoint posTo, SKImageInfo info, float yAngleDeg)
+        private void ComputeMatrix(SKPoint posFrom, SKPoint posTo, SKImageInfo info)
         {
             SKPoint center = posFrom + posTo;
             center.X /= 2.0f;
@@ -150,7 +199,7 @@ namespace Zal.Views
                     X = (float)(2 * Img_device.Bounds.Left + Img_device.Bounds.Right) / 3f * coef,
                     Y = (float)(2 * Img_device.Bounds.Top + Img_device.Bounds.Bottom) / 3f * coef
                 };
-                ComputeMatrix(posDevice, posCloud, info, 295);
+                ComputeMatrix(posDevice, posCloud, info);
                 isReady = true;
             }
             SKCanvas canvas = args.Surface.Canvas;
