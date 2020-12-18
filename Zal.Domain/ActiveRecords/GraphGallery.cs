@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Zal.Bridge.Gateways;
 using Zal.Bridge.Models;
 using Zal.Bridge.Models.ApiModels;
@@ -12,7 +13,7 @@ namespace Zal.Domain.ActiveRecords
     {
         private GraphGalleryModel Model;
         private List<GraphPhoto> photos;
-        private List<string> images;
+        //private List<string> images;
 
         public int Id => IdStr.GetHashCode();//todo vymyslet lepši id, asi z data vytvoření
         public string IdStr => Model.Id;
@@ -54,6 +55,17 @@ namespace Zal.Domain.ActiveRecords
         {
             var respond = await Gateway.CreateFolder(year);
             return string.IsNullOrEmpty(respond);
+        }
+
+        internal JToken GetJson()
+        {
+            return JObject.FromObject(Model);
+        }
+
+        internal static GraphGallery LoadFrom(JToken json)
+        {
+            var model = json.ToObject<GraphGalleryModel>();
+            return new GraphGallery(model);
         }
 
         //public async Task<bool> Upload(string imageName, byte[] rawImage, bool isMain = false)

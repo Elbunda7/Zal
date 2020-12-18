@@ -220,6 +220,7 @@ namespace Zal.Domain.ItemSets
 
         internal void LoadFrom(JToken json)
         {
+            if (json == null) return;
             var users = json.Value<JArray>("items").Select(x => User.LoadFrom(x));
             AllUsers.UnionWith(users);
             Users.AddAll(users);

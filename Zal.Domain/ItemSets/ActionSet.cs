@@ -147,6 +147,7 @@ namespace Zal.Domain.ItemSets
 
         internal void LoadFrom(JToken json)
         {
+            if (json == null) return;
             var actions = json.Value<JArray>("items").Select(x => ActionEvent.LoadFrom(x));
             var timestamp = json.Value<DateTime>("timestamp");
             if (actions.Count() >= 1)

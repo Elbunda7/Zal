@@ -108,6 +108,7 @@ namespace Zal.Domain.ItemSets
 
         internal void LoadFrom(JToken json)
         {
+            if (json == null) return;
             var actualities = json.Value<JArray>("items").Select(x => Article.LoadFrom(x));
             Data.AddAll(actualities);
             Data.LastSynchronization = json.Value<DateTime>("timestamp");

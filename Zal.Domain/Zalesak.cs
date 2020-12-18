@@ -110,11 +110,12 @@ namespace Zal.Domain
             {
                 JObject jObject = JObject.Parse(json);
                 Session.LoadFrom(jObject.GetValue("session"));
-                Users.LoadFrom(jObject.GetValue("users"));
-                Actions.LoadFrom(jObject.GetValue("actions"));
-                Actualities.LoadFrom(jObject.GetValue("actualities"));
+                GraphGalleries.LoadFrom(jObject.GetValue("gallery"));
+                //Users.LoadFrom(jObject.GetValue("users"));
+                //Actions.LoadFrom(jObject.GetValue("actions"));
+                //Actualities.LoadFrom(jObject.GetValue("actualities"));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
             }
         }
@@ -123,6 +124,7 @@ namespace Zal.Domain
         {
             JObject jObject = new JObject {
                 {"session", Session.GetJson() },
+                {"gallery", GraphGalleries.GetJson() },
                 //{"users", Users.GetJson() },
                 //{"actions", Actions.GetJson() },
                 //{"actualities", Actualities.GetJson() },

@@ -124,6 +124,7 @@ namespace Zal.Domain.ActiveRecords
         }
 
         internal void LoadFrom(JToken jToken) {
+            if (jToken == null) return;
             bool stayLogged = jToken.Value<bool>("StayLogged");
             if (stayLogged) {
                 RefreshToken = jToken.Value<string>("RefreshToken");

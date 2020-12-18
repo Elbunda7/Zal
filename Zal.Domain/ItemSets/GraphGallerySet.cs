@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Zal.Domain.ActiveRecords;
 using Zal.Domain.Tools.ARSets;
 
@@ -59,6 +60,43 @@ namespace Zal.Domain.ItemSets
             var gallery = await GraphGallery.CreateGallery(year, name);
             Data[year].Add(gallery);
             return gallery;
+        }
+
+        internal JToken GetJson()
+        {
+            JArray jArray = new JArray();
+            foreach (var galsByYear in Data)
+            {
+                foreach (GraphGallery gal in galsByYear.Value)
+                {
+                    jArray.Add(gal.GetJson());
+                }
+            }
+            JToken jToken = new JObject{
+                {"years", JArray.FromObject(Years) },
+                {"items", jArray }
+            };
+            return jToken;
+        }
+
+        internal void LoadFrom(JToken json)
+        {
+            if (json == null) return;
+            var galleries = json.Value<JArray>("items").Select(x => GraphGallery.LoadFrom(x));
+            Years = json.Value<JArray>("years").Values<int>().ToList();
+            if (galleries.Count() >= 1)
+            {
+                PlaceEachIntoRelevantCollection(galleries);
+            }
+        }
+
+        private void PlaceEachIntoRelevantCollection(IEnumerable<GraphGallery> items)
+        {
+            var usedYears = items.GroupBy(x=>x.Year).Select(x => x.Key);
+            foreach (int year in usedYears)
+            {
+                Data.Add(year, new GraphGalleryObservableSortedSet(items.Where(x => x.Year == year)));
+            }
         }
 
         //public async Task<GraphGallery> Add(string name, int year, DateTime date, string mainImgName = "")
